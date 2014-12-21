@@ -1,0 +1,30 @@
+{
+	"name": "trejjam/utils",
+	"description": "Utils, labels",
+	"keywords": [
+		"nette",
+		"utils",
+		"labels"
+	],
+	"license": [
+		"MIT"
+	],
+	"authors": [
+		{
+			"name": "Jan Trejbal"
+		}
+	],
+	"require": {
+		"php": ">=5.3.1",
+		"nette/nette": "~2.2"
+	},
+	"require-dev": {
+		"nette/tester": "@dev"
+	},
+	"suggest": {
+		"kdyby/console": "to use CLI configurator"
+	},
+	"autoload": {
+		"classmap": ["src/Utils"]
+	}
+}
