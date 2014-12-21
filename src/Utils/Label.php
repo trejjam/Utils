@@ -8,6 +8,8 @@
 
 namespace Trejjam\Utils\Components;
 
+use Nette\Application\UI;
+
 class Label extends \Nette\Application\UI\Control
 {
 	/**
@@ -16,19 +18,12 @@ class Label extends \Nette\Application\UI\Control
 	private $labels;
 
 	function setup(\Trejjam\Utils\Labels $labels) {
-		$this->labels=$labels;
+		$this->labels = $labels;
+
+		return $this;
 	}
 
-	public function render($key)
-	{
-		echo $this->labelService->$key;
+	public function render($key, $namespace = NULL) {
+		echo $this->labels->getData($key, $namespace);
 	}
-}
-
-interface ILabelFactory
-{
-	/**
-	 * @return Label
-	 */
-	function create();
 }

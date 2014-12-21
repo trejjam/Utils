@@ -16,6 +16,10 @@ class Labels
 	 * @var Nette\Database\Context
 	 */
 	protected $database;
+	/**
+	 * @var Components\Label
+	 */
+	protected $label;
 
 	protected $config;
 
@@ -23,11 +27,15 @@ class Labels
 	protected $namespace = [];
 	protected $notExistLabels = [];
 
-	public function __construct(Nette\Database\Context $database) {
+	public function __construct(Nette\Database\Context $database, \Trejjam\Utils\Components\Label $label) {
 		$this->database = $database;
+		$this->label=$label;
 	}
 	public function setConfig(array $config) {
 		$this->config = $config;
+	}
+	public function create() {
+		return $this->label->setup($this);
 	}
 
 	protected function init() {

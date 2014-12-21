@@ -45,9 +45,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 						  ]);
 
 		$label = $builder->addDefinition($this->prefix('label'))
-						  ->setClass('Trejjam\Utils\Components\Label')
-						  ->addSetup("setup");
-
+						  ->setClass('Trejjam\Utils\Components\Label');
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [

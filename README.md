@@ -28,11 +28,11 @@ utils:
 	labels:
 		table     : utils__labels
 		id        : id
-        namespace : 
-            name    : namespace
-            default : default
-        name      : name
-        value     : value		
+		namespace : 
+			name    : namespace
+			default : default
+		name      : name
+		value     : value		
 	cache : #not implemented yet
 		use     : false
 		name    : utils
@@ -118,53 +118,57 @@ Presenter/Model:
 		
 		/*		
 			"HTTP_ORIGIN"          => ...
-            "HTTP_USER_AGENT"      => ...
-            "REDIRECT_QUERY_STRING"=> ...
-            "QUERY_STRING"         => ...
+			"HTTP_USER_AGENT"      => ...
+			"REDIRECT_QUERY_STRING"=> ...
+			"QUERY_STRING"         => ...
 		*/
 		
 		dump(\Trejjam\Utils\Utils::getTextServerInfo());
-        		
-        /*		
-            Array ( [HTTP_ORIGIN] => ... [HTTP_USER_AGENT] => ... [REDIRECT_QUERY_STRING] => ... [QUERY_STRING] => ... ) 
-        */
-        
-        //save label to database
-        $this->labels->setData("key", "value");
-        //or
-        $this->labels->key = "value";
-        
-        //read label (use lazy loading)
-        dump($this->labels->getData("key"));
-        //or
-        dump((string)$this->labels->key);
-        
-        //save label to namespace (to database)
-        $this->labels->setData("key", "value", "namespace");
-        //or
-        $this->labels->namespace->key = "value";
-        
-        //read label in namespace
-        dump($this->labels->getData("key", "namespace"));
-        //or
-        dump((string)$this->labels->namespace->key);
-        
-        //delete label
-        $this->labels->delete("key", "namespace");
-        //or
-        $this->labels->namespace->key = NULL;
-        
-        $this->labels->key = "my value";
-        dump((string)$this->labels->key); //print "my value"
-        dump((string)$this->labels->backend->key); //print "my value"
-        
-        $this->labels->backend->key = "my back value";
-        dump((string)$this->labels->key); //print "my value"
-        dump((string)$this->labels->backend->key); //print "my back value"
-        
-        $this->labels->key = NULL;
-        dump((string)$this->labels->key); //print ""
-        dump((string)$this->labels->backend->key); //print "my back value"
+				
+		/*		
+			Array ( [HTTP_ORIGIN] => ... [HTTP_USER_AGENT] => ... [REDIRECT_QUERY_STRING] => ... [QUERY_STRING] => ... ) 
+		*/
+		
+		//save label to database
+		$this->labels->setData("key", "value");
+		//or
+		$this->labels->key = "value";
+		
+		//read label (use lazy loading)
+		dump($this->labels->getData("key"));
+		//or
+		dump((string)$this->labels->key);
+		
+		//save label to namespace (to database)
+		$this->labels->setData("key", "value", "namespace");
+		//or
+		$this->labels->namespace->key = "value";
+		
+		//read label in namespace
+		dump($this->labels->getData("key", "namespace"));
+		//or
+		dump((string)$this->labels->namespace->key);
+		
+		//delete label
+		$this->labels->delete("key", "namespace");
+		//or
+		$this->labels->namespace->key = NULL;
+		
+		$this->labels->key = "my value";
+		dump((string)$this->labels->key); //print "my value"
+		dump((string)$this->labels->backend->key); //print "my value"
+		
+		$this->labels->backend->key = "my back value";
+		dump((string)$this->labels->key); //print "my value"
+		dump((string)$this->labels->backend->key); //print "my back value"
+		
+		$this->labels->key = NULL;
+		dump((string)$this->labels->key); //print ""
+		dump((string)$this->labels->backend->key); //print "my back value"
+	}
+	
+	function createComponentLabel() {
+		return $this->labels->create();
 	}
 ```
 
@@ -172,5 +176,5 @@ Latte:
 
 ```smarty
 	{control label page}
-	{control label-backend page}
+	{control label page, backend}
 ```
