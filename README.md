@@ -32,12 +32,28 @@ utils:
 			name    : namespace
 			default : default
 		name      : name
-		value     : value		
-	cache : #not implemented yet
-		use     : false
-		name    : utils
-		timeout : 10 minutes    
-	debugger:false #not implemented yet
+		value     : value	
+	pageInfo : 
+		table        : page_info
+		id           : id
+		parentId     : parent_id
+		page         : page
+		# parentId=>NULL: [[module:]presenter:]action
+		# parentId=>int:  value for parent subAttribute
+		subAttribute : sub_attribute
+		title        : title
+		description  : description
+		keywords     : keywords
+		img          : img
+		rootPage     : 1
+		cache:
+			"use"     : TRUE
+			"name"    : "page_info"
+			"timeout" : "60 minutes"
+	layout: 
+		fileVersion   : 1
+		reformatFlash : TRUE    
+	debugger: false #not implemented yet
 ```
 Config
 ------
@@ -93,6 +109,8 @@ Usage
 Presenter/Model:
 
 ```php
+	use \Trejjam\Utils\Layout\BaseLayoutTrait;
+
 	/**
 	* @var \Trejjam\Utils\Labels @inject
 	*/
@@ -106,7 +124,7 @@ Presenter/Model:
 		$this->labels->page="new value"; //change value
 		
 		dump(\Trejjam\Utils\Utils::priceCreate(1234.4, "Kč")); //print 1.235 Kč
-		dump(\Trejjam\Utils\Utils::priceCreate(1234.4, '$')); //print 1.235 $
+		dump(\Trejjam\Utils\Utils::priceCreate(1234.4, "$")); //print 1.235 $
 		dump(\Trejjam\Utils\Utils::priceCreate(-1234.4, "Kč")); //print free
 		dump(\Trejjam\Utils\Utils::priceCreate(-1234.4, "Kč", "gratis")); //print gratis
 		dump(\Trejjam\Utils\Utils::priceCreate(-1234.4, "Kč", FALSE)); //print -1.235
@@ -166,15 +184,45 @@ Presenter/Model:
 		dump((string)$this->labels->key); //print ""
 		dump((string)$this->labels->backend->key); //print "my back value"
 	}
-	
-	function createComponentLabel() {
-		return $this->labels->create();
-	}
 ```
 
 Latte:
 
 ```smarty
+<!DOCTYPE html>
+<html n:class="$browser, ($IEversion!=-1)?'ie-'.$IEversion" lang="cs">
+	<head>
+		<meta name="robots" content="index, follow" />
+		<meta charset="UTF-8">
+		<link href="{$basePath}/img/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+		<link href="{$basePath}/img/favicon.ico" type="image/x-icon" rel="icon"/>
+
+		<meta name="description" content="{$pageInfo->description}" />
+		<meta name="keywords" content="{$pageInfo->keywords}" />
+
+		<meta property="og:url" content="http://{!$server}{$uri}"/>
+		<meta property="og:image" content="http://{!$server}{$basePath}/img2/{$pageInfo->fbImg}"/>
+		<meta property="og:title" content="{$pageInfo->title}"/>
+		<meta property="og:site_name" content="IMA config"/>
+		<meta property="og:description" content="{$pageInfo->description}"/>
+
+		<meta name="viewport" content="width=device-width, initial-scale=0.9">
+
+		<title>{$pageInfo->title}</title>
+	</head>
+	<body>
+		{include body}
+		<div id="fb-root"></div>
+		<script type="text/javascript" src="{$basePath}/js/jquery-1.11.1.min.js?{$fv}"></script>
+		<script type="text/javascript" src="{$basePath}/js/netteForms.js?{$fv}"></script>
+		<script type="text/javascript" src="{$basePath}/js/nette.ajax.js?{$fv}"></script>
+	</body>
+</html>
+
+{define body}
 	{control label page}
 	{control label page, backend}
+	
+	User is {$userLogged?"":"not"} logged.
+{/define}
 ```
