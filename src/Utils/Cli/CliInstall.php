@@ -17,10 +17,7 @@ class CliInstall extends Command
 {
 	const
 		FILE_LABELS_TABLE = "utils__labels",
-		FILE_ROLES_TABLE = "users__roles",
-		FILE_RESOURCES_TABLE = "users__resources",
-		FILE_USER_ROLE_TABLE = "users__user_role",
-		FILE_ROLES_DATA_TABLE = "users__roles-data";
+		FILE_PAGE_INFO_TABLE = "users__roles";
 
 	/**
 	 * @var \Nette\Database\Context @inject
@@ -33,6 +30,7 @@ class CliInstall extends Command
 	}
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->database->query($this->getFile(self::FILE_LABELS_TABLE));
+		$this->database->query($this->getFile(self::FILE_PAGE_INFO_TABLE));
 	}
 	protected function getFile($file) {
 		return file_get_contents(__DIR__."/../../sql/". $file.".sql");

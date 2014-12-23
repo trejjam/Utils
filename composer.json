@@ -4,7 +4,8 @@
 	"keywords": [
 		"nette",
 		"utils",
-		"labels"
+		"labels",
+		"pageInfo"
 	],
 	"license": [
 		"MIT"
@@ -16,7 +17,8 @@
 	],
 	"require": {
 		"php": ">=5.3.1",
-		"nette/nette": "~2.2"
+		"nette/nette": "~2.2",
+		"cbschuld/browser.php": "dev-master"
 	},
 	"require-dev": {
 		"nette/tester": "@dev"

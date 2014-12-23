@@ -23,11 +23,30 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 			'name'      => 'name',
 			'value'     => 'value',
 		],
-		'cache'    => [
-			//not implemented yet
-			"use"     => FALSE,
-			"name"    => "utils",
-			"timeout" => "10 minutes"
+		'pageInfo' => [
+			'table'        => 'page_info',
+			'id'           => 'id',
+			'parentId'     => 'parent_id',
+			'page'         => 'page',
+			/*
+			 * parentId=>NULL: [[module:]presenter:]action
+			 * parentId=>int:  value for parent subAttribute
+			*/
+			'subAttribute' => 'sub_attribute',
+			'title'        => 'title',
+			'description'  => 'description',
+			'keywords'     => 'keywords',
+			'img'          => 'img',
+			'rootPage'     => 1,
+			'cache'        => [
+				"use"     => TRUE,
+				"name"    => "page_info",
+				"timeout" => "60 minutes"
+			],
+		],
+		'layout'   => [
+			'fileVersion'   => 1,
+			'reformatFlash' => TRUE,
 		],
 		'debugger' => FALSE, //not implemented yet
 	];
@@ -45,7 +64,19 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 						  ]);
 
 		$label = $builder->addDefinition($this->prefix('label'))
-						  ->setClass('Trejjam\Utils\Components\Label');
+						 ->setClass('Trejjam\Utils\Components\Label');
+
+		$pageInfo = $builder->addDefinition($this->prefix('pageInfo'))
+							->setClass('Trejjam\Utils\PageInfo')
+							->addSetup("setConfig", [
+								"config" => $config["pageInfo"],
+							]);
+
+		$layout = $builder->addDefinition($this->prefix('baseLayout'))
+						  ->setClass('Trejjam\Utils\Layout\BaseLayout')
+						  ->addSetup("setConfig", [
+							  "config" => $config["layout"],
+						  ]);
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
@@ -58,6 +89,16 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 						->setClass('Trejjam\Utils\\' . $v)
 						->addTag("kdyby.console.command");
 			}
+		}
+
+		if ($config["pageInfo"]["cache"]["use"]) {
+			$builder->addDefinition($this->prefix("cache"))
+					->setFactory('Nette\Caching\Cache')
+					->setArguments(['@cacheStorage', $config["pageInfo"]["cache"]["name"]])
+					->setAutowired(FALSE);
+
+			$pageInfo->setArguments([$this->prefix("@cache")])
+					 ->addSetup("setTimeout", ["timeout" => $config["pageInfo"]["cache"]["timeout"]]);
 		}
 
 		/*
