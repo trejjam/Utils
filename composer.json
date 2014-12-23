@@ -1,11 +1,13 @@
 {
 	"name": "trejjam/utils",
-	"description": "Utils, labels",
+	"description": "Utils, labels, pageInfo, baseLayout, image",
 	"keywords": [
 		"nette",
 		"utils",
 		"labels",
-		"pageInfo"
+		"pageInfo",
+		"baseLayout",
+		"image"
 	],
 	"license": [
 		"MIT"
