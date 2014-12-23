@@ -106,6 +106,29 @@ php index.php Utils:labels -d labelName [-s namespace]
 Usage
 -----
 
+```yml
+image:
+	paths:
+		products: %wwwDir%/data/img
+	routine:
+		products:
+			mini:
+                dir    : %wwwDir%/data/img/mini
+                width  : 262
+                height : 400
+                flags  : [SHRINK_ONLY]
+            micro:
+                dir    : %wwwDir%/data/img/micro
+                width  : 180
+                height : 180
+                flags : [SHRINK_ONLY]
+            microB:
+                dir    : %wwwDir%/data/img/microB
+                width  : 76
+                height : 80
+                flags : [SHRINK_ONLY]
+```
+
 Presenter/Model:
 
 ```php
@@ -115,8 +138,13 @@ Presenter/Model:
 	* @var \Trejjam\Utils\Labels @inject
 	*/
 	public $labels;
+	/**
+	* @var \Trejjam\Utils\Image @inject
+	*/
+	public $image;
 	
 	function renderDefault() {
+		//-------------utils-------------
 		dump($this->labels->page); //print value where namespace==default and name==page
 		dump($this->labels->backend->page); //print value where namespace==backend and name==page
 		
@@ -146,6 +174,8 @@ Presenter/Model:
 		/*		
 			Array ( [HTTP_ORIGIN] => ... [HTTP_USER_AGENT] => ... [REDIRECT_QUERY_STRING] => ... [QUERY_STRING] => ... ) 
 		*/
+		
+		//-------------labels-------------
 		
 		//save label to database
 		$this->labels->setData("key", "value");
@@ -183,6 +213,35 @@ Presenter/Model:
 		$this->labels->key = NULL;
 		dump((string)$this->labels->key); //print ""
 		dump((string)$this->labels->backend->key); //print "my back value"
+		
+		//-------------image-------------
+		$this->image->cleanFileName("../;°+1ě2š3č4ř5ž6ý7á8í9é0../=%'ˇú/)(ů\"'¨,?.:-_\\|"); //print "__-1e2s3c4r5z6y7a8i9e0..-u-u-.-_"
+		
+		dump($this->imageUtils->convert(rootDir . "/www/data/img", "filename.JpG", "products"));
+		
+		/*
+            original =>
+                name => "filename.jpg"
+                width => 265
+                height => 247
+            mini =>
+                name => "filename.jpg"
+                width => 262
+                height => 244
+            micro =>
+                name => "filename.jpg"
+                width => 180
+                height => 168
+            microB =>
+                name => "filename.jpg"
+                width => 76
+                height => 71 
+                
+            and create thumbs in dir www/data/img/mini, www/data/img/micro, www/data/img/microB
+		*/
+		
+		$this->image->clean("filename.jpg", "products"); //remove thumbs from www/data/img/mini, www/data/img/micro, www/data/img/microB 
+		$this->image->cleanPath("filename.jpg", "products"); //remove image from www/data/img
 	}
 ```
 

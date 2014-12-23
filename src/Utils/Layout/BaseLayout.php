@@ -126,7 +126,7 @@ trait BaseLayoutTrait
 	public function getJsFiles($listFile = "default") {
 		$out = [];
 
-		$dir = rootDir . "/www/js/";
+		$dir = $this->config["wwwDir"] . "/js/";
 
 		if (!is_file($dir . $listFile . ".js-list")) {
 			return FALSE;

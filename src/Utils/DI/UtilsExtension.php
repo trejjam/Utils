@@ -48,14 +48,26 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 			'fileVersion'   => 1,
 			'reformatFlash' => TRUE,
 		],
+		'image'    => [
+			"paths"   => [
+
+			],
+			"routine" => [
+
+			],
+		],
 		'debugger' => FALSE, //not implemented yet
 	];
 
 	public function loadConfiguration() {
 		parent::loadConfiguration();
 
+		$parameters = $this->compiler->getConfig()["parameters"];
+
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
+
+		$config["layout"]["wwwDir"] = $parameters["wwwDir"];
 
 		$labels = $builder->addDefinition($this->prefix('labels'))
 						  ->setClass('Trejjam\Utils\Labels')
@@ -77,6 +89,12 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 						  ->addSetup("setConfig", [
 							  "config" => $config["layout"],
 						  ]);
+
+		$image = $builder->addDefinition($this->prefix('image'))
+						 ->setClass('Trejjam\Utils\Image')
+						 ->addSetup("setConfig", [
+							 "config" => $config["image"],
+						 ]);
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
