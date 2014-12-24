@@ -17,7 +17,7 @@ class CliInstall extends Command
 {
 	const
 		FILE_LABELS_TABLE = "utils__labels",
-		FILE_PAGE_INFO_TABLE = "users__roles";
+		FILE_PAGE_INFO_TABLE = "page_info";
 
 	/**
 	 * @var \Nette\Database\Context @inject
@@ -33,6 +33,6 @@ class CliInstall extends Command
 		$this->database->query($this->getFile(self::FILE_PAGE_INFO_TABLE));
 	}
 	protected function getFile($file) {
-		return file_get_contents(__DIR__."/../../sql/". $file.".sql");
+		return file_get_contents(__DIR__."/../../../sql/". $file.".sql");
 	}
 }
