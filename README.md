@@ -282,6 +282,6 @@ Latte:
 	{control label page}
 	{control label page, backend}
 	
-	User is {$userLogged?"":"not"} logged.
+	User is {$isUserLogged?"":"not"} logged.
 {/define}
 ```

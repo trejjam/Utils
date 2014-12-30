@@ -47,6 +47,8 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		'layout'   => [
 			'fileVersion'   => 1,
 			'reformatFlash' => TRUE,
+			'wwwDir'        => '%wwwDir%',
+			'debugMode'     => '%debugMode%',
 		],
 		'image'    => [
 			"paths"   => [
@@ -66,8 +68,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
-
-		$config["layout"]["wwwDir"] = $parameters["wwwDir"];
 
 		$labels = $builder->addDefinition($this->prefix('labels'))
 						  ->setClass('Trejjam\Utils\Labels')
@@ -110,12 +110,12 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($config["pageInfo"]["cache"]["use"]) {
-			$builder->addDefinition($this->prefix("cache"))
+			$builder->addDefinition($this->prefix("pageInfo.cache"))
 					->setFactory('Nette\Caching\Cache')
 					->setArguments(['@cacheStorage', $config["pageInfo"]["cache"]["name"]])
 					->setAutowired(FALSE);
 
-			$pageInfo->setArguments([$this->prefix("@cache")])
+			$pageInfo->setArguments([$this->prefix("@pageInfo.cache")])
 					 ->addSetup("setTimeout", ["timeout" => $config["pageInfo"]["cache"]["timeout"]]);
 		}
 

@@ -15,16 +15,20 @@ class BaseLayout
 	/**
 	 * @var Nette\Security\User
 	 */
-	private $user;
+	protected $user;
 	/**
 	 * @var \Trejjam\Utils\Labels
 	 */
-	private $labels;
+	protected $labels;
 
 	/**
 	 * @var array
 	 */
-	private $config = [];
+	protected $config = [];
+	/**
+	 * @var array
+	 */
+	protected $cacheParams = [];
 
 	function __construct(Nette\Security\User $user, \Trejjam\Utils\Labels $labels, \Trejjam\Utils\PageInfo $pageInfo) {
 		$this->user = $user;
@@ -38,9 +42,13 @@ class BaseLayout
 	function getConfig() {
 		return $this->config;
 	}
+	public function setCacheParams($cacheParams) {
+		$this->cacheParams = $cacheParams;
+	}
 
 	function setTemplate(Nette\Application\UI\ITemplate $template, $pageInfo) {
 		$template->fv = $this->config["fileVersion"];
+		$template->debug = $this->config["debugMode"];
 
 		$template->server = $_SERVER['SERVER_NAME'];
 		$template->uri = explode("?", isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : "")[0];
@@ -48,9 +56,7 @@ class BaseLayout
 		$this->setBrowserHead($template);
 		$template->pageInfo = $pageInfo;
 
-		$template->userLogged = $this->user->isLoggedIn();
-
-		$template->jsName = "default";
+		$template->isUserLogged = $this->user->isLoggedIn();
 	}
 
 	private function setBrowserHead(Nette\Application\UI\ITemplate $template) {
@@ -66,7 +72,6 @@ trait BaseLayoutTrait
 	 * @var \Trejjam\Utils\Layout\BaseLayout @inject
 	 */
 	public $layout;
-
 	/**
 	 * @var \Trejjam\Utils\PageInfo @inject
 	 */
@@ -92,10 +97,6 @@ trait BaseLayoutTrait
 			$this->ownBeforeRender();
 		}
 	}
-
-	function addCrumb($text, $url) {
-		$this->crumbs[] = (object)array("text" => $text, "url" => $url);
-	}
 	function afterRender() {
 		parent::afterRender();
 
@@ -103,8 +104,15 @@ trait BaseLayoutTrait
 			$this->editFlashs();
 		}
 		$this->template->crumbs = $this->crumbs;
+
+		if (method_exists($this, 'ownAfterRender')) {
+			$this->ownAfterRender();
+		}
 	}
 
+	function addCrumb($text, $url) {
+		$this->crumbs[] = (object)array("text" => $text, "url" => $url);
+	}
 	function editFlashs() {
 		foreach ($this->template->flashes as $k => $v) {
 			$this->template->flashes[$k]->text = $this->template->flashes[$k]->message;
@@ -119,25 +127,6 @@ trait BaseLayoutTrait
 				}
 			}
 		}
-	}
-	public function getJsCache($name = "default") {
-		return isset($this->cache) ? (isset($this->cache["jsCache/" . $name]) ? $this->cache["jsCache/" . $name] . ".js" : "") : "";
-	}
-	public function getJsFiles($listFile = "default") {
-		$out = [];
-
-		$dir = $this->config["wwwDir"] . "/js/";
-
-		if (!is_file($dir . $listFile . ".js-list")) {
-			return FALSE;
-		}
-
-		$jsList = file('safe://' . $dir . $listFile . ".js-list", FILE_IGNORE_NEW_LINES);
-		foreach ($jsList as $v) {
-			$out[] = $v;
-		}
-
-		return $out;
 	}
 	function createComponentLabel() {
 		return $this->labels->create();
