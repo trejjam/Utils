@@ -58,6 +58,41 @@ class Utils
 
 		return (json_last_error() == JSON_ERROR_NONE);
 	}
+	/**
+	 * @param $zip
+	 * @return string
+	 */
+	public static function unifyZip($zip) {
+		if (strlen($zip) == 5) {
+			return substr($zip, 0, 3) . " " . substr($zip, 3, 2);
+		}
+
+		return $zip;
+	}
+	/**
+	 * @param string $phone
+	 * @param bool   $addPrefix
+	 * @param string $prefix
+	 * @return string
+	 */
+	public static function unifyPhone($phone, $addPrefix = TRUE, $prefix = "+420") {
+		$trimPhone = str_replace(' ', '', $phone);
+		$out = '';
+		for ($i = strlen($trimPhone); $i >= 3; $i -= 3) {
+			if ($out != '') $out = ' ' . $out;
+			$out = substr($trimPhone, $i - 3, 3) . $out;
+
+			if ($i < 6) {
+				$out = substr($trimPhone, 0, $i - 3) . $out;
+			}
+		}
+
+		if ($addPrefix && strlen($out) < 12) {
+			$out = $prefix . ' ' . $out;
+		}
+
+		return $out;
+	}
 
 	/**
 	 * @return array
