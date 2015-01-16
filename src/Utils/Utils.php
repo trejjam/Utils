@@ -87,7 +87,7 @@ class Utils
 			}
 		}
 
-		if ($addPrefix && strlen($out) < 12) {
+		if ($addPrefix && strlen($out) < 12 && $out != '') {
 			$out = $prefix . ' ' . $out;
 		}
 

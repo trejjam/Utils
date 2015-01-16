@@ -8,7 +8,8 @@
 
 namespace Trejjam\Utils\Layout;
 
-use Nette;
+use Nette,
+	Trejjam;
 
 class BaseLayout
 {
@@ -17,7 +18,7 @@ class BaseLayout
 	 */
 	protected $user;
 	/**
-	 * @var \Trejjam\Utils\Labels
+	 * @var Trejjam\Utils\Labels
 	 */
 	protected $labels;
 
@@ -30,7 +31,7 @@ class BaseLayout
 	 */
 	protected $cacheParams = [];
 
-	function __construct(Nette\Security\User $user, \Trejjam\Utils\Labels $labels, \Trejjam\Utils\PageInfo $pageInfo) {
+	function __construct(Nette\Security\User $user, Trejjam\Utils\Labels $labels, Trejjam\Utils\PageInfo $pageInfo) {
 		$this->user = $user;
 		$this->labels = $labels;
 		$this->pageInfo = $pageInfo;
@@ -88,10 +89,17 @@ trait BaseLayoutTrait
 	 */
 	protected $config;
 
-	function beforeRender() {
-		$this->layout->setTemplate($this->template, $this->pageInfo->getHead($this->pageInfo->selectPage($this->request)));
+	function startup() {
+		parent::startup();
 
 		$this->config = $this->layout->getConfig();
+
+		if (method_exists($this, 'ownStartup')) {
+			$this->ownStartup();
+		}
+	}
+	function beforeRender() {
+		$this->layout->setTemplate($this->template, $this->pageInfo->getHead($this->pageInfo->selectPage($this->request)));
 
 		if (method_exists($this, 'ownBeforeRender')) {
 			$this->ownBeforeRender();
