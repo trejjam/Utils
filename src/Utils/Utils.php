@@ -77,6 +77,11 @@ class Utils
 	 */
 	public static function unifyPhone($phone, $addPrefix = TRUE, $prefix = "+420") {
 		$trimPhone = str_replace(' ', '', $phone);
+
+		while (strlen($trimPhone) > 9 && $trimPhone[0] == '0') {
+			$trimPhone = substr($trimPhone, 1);
+		}
+
 		$out = '';
 		for ($i = strlen($trimPhone); $i >= 3; $i -= 3) {
 			if ($out != '') $out = ' ' . $out;
