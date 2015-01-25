@@ -23,19 +23,20 @@ class Labels
 
 	protected $config;
 
-	protected $init = FALSE;
+	protected $init      = FALSE;
 	protected $namespace = [];
 	protected $notExistLabels = [];
 
-	public function __construct(Nette\Database\Context $database, \Trejjam\Utils\Components\Label $label) {
+	public function __construct(Nette\Database\Context $database) {
 		$this->database = $database;
-		$this->label=$label;
+		$this->label = new Components\Label;
+		$this->label->setup($this);
 	}
 	public function setConfig(array $config) {
 		$this->config = $config;
 	}
 	public function create() {
-		return $this->label->setup($this);
+		return $this->label;
 	}
 
 	protected function init() {
@@ -68,6 +69,7 @@ class Labels
 		if (!isset($this->namespace[$namespace])) {
 			throw new \Exception("Namespace not exist");
 		}
+
 		return array_keys($this->namespace[$namespace]);
 	}
 
@@ -151,7 +153,8 @@ class Labels
 	}
 
 	public function &__get($name) {
-		$labelsData= new LabelsData($name, $this);
+		$labelsData = new LabelsData($name, $this);
+
 		return $labelsData;
 	}
 	public function __set($name, $data) {
@@ -176,7 +179,8 @@ class LabelsData
 		return $this->labels->getData($this->name);
 	}
 	public function &__get($name) {
-		$labelData= $this->labels->getData($name, $this->name);
+		$labelData = $this->labels->getData($name, $this->name);
+
 		return $labelData;
 	}
 	public function __set($name, $data) {

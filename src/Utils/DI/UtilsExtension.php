@@ -75,9 +75,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 							  "config" => $config["labels"],
 						  ]);
 
-		$label = $builder->addDefinition($this->prefix('label'))
-						 ->setClass('Trejjam\Utils\Components\Label');
-
 		$pageInfo = $builder->addDefinition($this->prefix('pageInfo'))
 							->setClass('Trejjam\Utils\PageInfo')
 							->addSetup("setConfig", [

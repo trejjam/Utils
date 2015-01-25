@@ -10,7 +10,7 @@ namespace Trejjam\Utils\Components;
 
 use Nette\Application\UI;
 
-class Label extends \Nette\Application\UI\Control
+class Label extends UI\Control
 {
 	/**
 	 * @var \Trejjam\Utils\Labels
