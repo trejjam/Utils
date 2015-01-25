@@ -22,10 +22,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `utils__labels` (
 `id` int(11) NOT NULL,
-  `namespace` varchar(20) COLLATE utf8_czech_ci NOT NULL DEFAULT 'default',
-  `name` varchar(20) COLLATE utf8_czech_ci NOT NULL,
-  `value` text COLLATE utf8_czech_ci NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+  `namespace` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Klíče pro tabulku `utils__labels`

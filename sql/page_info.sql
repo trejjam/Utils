@@ -23,13 +23,13 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `page_info` (
 `id` int(11) NOT NULL,
   `parent_id` int(11) DEFAULT NULL,
-  `page` varchar(20) COLLATE utf8_czech_ci NOT NULL,
-  `sub_attribute` varchar(20) COLLATE utf8_czech_ci DEFAULT NULL,
-  `title` text COLLATE utf8_czech_ci,
-  `description` text COLLATE utf8_czech_ci,
-  `keywords` text COLLATE utf8_czech_ci,
-  `img` text COLLATE utf8_czech_ci
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+  `page` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sub_attribute` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` text COLLATE utf8mb4_unicode_ci,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `keywords` text COLLATE utf8mb4_unicode_ci,
+  `img` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Vypisuji data pro tabulku `page_info`
