@@ -123,6 +123,9 @@ trait BaseLayoutTrait
 	}
 	function editFlashs() {
 		foreach ($this->template->flashes as $k => $v) {
+			if (!isset($this->template->flashes[$k]->message)) {
+				continue;
+			}
 			$this->template->flashes[$k]->text = $this->template->flashes[$k]->message;
 			unset($this->template->flashes[$k]->message);
 
