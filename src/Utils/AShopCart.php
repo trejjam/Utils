@@ -17,6 +17,9 @@ use Nette,
  */
 abstract class AShopCart extends Nette\Object
 {
+	const
+		COMMENT = '_comment-';
+
 	/**
 	 * @var Nette\Http\SessionSection
 	 */
@@ -112,5 +115,20 @@ abstract class AShopCart extends Nette\Object
 	 */
 	public function cartClear() {
 		$this->shopCart->remove();
+	}
+
+	/**
+	 * @param $id
+	 * @param $text
+	 */
+	public function editComment($id, $text) {
+		$this->shopCart->{self::COMMENT . $id} = $text;
+	}
+	/**
+	 * @param $id
+	 * @return string
+	 */
+	public function getComment($id) {
+		return isset($this->shopCart->{self::COMMENT . $id}) ? $this->shopCart->{self::COMMENT . $id} : '';
 	}
 } 
