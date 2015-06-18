@@ -7,8 +7,14 @@
 parameters:
 
 extensions:
-	utils: Trejjam\DI\UtilsExtension
+	console: Kdyby\Console\DI\ConsoleExtension
+	utils: Trejjam\Utils\DI\UtilsExtension
 
 utils:
+	labels:
+		enable: true
+
+database:
+	dsn: "sqlite::memory:"
 
 services:

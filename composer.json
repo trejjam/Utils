@@ -1,6 +1,6 @@
 {
 	"name": "trejjam/utils",
-	"description": "Utils, labels, pageInfo, baseLayout, image",
+	"description": "Utils, labels",
 	"keywords": [
 		"nette",
 		"utils",
@@ -17,18 +17,40 @@
 			"name": "Jan Trejbal"
 		}
 	],
+	"support": {
+		"email": "jan.trejbal@gmail.com",
+		"issues": "https://github.com/Trejjam/Utils/issues"
+	},
 	"require": {
-		"php": ">=5.3.1",
-		"nette/nette": "~2.2",
-		"cbschuld/browser.php": "dev-master@dev"
+		"php": ">=5.4",
+
+		"nette/di": "^2.3",
+		"nette/database": "^2.3",
+
+		"kdyby/console": "^2.4"
 	},
 	"require-dev": {
-		"nette/tester": "@dev"
+		"nette/tester": "@dev",
+		"nette/bootstrap": "2.3.*",
+		"nette/robot-loader": "^2.3",
+
+		"tracy/tracy": "^2.3"
 	},
 	"suggest": {
+		"gabrielbull/browser": "to get information about browser",
 		"kdyby/console": "to use CLI configurator"
 	},
 	"autoload": {
-		"classmap": ["src/Utils"]
+		"psr-4": {
+			"Trejjam\\Utils\\": "src/"
+		},
+		"classmap": [
+			"src/exceptions.php"
+		]
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0-dev"
+		}
 	}
 }

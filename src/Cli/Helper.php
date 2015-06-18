@@ -6,18 +6,20 @@
  * Time: 1:45
  */
 
-namespace Trejjam\Utils;
+namespace Trejjam\Utils\Cli;
 
 use Symfony\Component\Console\Command\Command;
+use Trejjam;
 
-abstract class CliHelper extends Command
+abstract class Helper extends Command
 {
 	/**
-	 * @var Labels
+	 * @var Trejjam\Utils\Labels\Labels
 	 */
 	protected $labels;
 
-	public function __construct(Labels $labels) {
+	public function __construct(Trejjam\Utils\Labels\Labels $labels)
+	{
 		parent::__construct();
 
 		$this->labels = $labels;

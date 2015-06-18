@@ -15,7 +15,7 @@ use Nette,
  * Manage shopping cart
  * @package App\Model
  */
-abstract class AShopCart extends Nette\Object
+abstract class ShopCart extends Nette\Object
 {
 	const
 		COMMENT = '_comment-';
@@ -33,7 +33,8 @@ abstract class AShopCart extends Nette\Object
 	 */
 	protected $user;
 
-	public function __construct(Nette\Http\SessionSection $shopCart, Trejjam\Utils\Labels $labels, Nette\Security\User $user) {
+	public function __construct(Nette\Http\SessionSection $shopCart, Trejjam\Utils\Labels $labels, Nette\Security\User $user)
+	{
 		$this->shopCart = $shopCart;
 		$this->shopCart->setExpiration('14 days');
 
@@ -52,13 +53,15 @@ abstract class AShopCart extends Nette\Object
 	 * @param string $id
 	 * @param int    $count
 	 */
-	public function addItem($id, $count) {
+	public function addItem($id, $count)
+	{
 		$this->shopCart->$id = $count;
 	}
 	/**
 	 * @param string $id
 	 */
-	public function removeItem($id) {
+	public function removeItem($id)
+	{
 		if (isset($this->shopCart->$id)) {
 			unset($this->shopCart->$id);
 		}
@@ -67,7 +70,8 @@ abstract class AShopCart extends Nette\Object
 	 * @param string $id
 	 * @return int
 	 */
-	public function getItemCount($id) {
+	public function getItemCount($id)
+	{
 		if (isset($this->shopCart->$id) && $this->shopCart->$id > 0) {
 			return $this->shopCart->$id;
 		}
@@ -75,9 +79,10 @@ abstract class AShopCart extends Nette\Object
 		return 0;
 	}
 	/**
-	 * @return object
+	 * @return array
 	 */
-	public function getCart() {
+	public function getCart()
+	{
 		$out = array();
 		foreach ($this->shopCart as $k => $v) {
 			if (!Nette\Utils\Strings::startsWith($k, '_') && $v > 0) {
@@ -92,11 +97,13 @@ abstract class AShopCart extends Nette\Object
 	/**
 	 * @return int
 	 */
-	public function getCount() {
+	public function getCount()
+	{
 		return count($this->getCart());
 	}
 
-	public function getItemsCount() {
+	public function getItemsCount()
+	{
 		$out = 0;
 
 		foreach ($this->getCart() as $v) {
@@ -113,7 +120,8 @@ abstract class AShopCart extends Nette\Object
 	/**
 	 *
 	 */
-	public function cartClear() {
+	public function cartClear()
+	{
 		$this->shopCart->remove();
 	}
 
@@ -121,14 +129,16 @@ abstract class AShopCart extends Nette\Object
 	 * @param $id
 	 * @param $text
 	 */
-	public function editComment($id, $text) {
+	public function editComment($id, $text)
+	{
 		$this->shopCart->{self::COMMENT . $id} = $text;
 	}
 	/**
 	 * @param $id
 	 * @return string
 	 */
-	public function getComment($id) {
+	public function getComment($id)
+	{
 		return isset($this->shopCart->{self::COMMENT . $id}) ? $this->shopCart->{self::COMMENT . $id} : '';
 	}
-} 
+}

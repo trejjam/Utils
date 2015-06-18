@@ -6,24 +6,26 @@
  * Time: 23:53
  */
 
-namespace Trejjam\Utils\Components;
+namespace Trejjam\Utils\Labels;
 
 use Nette\Application\UI;
 
-class Label extends UI\Control
+class Component extends UI\Control
 {
 	/**
-	 * @var \Trejjam\Utils\Labels
+	 * @var Labels
 	 */
 	private $labels;
 
-	function setup(\Trejjam\Utils\Labels $labels) {
+	function setup(Labels $labels)
+	{
 		$this->labels = $labels;
 
 		return $this;
 	}
 
-	public function render($key, $namespace = NULL) {
+	public function render($key, $namespace = NULL)
+	{
 		echo $this->labels->getData($key, $namespace);
 	}
 }

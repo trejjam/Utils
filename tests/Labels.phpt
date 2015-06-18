@@ -1,5 +1,6 @@
 <?php
 /**
+ * Labels Tests
  * Created by PhpStorm.
  * User: jam
  * Date: 21.12.14
@@ -9,7 +10,11 @@ namespace Test;
 
 use Nette,
 	Tester,
-	Tester\Assert;
+	Tester\Assert,
+	Trejjam,
+	Kdyby,
+	Symfony;
+
 
 $container = require_once __DIR__ . '/bootstrap.php';
 
@@ -20,15 +25,21 @@ class LabelsTest extends Tester\TestCase
 	 */
 	private $container;
 	/**
-	 * @var \Trejjam\Utils\Labels
+	 * @var \Trejjam\Utils\Labels\Labels
 	 */
 	private $labels;
 
-	function __construct(Nette\DI\Container $container) {
+	function __construct(Nette\DI\Container $container)
+	{
 		$this->container = $container;
 	}
 
-	public function setUp() {
+	public function setUp()
+	{
+		/** @var Kdyby\Console\Application $install */
+		$install = $this->container->getService('console.application');
+		$install->run(new Symfony\Component\Console\Input\ArgvInput(['', 'Utils:install']), new Symfony\Component\Console\Output\NullOutput());
+
 		$this->labels = $this->container->getService("utils.labels");
 
 		foreach ($this->labels->getNamespaces() as $v) {
@@ -38,7 +49,8 @@ class LabelsTest extends Tester\TestCase
 		}
 	}
 
-	public function testLabels() {
+	public function testLabels()
+	{
 		$this->labels->setData("key1", "value1");
 		$this->labels->setData("key2", "value2");
 		$this->labels->setData("key3", "value3");
@@ -117,7 +129,8 @@ class LabelsTest extends Tester\TestCase
 		Assert::same($this->labels->getData("key5", "backend"), "");
 	}
 
-	public function testLabelsObject() {
+	public function testLabelsObject()
+	{
 		$this->labels->setData("key12", "value13");
 		$this->labels->setData("key22", "value23");
 		$this->labels->setData("key32", "value33");

@@ -10,18 +10,13 @@ if (!class_exists('Tester\Assert')) {
 Tester\Environment::setup();
 
 $configurator = new Nette\Configurator;
-$configurator->setDebugMode(FALSE);
+$configurator->setDebugMode(!FALSE);
+$configurator->enableDebugger(__DIR__ . '/../log');
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 $configurator->createRobotLoader()
 	->addDirectory(__DIR__ . '/../src')
 	->register();
 
-/*
-$configurator->onCompile[] = function ($configurator, \Nette\DI\Compiler $compiler) {
-	$ext = new \Trejjam\DI\UtilsExtension();
-	$compiler->addExtension('utils', $ext);
-};*/
-
-$configurator->addConfig(__DIR__ . '/../app/config/config.neon');
-$configurator->addConfig(__DIR__ . '/../app/config/config.local.neon');
+$configurator->addConfig(__DIR__ . '/config/config.neon');
+$configurator->addConfig(__DIR__ . '/config/config.local.neon');
 return $configurator->createContainer();

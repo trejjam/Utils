@@ -6,7 +6,7 @@
  * Time: 2:25
  */
 
-namespace Trejjam\Utils;
+namespace Trejjam\Utils\Cli;
 
 use Symfony\Component\Console\Input\InputArgument,
 	Symfony\Component\Console\Input\InputOption,
@@ -14,9 +14,10 @@ use Symfony\Component\Console\Input\InputArgument,
 	Symfony\Component\Console\Output\OutputInterface,
 	Nette;
 
-class CliLabels extends CliHelper
+class Labels extends Helper
 {
-	protected function configure() {
+	protected function configure()
+	{
 		$this->setName('Utils:labels')
 			 ->setDescription('Edit labels')
 			 ->addArgument(
@@ -39,7 +40,8 @@ class CliLabels extends CliHelper
 				'Delete label'
 			);
 	}
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
 		$namespace = $input->getOption('namespace');
 		$delete = $input->getOption('delete');
 
