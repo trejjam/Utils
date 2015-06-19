@@ -10,7 +10,6 @@ namespace Trejjam\Utils;
 
 
 use Nette,
-	App,
 	Trejjam;
 
 /**

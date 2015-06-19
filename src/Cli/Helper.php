@@ -8,8 +8,8 @@
 
 namespace Trejjam\Utils\Cli;
 
-use Symfony\Component\Console\Command\Command;
-use Trejjam;
+use Symfony\Component\Console\Command\Command,
+	Trejjam;
 
 abstract class Helper extends Command
 {

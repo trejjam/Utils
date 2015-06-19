@@ -10,7 +10,6 @@ namespace Trejjam\Utils\Labels;
 
 
 use Nette,
-	App,
 	Trejjam;
 
 class Data
