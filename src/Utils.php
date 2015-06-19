@@ -12,11 +12,23 @@ use Nette;
 
 class Utils
 {
+	/**
+	 * @param string      $freeText
+	 * @param double      $price
+	 * @param null|string $units
+	 * @param int         $decimalLength
+	 * @return string
+	 */
 	public static function priceFreeText($freeText, $price, $units = NULL, $decimalLength = 2)
 	{
 		return $price <= 0 ? $freeText : self::priceCreate($price, $units, $decimalLength);
 	}
-
+	/**
+	 * @param double      $price
+	 * @param null|string $units
+	 * @param int         $decimalLength
+	 * @return string
+	 */
 	public static function priceCreate($price, $units = NULL, $decimalLength = 2)
 	{
 		$workPrice = floor(abs($price * pow(10, $decimalLength)));
@@ -43,7 +55,12 @@ class Utils
 
 		return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($outDecimalPrice, ['', '0']) ? '-' : $outDecimalPrice) . (is_null($units) ? '' : ' ' . $units);
 	}
-
+	/**
+	 * @param int $number
+	 * @param int $positionStart
+	 * @param int $numberLength
+	 * @return int
+	 */
 	public static function numberAt($number, $positionStart, $numberLength = 1)
 	{
 		return (int)(floor($number / pow(10, $positionStart))) % pow(10, $numberLength);
@@ -110,40 +127,3 @@ class Utils
 		return print_r(self::getServerInfo(), TRUE);
 	}
 }
-
-/*
-echo Utils::numberAt(12345, 0, 1) . "\n";
-echo Utils::numberAt(12345, 0, 2) . "\n";
-echo Utils::numberAt(12345, 0, 3) . "\n";
-
-
-echo Utils::priceCreate(1234) . "\n";
-echo Utils::priceCreate(1234.43) . "\n";
-echo Utils::priceCreate(1234.689) . "\n";
-echo Utils::priceCreate(1234.684) . "\n";
-
-echo Utils::priceCreate(21234) . "\n";
-echo Utils::priceCreate(21234.43) . "\n";
-echo Utils::priceCreate(21234.689) . "\n";
-echo Utils::priceCreate(21234.684) . "\n";
-
-echo Utils::priceCreate(321234) . "\n";
-echo Utils::priceCreate(321234.43) . "\n";
-echo Utils::priceCreate(321234.689) . "\n";
-echo Utils::priceCreate(321234.684) . "\n";
-
-echo Utils::priceCreate(4561234) . "\n";
-echo Utils::priceCreate(4561234.43) . "\n";
-echo Utils::priceCreate(4561234.689) . "\n";
-echo Utils::priceCreate(4561234.684) . "\n";
-
-echo Utils::priceCreate(45621234) . "\n";
-echo Utils::priceCreate(45621234.43) . "\n";
-echo Utils::priceCreate(45621234.689) . "\n";
-echo Utils::priceCreate(45621234.684) . "\n";
-
-echo Utils::priceCreate(456321234) . "\n";
-echo Utils::priceCreate(456321234.43) . "\n";
-echo Utils::priceCreate(456321234.689) . "\n";
-echo Utils::priceCreate(456321234.684) . "\n";
-*/
