@@ -36,6 +36,7 @@ class ListContainer extends Container
 		$i = 0;
 		foreach (is_null($data) ? [] : $data as $k => $v) {
 			if (
+				!is_numeric($k) ||
 				(!is_null($count) && $i >= $count) ||
 				(!is_null($max) && $i >= $max)
 			) {

@@ -69,15 +69,15 @@ class ContentsTest extends Tester\TestCase
 	function testContents2()
 	{
 		/** @var Contents\Items\Container $dataObject */
-		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => 'de', 'b' => 'foo']]]]]);
+		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => ['abc' => 'foo', 'foo2', ['b' => ['a' => 'de', 'b' => 'foo']]]]]);
 
 		Assert::same([
 			'a' => [
 				'a' => 'bcd',
 				'b' => '',
 				'c' => [
-					['a' => '', 'b' => ['a' => 'de']],
 					['a' => '', 'b' => ['a' => '']],
+					['a' => '', 'b' => ['a' => 'de']],
 				],
 			],
 		], $dataObject->getContent());
@@ -87,8 +87,8 @@ class ContentsTest extends Tester\TestCase
 				'a' => 'bcd',
 				'b' => NULL,
 				'c' => [
-					['a' => NULL, 'b' => ['a' => 'de']],
 					['a' => NULL, 'b' => ['a' => NULL]],
+					['a' => NULL, 'b' => ['a' => 'de']],
 				],
 			],
 		], $dataObject->getRawContent());
@@ -96,7 +96,9 @@ class ContentsTest extends Tester\TestCase
 		Assert::same([
 			'a' => [
 				'c' => [
+					'foo2',
 					['b' => ['b' => 'foo']],
+					'abc' => 'foo', //non numeric key removed directly!
 				],
 			],
 		], $dataObject->getRemovedItems());
