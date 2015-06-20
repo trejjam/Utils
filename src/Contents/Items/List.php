@@ -68,7 +68,7 @@ class ListContainer extends Container
 			foreach ($this->data as $k => $v) {
 				$tempSubRemoved = $v->getRemovedItems();
 
-				if (is_array($tempSubRemoved) && count($tempSubRemoved) > 0) {
+				if (!is_null($tempSubRemoved) && (!is_array($tempSubRemoved) || count($tempSubRemoved) > 0)) {
 					$out[$k] = $tempSubRemoved;
 				}
 			}

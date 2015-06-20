@@ -80,12 +80,15 @@ class Container extends Base
 		if (is_null($this->rawData)) {
 			return NULL;
 		}
+		else if (!is_array($this->rawData)) {
+			return $this->rawData;
+		}
 
 		foreach (array_merge($this->rawData, $this->data) as $k => $v) {
 			if ($v instanceof Container) {
 				$tempSubRemoved = $v->getRemovedItems();
 
-				if (is_array($tempSubRemoved) && count($tempSubRemoved) > 0) {
+				if (!is_null($tempSubRemoved) && (!is_array($tempSubRemoved) || count($tempSubRemoved) > 0)) {
 					$out[$k] = $tempSubRemoved;
 				}
 			}

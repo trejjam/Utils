@@ -34,6 +34,7 @@ class ContentsTest extends Tester\TestCase
 
 	function testContents1()
 	{
+		/** @var Contents\Items\Container $dataObject */
 		$dataObject = $this->contents->getDataObject('testContent', '');
 
 		Assert::same([
@@ -67,6 +68,7 @@ class ContentsTest extends Tester\TestCase
 	}
 	function testContents2()
 	{
+		/** @var Contents\Items\Container $dataObject */
 		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => 'de', 'b' => 'foo']]]]]);
 
 		Assert::same([
@@ -101,7 +103,8 @@ class ContentsTest extends Tester\TestCase
 	}
 	function testContents3()
 	{
-		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => ['a' => 'de'], 'b' => 'foo']]]]]);
+		/** @var Contents\Items\Container $dataObject */
+		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => ['a' => 'de'], 'b' => 'foo']], 'abcd']]]);
 
 		Assert::same([
 			'a' => [
@@ -128,7 +131,12 @@ class ContentsTest extends Tester\TestCase
 		Assert::same([
 			'a' => [
 				'c' => [
-					['b' => ['a' => ['a' => 'de'], 'b' => 'foo']],
+					[
+						'b' => [
+							'a' => ['a' => 'de'], 'b' => 'foo'
+						],
+					],
+					'abcd',
 				],
 			],
 		], $dataObject->getRemovedItems());
