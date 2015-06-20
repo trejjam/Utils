@@ -75,9 +75,11 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
-				"cli.labels"  => "Labels",
 				"cli.install" => "Install",
 			];
+			if ($config['labels']['enable']) {
+				$command["cli.labels"] = "Labels";
+			}
 
 			foreach ($command as $k => $v) {
 				$builder->addDefinition($this->prefix($k))

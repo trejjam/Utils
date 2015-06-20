@@ -8,14 +8,28 @@
 
 namespace Trejjam\Utils\Cli;
 
-use Symfony\Component\Console\Input\InputArgument,
+use Symfony\Component\Console\Command\Command,
+	Symfony\Component\Console\Input\InputArgument,
 	Symfony\Component\Console\Input\InputOption,
 	Symfony\Component\Console\Input\InputInterface,
 	Symfony\Component\Console\Output\OutputInterface,
-	Nette;
+	Nette,
+	Trejjam;
 
-class Labels extends Helper
+class Labels extends Command
 {
+	/**
+	 * @var Trejjam\Utils\Labels\Labels
+	 */
+	protected $labels;
+
+	public function __construct(Trejjam\Utils\Labels\Labels $labels)
+	{
+		parent::__construct();
+
+		$this->labels = $labels;
+	}
+
 	protected function configure()
 	{
 		$this->setName('Utils:labels')
