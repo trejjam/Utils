@@ -46,16 +46,16 @@ class ContentsTest extends Tester\TestCase
 				],
 			],
 		], $dataObject->getContent());
-		Assert::equal((object)[
-			'a' => (object)[
+		Assert::equal(Nette\Utils\ArrayHash::from([
+			'a' => [
 				'a' => '',
 				'b' => '',
-				'c' => (object)[
-					(object)['a' => '', 'b' => (object)['a' => '']],
-					(object)['a' => '', 'b' => (object)['a' => '']],
+				'c' => [
+					['a' => '', 'b' => ['a' => '']],
+					['a' => '', 'b' => ['a' => '']],
 				],
 			],
-		], $dataObject->getContent(TRUE));
+		]), $dataObject->getContent(TRUE));
 
 		Assert::throws(function () {
 			$this->contents->getDataObject('testContent', 'abcd');

@@ -55,7 +55,7 @@ class Container extends Base
 			$out[$k] = $v->getContent($forceObject);
 		}
 
-		return $forceObject ? (object)$out : $out;
+		return $forceObject ? Nette\Utils\ArrayHash::from($out) : $out;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Container extends Base
 			$out[$k] = $v->getRawContent($forceObject);
 		}
 
-		return $forceObject ? (object)$out : $out;
+		return $forceObject ? Nette\Utils\ArrayHash::from($out) : $out;
 	}
 
 	public function getRemovedItems()

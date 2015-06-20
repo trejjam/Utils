@@ -67,7 +67,7 @@ class Contents
 
 		if (!is_array($data) && !is_object($data)) {
 			try {
-				$data = Nette\Utils\Json::decode($data);
+				$data = Nette\Utils\Json::decode($data, Nette\Utils\Json::FORCE_ARRAY);
 			}
 			catch (Nette\Utils\JsonException $e) {
 				if ($data == '' || is_null($data)) {
