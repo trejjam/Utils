@@ -36,6 +36,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		'contents' => [
 			'enable'                 => FALSE,
 			'configurationDirectory' => '%appDir%/config/contents',
+			'logDirectory'           => NULL,
 		],
 	];
 
@@ -68,9 +69,17 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($config['contents']['enable']) {
+			$contentsArguments = [
+				$config['contents']['configurationDirectory'],
+				$config['contents']['logDirectory'],
+			];
+			if (!is_null($config['contents']['logDirectory'])) {
+				$contentsArguments[2] = '@tracy.logger';
+			}
+
 			$contents = $builder->addDefinition($this->prefix('contents'))
 								->setClass('Trejjam\Utils\Contents\Contents')
-								->setArguments([$config['contents']['configurationDirectory']]);
+								->setArguments($contentsArguments);
 		}
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {

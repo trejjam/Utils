@@ -10,6 +10,7 @@ namespace Trejjam\Utils\Contents;
 
 
 use Nette,
+	Tracy,
 	Trejjam;
 
 class Contents
@@ -18,10 +19,20 @@ class Contents
 	 * @var  string
 	 */
 	protected $configurationDirectory;
+	/**
+	 * @var string
+	 */
+	protected $logDirectory;
+	/**
+	 * @var Tracy\ILogger
+	 */
+	protected $logger;
 
-	public function __construct($configurationDirectory)
+	public function __construct($configurationDirectory, $logDirectory = NULL, Tracy\ILogger $logger = NULL)
 	{
 		$this->configurationDirectory = $configurationDirectory;
+		$this->logDirectory = $logDirectory;
+		$this->logger = $logger;
 	}
 
 	protected function getFilePath($name)
@@ -68,6 +79,14 @@ class Contents
 			}
 		}
 
-		return Factory::getItemObject(['type' => 'container', 'child' => $configuration], $data);
+		$out = Factory::getItemObject(['type' => 'container', 'child' => $configuration], $data);
+
+		if (!is_null($this->logDirectory) && !is_null($this->logger)) {
+			@mkdir($this->logger->directory . '/' . $this->logDirectory, 0770);
+			chmod($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
+			$this->logger->log(var_export($out->getRemovedItems(), TRUE), $this->logDirectory . '/' . $name);
+		}
+
+		return $out;
 	}
 }

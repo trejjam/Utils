@@ -19,12 +19,27 @@ class Text extends Base
 		return is_scalar($data) ? $data : '';
 	}
 
+	/**
+	 * @param bool|FALSE $forceObject
+	 * @return string
+	 */
 	public function getContent($forceObject = FALSE)
 	{
 		return $this->data;
 	}
+
+	/**
+	 * @param bool|FALSE $forceObject
+	 * @return mixed
+	 */
 	public function getRawContent($forceObject = FALSE)
 	{
 		return $this->rawData;
+	}
+
+
+	public function getRemovedItems()
+	{
+		return $this->rawData !== $this->data ? $this->rawData : NULL;
 	}
 }

@@ -39,6 +39,7 @@
 		"gabrielbull/browser": "4.0.0-beta"
 	},
 	"suggest": {
+		"tracy/tracy": "to use Contents logging",
 		"nette/database": "to use Labels",
 		"gabrielbull/browser": "to get information about browser",
 		"kdyby/console": "to use CLI configurator"

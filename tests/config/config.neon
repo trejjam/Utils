@@ -15,6 +15,7 @@ utils:
 		enable: true
 	contents:
 		enable: true
+		logDirectory: contents
 
 database:
 	dsn: "sqlite::memory:"

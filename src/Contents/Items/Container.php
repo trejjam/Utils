@@ -42,6 +42,11 @@ class Container extends Base
 	{
 		return $this->data;
 	}
+
+	/**
+	 * @param bool|FALSE $forceObject
+	 * @return array|object
+	 */
 	public function getContent($forceObject = FALSE)
 	{
 		$out = [];
@@ -52,6 +57,11 @@ class Container extends Base
 
 		return $forceObject ? (object)$out : $out;
 	}
+
+	/**
+	 * @param bool|FALSE $forceObject
+	 * @return array|object
+	 */
 	public function getRawContent($forceObject = FALSE)
 	{
 		$out = [];
@@ -61,5 +71,32 @@ class Container extends Base
 		}
 
 		return $forceObject ? (object)$out : $out;
+	}
+
+	public function getRemovedItems()
+	{
+		$out = [];
+
+		if (is_null($this->rawData)) {
+			return NULL;
+		}
+
+		foreach (array_merge($this->rawData, $this->data) as $k => $v) {
+			if ($v instanceof Container) {
+				$tempSubRemoved = $v->getRemovedItems();
+
+				if (is_array($tempSubRemoved) && count($tempSubRemoved) > 0) {
+					$out[$k] = $tempSubRemoved;
+				}
+			}
+			else if ($v instanceof Base) {
+				//TODO
+			}
+			else {
+				$out[$k] = $this->rawData[$k];
+			}
+		}
+
+		return $out;
 	}
 }

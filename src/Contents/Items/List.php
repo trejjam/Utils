@@ -14,6 +14,8 @@ use Nette,
 
 class ListContainer extends Container
 {
+	protected $removedData = [];
+
 	protected function sanitizeData($data)
 	{
 		$count = isset($this->configuration['count']) ? $this->configuration['count'] : NULL;
@@ -32,11 +34,12 @@ class ListContainer extends Container
 		$out = [];
 
 		$i = 0;
-		foreach (is_null($data) ? [] : $data as $v) {
+		foreach (is_null($data) ? [] : $data as $k => $v) {
 			if (
 				(!is_null($count) && $i >= $count) ||
 				(!is_null($max) && $i >= $max)
 			) {
+				$this->removedData[$k] = $v;
 				continue;
 			}
 
@@ -52,5 +55,29 @@ class ListContainer extends Container
 		}
 
 		return $out;
+	}
+
+	public function getRemovedItems()
+	{
+		if (!is_array($this->rawData)) {
+			return $this->rawData;
+		}
+		else {
+			$out = [];
+
+			foreach ($this->data as $k => $v) {
+				$tempSubRemoved = $v->getRemovedItems();
+
+				if (is_array($tempSubRemoved) && count($tempSubRemoved) > 0) {
+					$out[$k] = $tempSubRemoved;
+				}
+			}
+
+			foreach ($this->removedData as $k => $v) {
+				$out[$k] = $v;
+			}
+
+			return $out;
+		}
 	}
 }

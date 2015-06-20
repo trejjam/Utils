@@ -28,4 +28,5 @@ abstract class Base
 	abstract protected function sanitizeData($data);
 	abstract public function getContent($forceObject = FALSE);
 	abstract public function getRawContent($forceObject = FALSE);
+	abstract public function getRemovedItems();
 }

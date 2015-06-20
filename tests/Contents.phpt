@@ -90,6 +90,14 @@ class ContentsTest extends Tester\TestCase
 				],
 			],
 		], $dataObject->getRawContent());
+
+		Assert::same([
+			'a' => [
+				'c' => [
+					['b' => ['b' => 'foo']],
+				],
+			],
+		], $dataObject->getRemovedItems());
 	}
 
 	function testList1()
@@ -170,6 +178,10 @@ class ContentsTest extends Tester\TestCase
 			['name' => '', 'content' => 'abcd'],
 		], $containerItem->getContent());
 
+		Assert::same([
+			1 => ['content' => 'abcd', 'name' => 'abcdef'],
+		], $containerItem->getRemovedItems());
+
 		Assert::throws(function () {
 			/** @var Contents\Items\ListContainer $containerItem */
 			$containerItem = Contents\Factory::getItemObject([
@@ -192,10 +204,11 @@ class ContentsTest extends Tester\TestCase
 				'name'    => 'text',
 				'content' => 'text',
 			],
-		], ['content' => 'abcd']);
+		], ['content' => 'abcd', 'foo' => 'abcd']);
 
 		Assert::same(['name', 'content'], array_keys($containerItem->getChild()));
 		Assert::same(['name' => '', 'content' => 'abcd'], $containerItem->getContent());
+		Assert::same(['foo' => 'abcd'], $containerItem->getRemovedItems());
 
 		Assert::throws(function () {
 			/** @var Contents\Items\Container $containerItem */
@@ -220,13 +233,14 @@ class ContentsTest extends Tester\TestCase
 					],
 				],
 			],
-		], ['content' => ['text' => 'abcd']]);
+		], ['content' => ['text' => 'abcd', 'oldFoo' => 'efgh']]);
 
 		Assert::same(['name', 'content'], array_keys($containerItem->getChild()));
 		Assert::same(['name' => '', 'content' => ['foo' => '', 'text' => 'abcd']], $containerItem->getContent());
+		Assert::same(['content' => ['oldFoo' => 'efgh']], $containerItem->getRemovedItems());
 	}
 
-	function testText()
+	function testText1()
 	{
 		/** @var Contents\Items\Text $textItem */
 		$textItem = Contents\Factory::getItemObject('text', 'abd');
@@ -236,9 +250,13 @@ class ContentsTest extends Tester\TestCase
 		Assert::throws(function () {
 			Contents\Factory::getItemObject('', ['abd']);
 		}, Trejjam\Utils\InvalidArgumentException::class, NULL, Trejjam\Utils\Exception::CONTENTS_UNKNOWN_ITEM_TYPE);
+	}
 
+	function testText2()
+	{
 		$textItem = Contents\Factory::getItemObject(['type' => 'text'], ['abd']);
 		Assert::same('', $textItem->getContent());
+		Assert::same(['abd'], $textItem->getRemovedItems());
 	}
 }
 

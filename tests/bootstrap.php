@@ -11,6 +11,7 @@ Tester\Environment::setup();
 
 $configurator = new Nette\Configurator;
 $configurator->setDebugMode(!FALSE);
+Tracy\Debugger::$logDirectory = __DIR__ . '/../log';
 //$configurator->enableDebugger(__DIR__ . '/../log');
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 $configurator->createRobotLoader()
