@@ -99,6 +99,40 @@ class ContentsTest extends Tester\TestCase
 			],
 		], $dataObject->getRemovedItems());
 	}
+	function testContents3()
+	{
+		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => ['a' => 'de'], 'b' => 'foo']]]]]);
+
+		Assert::same([
+			'a' => [
+				'a' => 'bcd',
+				'b' => '',
+				'c' => [
+					['a' => '', 'b' => ['a' => '']],
+					['a' => '', 'b' => ['a' => '']],
+				],
+			],
+		], $dataObject->getContent());
+
+		Assert::same([
+			'a' => [
+				'a' => 'bcd',
+				'b' => NULL,
+				'c' => [
+					['a' => NULL, 'b' => ['a' => ['a' => 'de']]],
+					['a' => NULL, 'b' => ['a' => NULL]],
+				],
+			],
+		], $dataObject->getRawContent());
+
+		Assert::same([
+			'a' => [
+				'c' => [
+					['b' => ['a' => ['a' => 'de'], 'b' => 'foo']],
+				],
+			],
+		], $dataObject->getRemovedItems());
+	}
 
 	function testList1()
 	{

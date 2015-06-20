@@ -90,7 +90,9 @@ class Container extends Base
 				}
 			}
 			else if ($v instanceof Base) {
-				//TODO
+				if (!is_null($v->getRawContent()) && $v->getContent() !== $v->getRawContent()) {
+					$out[$k] = $v->getRawContent();
+				}
 			}
 			else {
 				$out[$k] = $this->rawData[$k];
