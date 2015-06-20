@@ -13,13 +13,13 @@ use Nette;
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
 	private $defaults = [
-		'flashes' => [
+		'flashes'  => [
 			'enable' => FALSE,
 		],
-		'browser' => [
+		'browser'  => [
 			'enable' => FALSE,
 		],
-		'labels'  => [
+		'labels'   => [
 			'enable'        => FALSE,
 			'componentName' => 'labels',
 			'table'         => 'utils__labels',
@@ -32,6 +32,10 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 				'name'      => 'name',
 				'value'     => 'value',
 			],
+		],
+		'contents' => [
+			'enable'                 => FALSE,
+			'configurationDirectory' => '%appDir%/config/contents',
 		],
 	];
 
@@ -61,6 +65,12 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		if ($config['browser']['enable']) {
 			$browser = $builder->addDefinition($this->prefix('browser'))
 							   ->setClass('Browser\Browser');
+		}
+
+		if ($config['contents']['enable']) {
+			$contents = $builder->addDefinition($this->prefix('contents'))
+								->setClass('Trejjam\Utils\Contents\Contents')
+								->setArguments([$config['contents']['configurationDirectory']]);
 		}
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {

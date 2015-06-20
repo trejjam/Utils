@@ -12,23 +12,24 @@ namespace Trejjam\Utils;
 use Nette,
 	Trejjam;
 
-/**
- * @author Filip Procházka <filip@prochazka.su>
- */
 interface Exception
 {
+	const
+		CONTENTS_UNKNOWN_ITEM_TYPE = 1,
+		CONTENTS_INCOMPLETE_CONFIGURATION = 2,
+		CONTENTS_COLLISION_CONFIGURATION = 4,
+		CONTENTS_MISSING_CONFIGURATION = 8,
+		CONTENTS_JSON_DECODE = 16;
 }
 
-/**
- * @author Filip Procházka <filip@prochazka.su>
- */
 class InvalidArgumentException extends \InvalidArgumentException implements Exception
 {
 }
 
-/**
- * @author Filip Procházka <filip@prochazka.su>
- */
-class InvalidStateException extends \RuntimeException implements Exception
+class DomainException extends \DomainException implements Exception
+{
+}
+
+class LogicException extends \LogicException implements Exception
 {
 }

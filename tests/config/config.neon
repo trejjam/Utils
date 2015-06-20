@@ -13,6 +13,8 @@ extensions:
 utils:
 	labels:
 		enable: true
+	contents:
+		enable: true
 
 database:
 	dsn: "sqlite::memory:"

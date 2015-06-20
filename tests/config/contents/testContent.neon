@@ -1,0 +1,14 @@
+a:
+	type: container
+	child:
+		a: text
+		b: text
+		c:
+			type: list
+			count: 2
+			listItem:
+				a: text
+				b:
+					type: container
+					child:
+						a: text
