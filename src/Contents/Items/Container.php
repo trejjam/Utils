@@ -29,7 +29,7 @@ class Container extends Base
 		$out = [];
 
 		foreach ($child as $k => $v) {
-			$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject($v, isset($data[$k]) ? $data[$k] : NULL);
+			$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject($v, isset($data[$k]) ? $data[$k] : NULL, $this->subTypes);
 		}
 
 		return $out;
@@ -93,8 +93,9 @@ class Container extends Base
 				}
 			}
 			else if ($v instanceof Base) {
-				if (!is_null($v->getRawContent()) && $v->getContent() !== $v->getRawContent()) {
-					$out[$k] = $v->getRawContent();
+				$removed = $v->getRemovedItems();
+				if (!is_null($removed)) {
+					$out[$k] = $removed;
 				}
 			}
 			else {

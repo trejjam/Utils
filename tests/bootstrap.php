@@ -16,6 +16,7 @@ Tracy\Debugger::$logDirectory = __DIR__ . '/../log';
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 $configurator->createRobotLoader()
 			 ->addDirectory(__DIR__ . '/../src')
+			 ->addDirectory(__DIR__ . '/app')
 			 ->register();
 
 $configurator->addConfig(__DIR__ . '/config/config.neon');

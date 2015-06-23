@@ -15,11 +15,12 @@ use Nette,
 class Factory
 {
 	/**
-	 * @param $configuration
-	 * @param $data
+	 * @param                                         $configuration
+	 * @param                                         $data
+	 * @param Trejjam\Utils\Contents\Items\SubType[] $subTypes
 	 * @return Items\Base
 	 */
-	static function getItemObject($configuration, $data)
+	static function getItemObject($configuration, $data, array $subTypes = [])
 	{
 		$type = isset($configuration['type']) ? $configuration['type'] : NULL;
 		if (is_scalar($configuration)) {
@@ -30,17 +31,17 @@ class Factory
 		switch ($type) {
 			case 'container':
 
-				$out = new Items\Container($configuration, $data);
+				$out = new Items\Container($configuration, $data, $subTypes);
 				break;
 
 			case 'list':
 
-				$out = new Items\ListContainer($configuration, $data);
+				$out = new Items\ListContainer($configuration, $data, $subTypes);
 				break;
 
 			case 'text':
 
-				$out = new Items\Text($configuration, $data);
+				$out = new Items\Text($configuration, $data, $subTypes);
 				break;
 
 			default:

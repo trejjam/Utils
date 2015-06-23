@@ -28,11 +28,21 @@ class Contents
 	 */
 	protected $logger;
 
+	/**
+	 * @var Trejjam\Utils\Contents\Items\SubType[]
+	 */
+	protected $subTypes = [];
+
 	public function __construct($configurationDirectory, $logDirectory = NULL, Tracy\ILogger $logger = NULL)
 	{
 		$this->configurationDirectory = $configurationDirectory;
 		$this->logDirectory = $logDirectory;
 		$this->logger = $logger;
+	}
+
+	public function addSubType(Trejjam\Utils\Contents\Items\SubType $subType)
+	{
+		$this->subTypes[$subType->getName()] = $subType;
 	}
 
 	protected function getFilePath($name)
@@ -79,7 +89,7 @@ class Contents
 			}
 		}
 
-		$out = Factory::getItemObject(['type' => 'container', 'child' => $configuration], $data);
+		$out = Factory::getItemObject(['type' => 'container', 'child' => $configuration], $data, $this->subTypes);
 
 		if (!is_null($this->logDirectory) && !is_null($this->logger)) {
 			@mkdir($this->logger->directory . '/' . $this->logDirectory, 0770);

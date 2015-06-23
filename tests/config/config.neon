@@ -6,6 +6,11 @@
 #
 parameters:
 
+application:
+	errorPresenter: Error
+	mapping:
+		*: Test\App\*Module\Presenters\*Presenter
+
 extensions:
 	console: Kdyby\Console\DI\ConsoleExtension
 	utils: Trejjam\Utils\DI\UtilsExtension
@@ -16,8 +21,16 @@ utils:
 	contents:
 		enable: true
 		logDirectory: contents
+		subTypes:
+			url: Trejjam\Utils\Test\UrlSubType
 
 database:
 	dsn: "sqlite::memory:"
 
 services:
+	#routing.router:
+	#	autowired: no
+	router: Test\App\RouterFactory()::createRouter
+	#simpleRouter: Nette\Application\Routers\SimpleRouter
+	url: Nette\Http\Url('http://localhost.tld/')
+	application.linkGenerator: Nette\Application\LinkGenerator(@router, @url)

@@ -44,13 +44,13 @@ class ListContainer extends Container
 				continue;
 			}
 
-			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], $v);
+			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], $v, $this->subTypes);
 
 			$i++;
 		}
 
 		while (!is_null($count) && $i < $count) {
-			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL);
+			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $this->subTypes);
 
 			$i++;
 		}

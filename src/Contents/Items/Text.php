@@ -40,6 +40,22 @@ class Text extends Base
 
 	public function getRemovedItems()
 	{
-		return $this->rawData !== $this->data ? $this->rawData : NULL;
+		$out = $this->rawData !== $this->data ? $this->rawData : NULL;
+
+		list(, , $out) = $this->useSubType(function (SubType $subtype, array $inData) {
+			list($data, $rawData, $previous) = $inData;
+
+			return [
+				$data,
+				$rawData,
+				$previous === FALSE ? $previous : $subtype->removedContent($rawData, $data),
+			];
+		}, [
+			$this->data,
+			$this->rawData,
+			$out,
+		]);
+
+		return $out === FALSE ? NULL : $out;
 	}
 }

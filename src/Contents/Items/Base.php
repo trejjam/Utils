@@ -14,15 +14,69 @@ use Nette,
 
 abstract class Base
 {
-	protected $data;
 	protected $rawData;
+	protected $data;
 	protected $configuration;
+	/**
+	 * @var SubType[]
+	 */
+	protected $subTypes;
 
-	function __construct($configuration, $data = NULL)
+	/**
+	 * @param            $configuration
+	 * @param null       $data
+	 * @param SubType[]  $subTypes
+	 */
+	function __construct($configuration, $data = NULL, array $subTypes = [])
 	{
 		$this->configuration = $configuration;
 		$this->rawData = $data;
-		$this->data = $this->sanitizeData($data);
+		$this->subTypes = $subTypes;
+		$this->data =
+			$this->sanitizeSubTypeData(
+				$this->sanitizeData($data)
+			);
+	}
+
+	/**
+	 * @return SubType[]
+	 */
+	protected function getSuitableSubTypes()
+	{
+		$out = [];
+
+		foreach ($this->subTypes as $k => $v) {
+			if ($v->applyOn($this)) {
+				$out[$k] = $v;
+			}
+		}
+
+		return $out;
+	}
+	/**
+	 * @param mixed $data
+	 * @return mixed
+	 */
+	protected function sanitizeSubTypeData($data)
+	{
+		return $this->useSubType(function (SubType $subType, $data) {
+			return $subType->sanitize($data);
+		}, $data);
+	}
+
+	public function useSubType(callable $callback, $previous = NULL)
+	{
+		if (isset($this->configuration['subType'])) {
+			$itemSubType = is_array($this->configuration['subType']) ? $this->configuration['subType'] : [$this->configuration['subType']];
+
+			foreach ($this->getSuitableSubTypes() as $subTypeName => $subType) {
+				if (in_array($subTypeName, $itemSubType)) {
+					$previous = $callback($subType, $previous);
+				}
+			}
+		}
+
+		return $previous;
 	}
 
 	abstract protected function sanitizeData($data);

@@ -39,23 +39,26 @@ class ContentsTest extends Tester\TestCase
 
 		Assert::same([
 			'a' => [
-				'a' => '',
+				'a' => '#',
 				'b' => '',
 				'c' => [
 					['a' => '', 'b' => ['a' => '']],
 					['a' => '', 'b' => ['a' => '']],
 				],
 			],
+			'b' => [],
 		], $dataObject->getContent());
+
 		Assert::equal(Nette\Utils\ArrayHash::from([
 			'a' => [
-				'a' => '',
+				'a' => '#',
 				'b' => '',
 				'c' => [
 					['a' => '', 'b' => ['a' => '']],
 					['a' => '', 'b' => ['a' => '']],
 				],
 			],
+			'b' => [],
 		]), $dataObject->getContent(TRUE));
 
 		Assert::throws(function () {
@@ -80,6 +83,7 @@ class ContentsTest extends Tester\TestCase
 					['a' => '', 'b' => ['a' => 'de']],
 				],
 			],
+			'b' => [],
 		], $dataObject->getContent());
 
 		Assert::same([
@@ -91,6 +95,7 @@ class ContentsTest extends Tester\TestCase
 					['a' => NULL, 'b' => ['a' => 'de']],
 				],
 			],
+			'b' => [],
 		], $dataObject->getRawContent());
 
 		Assert::same([
@@ -106,27 +111,50 @@ class ContentsTest extends Tester\TestCase
 	function testContents3()
 	{
 		/** @var Contents\Items\Container $dataObject */
-		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'bcd', 'c' => [['b' => ['a' => ['a' => 'de'], 'b' => 'foo']], 'abcd']]]);
+		$dataObject = $this->contents->getDataObject('testContent', ['a' => ['a' => 'Homepage:default#abcd, {"a":"b"}', 'c' => [['b' => ['a' => ['a' => 'de'], 'b' => 'foo']], 'abcd']], 'b' => [
+			['a' => '#'],
+			['a' => ''],
+			['a' => 'Homepage:default#abcd'],
+			['a' => 'Homepage:default, {"a":"b"}'],
+			['a' => 'Homepage:default'],
+			['a' => 'Homepage:'],
+		]]);
 
 		Assert::same([
 			'a' => [
-				'a' => 'bcd',
+				'a' => 'http://localhost.tld/?a=b#abcd',
 				'b' => '',
 				'c' => [
 					['a' => '', 'b' => ['a' => '']],
 					['a' => '', 'b' => ['a' => '']],
 				],
 			],
+			'b' => [
+				['a' => '#'],
+				['a' => '#'],
+				['a' => 'http://localhost.tld/#abcd'],
+				['a' => 'http://localhost.tld/?a=b'],
+				['a' => 'http://localhost.tld/'],
+				['a' => 'http://localhost.tld/'],
+			],
 		], $dataObject->getContent());
 
 		Assert::same([
 			'a' => [
-				'a' => 'bcd',
+				'a' => 'Homepage:default#abcd, {"a":"b"}',
 				'b' => NULL,
 				'c' => [
 					['a' => NULL, 'b' => ['a' => ['a' => 'de']]],
 					['a' => NULL, 'b' => ['a' => NULL]],
 				],
+			],
+			'b' => [
+				['a' => '#'],
+				['a' => ''],
+				['a' => 'Homepage:default#abcd'],
+				['a' => 'Homepage:default, {"a":"b"}'],
+				['a' => 'Homepage:default'],
+				['a' => 'Homepage:'],
 			],
 		], $dataObject->getRawContent());
 

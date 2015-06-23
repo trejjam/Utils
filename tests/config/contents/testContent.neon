@@ -1,7 +1,9 @@
 a:
 	type: container
 	child:
-		a: text
+		a:
+			type: text
+			subType: url
 		b: text
 		c:
 			type: list
@@ -12,3 +14,9 @@ a:
 					type: container
 					child:
 						a: text
+b:
+	type: list
+	listItem:
+		a:
+			type: text
+			subType: url
