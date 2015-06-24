@@ -10,6 +10,7 @@ namespace Trejjam\Utils\Contents;
 
 
 use Nette,
+	Nette\Application\UI,
 	Tracy,
 	Trejjam;
 
@@ -80,12 +81,7 @@ class Contents
 				$data = Nette\Utils\Json::decode($data, Nette\Utils\Json::FORCE_ARRAY);
 			}
 			catch (Nette\Utils\JsonException $e) {
-				if ($data == '' || is_null($data)) {
-					$data = NULL;
-				}
-				else {
-					throw new Trejjam\Utils\LogicException('Json::decode problem on non empty data object', Trejjam\Utils\Exception::CONTENTS_JSON_DECODE, $e);
-				}
+				throw new Trejjam\Utils\LogicException('Json::decode problem', Trejjam\Utils\Exception::CONTENTS_JSON_DECODE, $e);
 			}
 		}
 
@@ -98,5 +94,41 @@ class Contents
 		}
 
 		return $out;
+	}
+
+	/**
+	 * @param Items\Base  $itemContainer
+	 * @param array       $userOptions
+	 * @param null|string $contentName
+	 * @return UI\Form
+	 */
+	public function createForm(Trejjam\Utils\Contents\Items\Base $itemContainer, $userOptions = [], $contentName = NULL)
+	{
+		$form = new UI\Form;
+
+		$ids = [];
+		$itemContainer->generateForm($itemContainer, $form, 'root', '', $ids, $userOptions);
+
+		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $contentName) {
+			return $this->proceedEditForm($form, $itemContainer, $contentName);
+		};
+		$form->addProtection();
+
+		return $form;
+	}
+
+	public function proceedEditForm(UI\Form $form, Trejjam\Utils\Contents\Items\Base $itemContainer, $contentName)
+	{
+		$values = $form->getValues();
+
+		$itemContainer->update($values->root);
+
+		if (!is_null($this->logDirectory) && !is_null($this->logger)) {
+			@mkdir($this->logger->directory . '/' . $this->logDirectory, 0770);
+			chmod($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
+			$this->logger->log(var_export($itemContainer->getUpdated(), TRUE), $this->logDirectory . '/' . (is_null($contentName) ? '__updated__' : $contentName));
+		}
+
+		return TRUE;
 	}
 }

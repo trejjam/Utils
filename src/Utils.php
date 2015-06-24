@@ -8,7 +8,8 @@
 
 namespace Trejjam\Utils;
 
-use Nette;
+use Nette,
+	Trejjam;
 
 class Utils
 {
@@ -125,5 +126,23 @@ class Utils
 	public static function getTextServerInfo()
 	{
 		return print_r(self::getServerInfo(), TRUE);
+	}
+
+
+	public static function getValue(array $array, $key, $keyDelimiter = '.')
+	{
+		$out = $array;
+		$keyArray = explode($keyDelimiter, $key);
+
+		foreach ($keyArray as $v) {
+			if (isset($out[$v])) {
+				$out = $out[$v];
+			}
+			else {
+				throw new Trejjam\Utils\LogicException("Key '$v' from '$key' not exist in array.", Exception::UTILS_KEY_NOT_FOUND);
+			}
+		}
+
+		return $out;
 	}
 }

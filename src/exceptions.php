@@ -19,7 +19,8 @@ interface Exception
 		CONTENTS_INCOMPLETE_CONFIGURATION = 2,
 		CONTENTS_COLLISION_CONFIGURATION = 4,
 		CONTENTS_MISSING_CONFIGURATION = 8,
-		CONTENTS_JSON_DECODE = 16;
+		CONTENTS_JSON_DECODE = 16,
+		UTILS_KEY_NOT_FOUND = 32;
 }
 
 class InvalidArgumentException extends \InvalidArgumentException implements Exception

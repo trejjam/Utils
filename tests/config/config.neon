@@ -23,6 +23,7 @@ utils:
 		logDirectory: contents
 		subTypes:
 			url: Trejjam\Utils\Test\UrlSubType
+			bool: Trejjam\Utils\Test\BoolSubType
 
 database:
 	dsn: "sqlite::memory:"

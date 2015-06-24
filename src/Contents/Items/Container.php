@@ -19,6 +19,8 @@ class Container extends Base
 	 */
 	protected $data = [];
 
+	protected $updated = [];
+
 	protected function sanitizeData($data)
 	{
 		if (!isset($this->configuration['child'])) {
@@ -26,10 +28,16 @@ class Container extends Base
 		}
 		$child = $this->configuration['child'];
 
-		$out = [];
+		/** @var Base[] $out */
+		$out = $this->data;
 
 		foreach ($child as $k => $v) {
-			$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject($v, isset($data[$k]) ? $data[$k] : NULL, $this->subTypes);
+			if (isset($out[$k])) {
+				$out[$k]->update(isset($data[$k]) ? $data[$k] : NULL);
+			}
+			else {
+				$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject($v, isset($data[$k]) ? $data[$k] : NULL, $this->subTypes);
+			}
 		}
 
 		return $out;
@@ -104,5 +112,63 @@ class Container extends Base
 		}
 
 		return $out;
+	}
+
+	/**
+	 * @param Base|Container        $item
+	 * @param Nette\Forms\Container $formContainer
+	 * @param                       $name
+	 * @param                       $parentName
+	 * @param array                 $ids
+	 * @param array                 $userOptions
+	 */
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	{
+		$container = $formContainer->addContainer($name);
+
+		foreach ($this->getChild() as $childName => $child) {
+			$child->generateForm(
+				$child,
+				$container,
+				$childName,
+				$parentName . '__' . $name, $ids, isset($userOptions[$childName]) && is_array($userOptions[$childName]) ? $userOptions[$childName] : []
+			);
+		}
+
+		$item->applyUserOptions($container, $userOptions);
+	}
+
+	/**
+	 * @param Nette\Forms\Container $control
+	 * @param array                 $options
+	 */
+	public function applyUserOptions($control, array $options)
+	{
+
+	}
+
+	public function update($data)
+	{
+		$this->rawData = $data;
+		$this->init();
+
+		$this->isUpdated = FALSE;
+		$this->updated = [];
+
+		foreach ($this->getChild() as $childName => $child) {
+			$updated = $child->getUpdated();
+
+			if (!is_null($updated) || (is_array($updated) && count($updated) > 0)) {
+				$this->isUpdated = TRUE;
+				$this->updated[$childName] = $child->getUpdated();
+			}
+		}
+	}
+
+	public function __toString()
+	{
+		$data = $this->getRawContent();
+
+		return Nette\Utils\Json::encode($data);
 	}
 }

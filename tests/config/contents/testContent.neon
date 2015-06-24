@@ -8,6 +8,8 @@ a:
 		c:
 			type: list
 			count: 2
+			listLabel: 'Foo'
+			listHead: b.a
 			listItem:
 				a: text
 				b:
@@ -16,7 +18,11 @@ a:
 						a: text
 b:
 	type: list
+	addItemLabel: 'Links'
 	listItem:
 		a:
 			type: text
 			subType: url
+c:
+	type: text
+	subType: bool

@@ -14,6 +14,9 @@ use Nette,
 
 class ListContainer extends Container
 {
+	const
+		LIST_BOX = '__list__';
+
 	protected $removedData = [];
 
 	protected function sanitizeData($data)
@@ -31,7 +34,8 @@ class ListContainer extends Container
 			throw new Trejjam\Utils\DomainException('List has defined \'count\' and \'max\' at same time.', Trejjam\Utils\Exception::CONTENTS_COLLISION_CONFIGURATION);
 		}
 
-		$out = [];
+		/** @var Base[] $out */
+		$out = $this->data;
 
 		$i = 0;
 		foreach (is_null($data) ? [] : $data as $k => $v) {
@@ -44,13 +48,18 @@ class ListContainer extends Container
 				continue;
 			}
 
-			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], $v, $this->subTypes);
+			if (isset($out[$k])) {
+				$out[$k]->update(isset($data[$k]) ? $data[$k] : NULL);
+			}
+			else {
+				$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], $v, $this->subTypes);
+			}
 
 			$i++;
 		}
 
 		while (!is_null($count) && $i < $count) {
-			$out[] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $this->subTypes);
+			$out[$i] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $this->subTypes);
 
 			$i++;
 		}
@@ -80,5 +89,61 @@ class ListContainer extends Container
 
 			return $out;
 		}
+	}
+
+	/**
+	 * @param Base|Container        $item
+	 * @param Nette\Forms\Container $formContainer
+	 * @param                       $name
+	 * @param                       $parentName
+	 * @param array                 $ids
+	 * @param array                 $userOptions
+	 */
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	{
+		$container = $formContainer->addContainer($name);
+
+		if (!isset($item->configuration['count']) && (!isset($item->configuration['max']) || $item->configuration['max'] > count($item->getChild()))) {
+			$new = $container->addSubmit($item::NEW_ITEM, $this->getConfigValue('addItemLabel', 'new', $userOptions));
+			$new->setValidationScope(FALSE)
+				->setAttribute('id', $ids[] = $parentName . '__' . $name . $item::NEW_ITEM);
+		}
+
+		$listSelect = $container->addSelect(self::LIST_BOX, $this->getConfigValue('listLabel', 'new', $userOptions));
+		$items = [];
+
+		$listHead = $this->getConfigValue('listHead', NULL, $userOptions);
+
+		foreach ($this->getChild() as $childName => $child) {
+			$subIds = [];
+			$child->generateForm(
+				$child,
+				$container,
+				$childName,
+				$parentName . '__' . $name, $subIds, isset($userOptions[$childName]) && is_array($userOptions[$childName]) ? $userOptions[$childName] : []
+			);
+
+			try {
+				$itemName = is_null($listHead) ? $childName : Trejjam\Utils\Utils::getValue($child->getContent(), $listHead);
+			}
+			catch (Trejjam\Utils\LogicException $e) {
+				if ($e->getCode() & Trejjam\Utils\Exception::UTILS_KEY_NOT_FOUND) {
+					$itemName = $childName;
+				}
+				else {
+					throw $e;
+				}
+			}
+
+			if (empty($itemName)) {
+				$itemName = $childName;
+			}
+
+			$items[$itemName] = $itemName;
+		}
+
+		$listSelect->setItems($items);
+
+		$item->applyUserOptions($container, $userOptions);
 	}
 }

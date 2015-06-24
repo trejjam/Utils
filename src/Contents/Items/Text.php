@@ -37,7 +37,6 @@ class Text extends Base
 		return $this->rawData;
 	}
 
-
 	public function getRemovedItems()
 	{
 		$out = $this->rawData !== $this->data ? $this->rawData : NULL;
@@ -45,11 +44,21 @@ class Text extends Base
 		list(, , $out) = $this->useSubType(function (SubType $subtype, array $inData) {
 			list($data, $rawData, $previous) = $inData;
 
-			return [
+			$out = [
 				$data,
 				$rawData,
-				$previous === FALSE ? $previous : $subtype->removedContent($rawData, $data),
+				$previous,
 			];
+
+			if ($previous !== FALSE) {
+				$subRemoved = $subtype->removedContent($rawData, $data);
+
+				if (!is_null($subRemoved)) {
+					$out[2] = $subRemoved;
+				}
+			}
+
+			return $out;
 		}, [
 			$this->data,
 			$this->rawData,
@@ -57,5 +66,37 @@ class Text extends Base
 		]);
 
 		return $out === FALSE ? NULL : $out;
+	}
+
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	{
+		$addFormItem = $this->useSubType(function (SubType $subType, $addFormItem) use ($formContainer, $name, $parentName, $ids, $userOptions) {
+			if ($subType instanceof IEditItem) {
+				$subType->generateForm($this, $formContainer, $name, $parentName, $ids, $userOptions);
+
+				return FALSE;
+			}
+
+			return $addFormItem;
+		}, TRUE);
+
+		if ($addFormItem) {
+			$input = $formContainer->addText($name, $name);
+			$input->setOption('id', $ids[] = $parentName . '__' . $name);
+			$input->setValue($item->getRawContent());
+
+			$item->applyUserOptions($input, $userOptions);
+		}
+	}
+
+	public function update($data)
+	{
+		$oldData = $this->rawData;
+
+		parent::update($data);
+
+		if ($this->isUpdated) {
+			$this->updated = is_null($oldData) ? self::EMPTY_VALUE : $oldData;
+		}
 	}
 }

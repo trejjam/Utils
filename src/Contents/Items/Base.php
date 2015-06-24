@@ -12,8 +12,14 @@ namespace Trejjam\Utils\Contents\Items;
 use Nette,
 	Trejjam;
 
-abstract class Base
+abstract class Base implements IEditItem
 {
+	const
+		NEW_ITEM = '__new__',
+		EMPTY_VALUE = '__empty__';
+
+	protected $isUpdated = FALSE;
+	protected $updated   = NULL;
 	protected $rawData;
 	protected $data;
 	protected $configuration;
@@ -32,10 +38,15 @@ abstract class Base
 		$this->configuration = $configuration;
 		$this->rawData = $data;
 		$this->subTypes = $subTypes;
-		$this->data =
-			$this->sanitizeSubTypeData(
-				$this->sanitizeData($data)
-			);
+
+		$this->init();
+	}
+
+	protected function init()
+	{
+		$this->data = $this->sanitizeSubTypeData(
+			$this->sanitizeData($this->rawData)
+		);
 	}
 
 	/**
@@ -83,4 +94,46 @@ abstract class Base
 	abstract public function getContent($forceObject = FALSE);
 	abstract public function getRawContent($forceObject = FALSE);
 	abstract public function getRemovedItems();
+
+	/**
+	 * @param Nette\Forms\Controls\BaseControl $control
+	 * @param array                            $options
+	 */
+	public function applyUserOptions($control, array $options)
+	{
+		$class = isset($options['class']) ? $options['class'] : NULL;
+
+		if (!is_null($class)) {
+			$control->setAttribute('class', $class);
+		}
+		//$this->setRules($input, $validate);
+	}
+
+	public function update($data)
+	{
+		$this->isUpdated = $this->rawData !== $data;
+
+		$this->rawData = $data;
+		$this->init();
+	}
+
+	public function getUpdated()
+	{
+		return $this->isUpdated ? $this->updated : NULL;
+	}
+
+	public function getConfigValue($name, $default, $userOptions = [])
+	{
+		return isset($userOptions[$name])
+			? $userOptions[$name]
+			: (isset($this->configuration[$name])
+				? $this->configuration[$name]
+				: $default
+			);
+	}
+
+	public function __toString()
+	{
+		return $this->rawData;
+	}
 }
