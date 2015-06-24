@@ -18,7 +18,7 @@ class BaseLayout
 	 */
 	protected $user;
 	/**
-	 * @var Trejjam\Utils\Labels
+	 * @var Trejjam\Utils\Labels\Labels
 	 */
 	protected $labels;
 
@@ -29,7 +29,7 @@ class BaseLayout
 
 	protected $configurations = [];
 
-	function __construct(Trejjam\Utils\Labels $labels = NULL, Nette\Security\User $user)
+	function __construct(Trejjam\Utils\Labels\Labels $labels = NULL, Nette\Security\User $user)
 	{
 		$this->labels = $labels;
 		$this->user = $user;
@@ -94,7 +94,7 @@ trait BaseLayoutTrait
 	 */
 	public $layout;
 	/**
-	 * @var \Trejjam\Utils\Labels
+	 * @var \Trejjam\Utils\Labels\Labels
 	 */
 	protected $labels = NULL;
 

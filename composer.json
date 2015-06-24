@@ -5,9 +5,7 @@
 		"nette",
 		"utils",
 		"labels",
-		"pageInfo",
-		"baseLayout",
-		"image"
+		"baseLayout"
 	],
 	"license": [
 		"MIT"
