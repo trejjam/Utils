@@ -95,7 +95,7 @@ class ContentsTest extends Tester\TestCase
 
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
-		Assert::true((bool)$formDom->xpath('//form//input[contains(concat(\' \', normalize-space(@class), \' \'), \' foo \')][@name=\'root[a][a]\']'));
+		Assert::true($formDom->has('form  input.foo[name=\'root[a][a]\']'));
 
 		Assert::same('{"a":{"a":null,"b":null,"c":[{"a":null,"b":{"a":null}},{"a":null,"b":{"a":null}}]},"b":[],"c":null}', $dataObjectJson = (string)$dataObject);
 
@@ -228,6 +228,118 @@ class ContentsTest extends Tester\TestCase
 
 		Assert::same($dataObjectJson, (string)$dataObject2);
 	}
+	function testContents4()
+	{
+		/** @var Contents\Items\Container $dataObject */
+		$dataObject = $this->contents->getDataObject('testContent', [
+			'a' => [
+				'a' => 'Homepage:default#abcd, {"a":"b"}',
+				'c' => [
+					['b' => ['a' => ['a' => 'de'], 'b' => 'foo']],
+					'abcd',
+				],
+			],
+			'b' => [
+				['a' => '#'],
+				['a' => ''],
+				['a' => 'Homepage:default#abcd'],
+				['a' => 'Homepage:default, {"a":"b"}'],
+				['a' => 'Homepage:default'],
+				['a' => 'Homepage:'],
+			],
+			'c' => TRUE,
+		]);
+
+		Assert::same([
+			'a' => [
+				'a' => 'http://localhost.tld/?a=b#abcd',
+				'b' => '',
+				'c' => [
+					['a' => '', 'b' => ['a' => '']],
+					['a' => '', 'b' => ['a' => '']],
+				],
+			],
+			'b' => [
+				['a' => '#'],
+				['a' => '#'],
+				['a' => 'http://localhost.tld/#abcd'],
+				['a' => 'http://localhost.tld/?a=b'],
+				['a' => 'http://localhost.tld/'],
+				['a' => 'http://localhost.tld/'],
+			],
+			'c' => TRUE,
+		], $dataObject->getContent());
+
+		Assert::same([
+			'a' => [
+				'a' => 'Homepage:default#abcd, {"a":"b"}',
+				'b' => NULL,
+				'c' => [
+					['a' => NULL, 'b' => ['a' => ['a' => 'de']]],
+					['a' => NULL, 'b' => ['a' => NULL]],
+				],
+			],
+			'b' => [
+				['a' => '#'],
+				['a' => ''],
+				['a' => 'Homepage:default#abcd'],
+				['a' => 'Homepage:default, {"a":"b"}'],
+				['a' => 'Homepage:default'],
+				['a' => 'Homepage:'],
+			],
+			'c' => TRUE,
+		], $dataObject->getRawContent());
+
+		Assert::same([
+			'a' => [
+				'c' => [
+					[
+						'b' => [
+							'a' => ['a' => 'de'], 'b' => 'foo'
+						],
+					],
+					'abcd',
+				],
+			],
+			'b' => [
+				1 => ['a' => ''],
+			],
+		], $dataObject->getRemovedItems());
+
+		Assert::same('{"a":{"a":"Homepage:default#abcd, {\"a\":\"b\"}","b":null,"c":[{"a":null,"b":{"a":{"a":"de"}}},{"a":null,"b":{"a":null}}]},"b":[{"a":"#"},{"a":""},{"a":"Homepage:default#abcd"},{"a":"Homepage:default, {\"a\":\"b\"}"},{"a":"Homepage:default"},{"a":"Homepage:"}],"c":true}', $dataObjectJson = (string)$dataObject);
+
+		/** @var Contents\Items\Container $dataObject */
+		$dataObject2 = $this->contents->getDataObject('testContent', $dataObjectJson);
+
+		Assert::same($dataObjectJson, (string)$dataObject2);
+
+		/**
+		 *
+		 * @var $tester        PresenterTester
+		 * @var $presenterPost Nette\Application\UI\Presenter
+		 */
+		list($tester, $presenterPost) = $this->getPresenter();
+		$form = $this->contents->createForm($dataObject, [
+			'a' => [
+				'a' => [
+					'class' => 'foo',
+				],
+			],
+		], 'testContent.update', ['a', 'c']);
+		$presenterPost->addComponent($form, 'contentsForm');
+
+		$tester->run();
+
+		ob_start();
+		$form->render();
+		$formHtml = ob_get_clean();
+
+		$formDom = Tester\DomQuery::fromHtml($formHtml);
+
+		Assert::true($formDom->has('form  input.foo[name=\'a[a]\']'));
+		Assert::false($formDom->has('form input[name=\'b\']'));
+		Assert::true($formDom->has('form input[name=\'c\']'));
+	}
 
 	function testList1()
 	{
@@ -282,9 +394,9 @@ class ContentsTest extends Tester\TestCase
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
 		Assert::true($formDom->has('form'));
-		Assert::true((bool)$formDom->xpath('//form//input[@name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
-		Assert::true((bool)$formDom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'0\']'));
-		Assert::true((bool)$formDom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'abcdef\']'));
+		Assert::true($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
 		Assert::true($formDom->has('form input[id=__root__new__]'));
 
 		Assert::same([
@@ -311,9 +423,9 @@ class ContentsTest extends Tester\TestCase
 		$form2Dom = Tester\DomQuery::fromHtml($form2Html);
 
 		Assert::true($form2Dom->has('form'));
-		Assert::true((bool)$form2Dom->xpath('//form//input[@name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
-		Assert::true((bool)$form2Dom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'new_value\']'));
-		Assert::true((bool)$form2Dom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'abcdef\']'));
+		Assert::true($form2Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
 
 
 		$form3 = $this->contents->createForm($listItem, [
@@ -328,9 +440,15 @@ class ContentsTest extends Tester\TestCase
 		$form3Dom = Tester\DomQuery::fromHtml($form3Html);
 
 		Assert::true($form3Dom->has('form'));
-		Assert::true((bool)$form3Dom->xpath('//form//input[@name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
-		Assert::true((bool)$form3Dom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'0\']'));
-		Assert::true((bool)$form3Dom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'1\']'));
+		Assert::true($form3Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($form3Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::true($form3Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
+
+		Assert::throws(function () use ($listItem) {
+			$this->contents->createForm($listItem, [], 'testContent.update', [
+				'notExistKey'
+			]);
+		}, Trejjam\Utils\LogicException::class, NULL, Trejjam\Utils\Exception::CONTENTS_CHILD_NOT_EXIST);
 	}
 	function testList2()
 	{
@@ -416,9 +534,9 @@ class ContentsTest extends Tester\TestCase
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
 		Assert::true($formDom->has('form'));
-		Assert::false((bool)$formDom->xpath('//form//input[@name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
-		Assert::true((bool)$formDom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'0\']'));
-		Assert::false((bool)$formDom->xpath('//form//select[@name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\']//option[@value=\'abcd\']'));
+		Assert::false($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::false($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcd\']'));
 
 		$form->setValues([
 			'root' => [

@@ -87,11 +87,7 @@ class Contents
 
 		$out = Factory::getItemObject(['type' => 'container', 'child' => $configuration], $data, $this->subTypes);
 
-		if (!is_null($this->logDirectory) && !is_null($this->logger)) {
-			@mkdir($this->logger->directory . '/' . $this->logDirectory, 0770);
-			chmod($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
-			$this->logger->log(var_export($out->getRemovedItems(), TRUE), $this->logDirectory . '/' . $name);
-		}
+		$this->logObject($out->getRemovedItems(), $name);
 
 		return $out;
 	}
@@ -100,35 +96,60 @@ class Contents
 	 * @param Items\Base  $itemContainer
 	 * @param array       $userOptions
 	 * @param null|string $contentName
+	 * @param array       $fields
 	 * @return UI\Form
 	 */
-	public function createForm(Trejjam\Utils\Contents\Items\Base $itemContainer, $userOptions = [], $contentName = NULL)
+	public function createForm(Trejjam\Utils\Contents\Items\Base $itemContainer, $userOptions = [], $contentName = NULL, array $fields = NULL)
 	{
 		$form = new UI\Form;
 
-		$ids = [];
-		$itemContainer->generateForm($itemContainer, $form, 'root', '', $ids, $userOptions);
+		if (is_null($fields)) {
+			$this->createFieldContainer($itemContainer, $form, $userOptions, 'root', $contentName);
+		}
+		else if ($itemContainer instanceof Trejjam\Utils\Contents\Items\Container) {
+			$itemContainerChild = $itemContainer->getChild();
 
-		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $contentName) {
-			return $this->proceedEditForm($form, $itemContainer, $contentName);
-		};
+			foreach ($fields as $v) {
+				if (!isset($itemContainerChild[$v])) {
+					throw new Trejjam\Utils\LogicException("Field '$v' not exist in given container", Trejjam\Utils\Exception::CONTENTS_CHILD_NOT_EXIST);
+				}
+
+				$this->createFieldContainer($itemContainerChild[$v], $form, isset($userOptions[$v]) ? $userOptions[$v] : [], $v, $contentName);
+			}
+		}
+
 		$form->addProtection();
 
 		return $form;
 	}
 
-	public function proceedEditForm(UI\Form $form, Trejjam\Utils\Contents\Items\Base $itemContainer, $contentName)
+	protected function createFieldContainer(Trejjam\Utils\Contents\Items\Base $itemContainer, UI\Form &$form, $userOptions = [], $field, $contentName = NULL)
+	{
+		$ids = [];
+		$itemContainer->generateForm($itemContainer, $form, $field, '', $ids, $userOptions);
+
+		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $field, $contentName) {
+			return $this->proceedEditForm($form, $itemContainer, $field, $contentName);
+		};
+	}
+
+	public function proceedEditForm(UI\Form $form, Trejjam\Utils\Contents\Items\Base $itemContainer, $field, $contentName)
 	{
 		$values = $form->getValues();
 
-		$itemContainer->update($values->root);
+		$itemContainer->update($values[$field]);
 
+		$this->logObject($itemContainer->getUpdated(), $contentName);
+
+		return TRUE;
+	}
+
+	protected function logObject($object, $fileName = NULL)
+	{
 		if (!is_null($this->logDirectory) && !is_null($this->logger)) {
 			@mkdir($this->logger->directory . '/' . $this->logDirectory, 0770);
 			chmod($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
-			$this->logger->log(var_export($itemContainer->getUpdated(), TRUE), $this->logDirectory . '/' . (is_null($contentName) ? '__updated__' : $contentName));
+			$this->logger->log(var_export($object, TRUE), $this->logDirectory . '/' . (is_null($fileName) ? __CLASS__ : $fileName));
 		}
-
-		return TRUE;
 	}
 }

@@ -16,7 +16,14 @@ class Text extends Base
 {
 	protected function sanitizeData($data)
 	{
-		return is_scalar($data) ? $data : '';
+		if (is_scalar($data)) {
+			return $data;
+		}
+		else {
+			$this->isRawValid = FALSE;
+
+			return '';
+		}
 	}
 
 	/**
@@ -35,6 +42,10 @@ class Text extends Base
 	public function getRawContent($forceObject = FALSE)
 	{
 		return $this->rawData;
+	}
+	public function getValidRawContent($forceObject = FALSE)
+	{
+		return $this->isRawValid ? $this->rawData : $this->data;
 	}
 
 	public function getRemovedItems()
@@ -83,7 +94,7 @@ class Text extends Base
 		if ($addFormItem) {
 			$input = $formContainer->addText($name, $name);
 			$input->setOption('id', $ids[] = $parentName . '__' . $name);
-			$input->setValue($item->getRawContent());
+			$input->setValue($item->getValidRawContent());
 
 			$item->applyUserOptions($input, $userOptions);
 		}

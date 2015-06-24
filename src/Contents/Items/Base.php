@@ -18,8 +18,9 @@ abstract class Base implements IEditItem
 		NEW_ITEM = '__new__',
 		EMPTY_VALUE = '__empty__';
 
-	protected $isUpdated = FALSE;
-	protected $updated   = NULL;
+	protected $isRawValid = TRUE;
+	protected $isUpdated  = FALSE;
+	protected $updated    = NULL;
 	protected $rawData;
 	protected $data;
 	protected $configuration;
