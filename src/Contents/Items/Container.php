@@ -131,7 +131,9 @@ class Container extends Base
 				$child,
 				$container,
 				$childName,
-				$parentName . '__' . $name, $ids, isset($userOptions[$childName]) && is_array($userOptions[$childName]) ? $userOptions[$childName] : []
+				$parentName . '__' . $name,
+				$ids,
+				isset($userOptions['child']) && isset($userOptions['child'][$childName]) && is_array($userOptions['child'][$childName]) ? $userOptions['child'][$childName] : []
 			);
 		}
 

@@ -120,7 +120,9 @@ class ListContainer extends Container
 				$child,
 				$container,
 				$childName,
-				$parentName . '__' . $name, $subIds, isset($userOptions[$childName]) && is_array($userOptions[$childName]) ? $userOptions[$childName] : []
+				$parentName . '__' . $name,
+				$subIds,
+				isset($userOptions['child']) && isset($userOptions['child'][$childName]) && is_array($userOptions['child'][$childName]) ? $userOptions['child'][$childName] : []
 			);
 
 			try {

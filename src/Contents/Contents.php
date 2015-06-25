@@ -114,7 +114,7 @@ class Contents
 					throw new Trejjam\Utils\LogicException("Field '$v' not exist in given container", Trejjam\Utils\Exception::CONTENTS_CHILD_NOT_EXIST);
 				}
 
-				$this->createFieldContainer($itemContainerChild[$v], $form, isset($userOptions[$v]) ? $userOptions[$v] : [], $v, $contentName);
+				$this->createFieldContainer($itemContainerChild[$v], $form, isset($userOptions['fields']) && isset($userOptions['fields'][$v]) ? $userOptions['fields'][$v] : [], $v, $contentName);
 			}
 		}
 

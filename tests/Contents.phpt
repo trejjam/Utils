@@ -79,9 +79,13 @@ class ContentsTest extends Tester\TestCase
 		 */
 		list($tester, $presenterPost) = $this->getPresenter();
 		$form = $this->contents->createForm($dataObject, [
-			'a' => [
+			'child' => [
 				'a' => [
-					'class' => 'foo',
+					'child' => [
+						'a' => [
+							'class' => 'foo',
+						],
+					],
 				],
 			],
 		], 'testContent.update');
@@ -95,7 +99,7 @@ class ContentsTest extends Tester\TestCase
 
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
-		Assert::true($formDom->has('form  input.foo[name=\'root[a][a]\']'));
+		Assert::true($formDom->has('form input.foo[name=\'root[a][a]\']'));
 
 		Assert::same('{"a":{"a":null,"b":null,"c":[{"a":null,"b":{"a":null}},{"a":null,"b":{"a":null}}]},"b":[],"c":null}', $dataObjectJson = (string)$dataObject);
 
@@ -320,9 +324,13 @@ class ContentsTest extends Tester\TestCase
 		 */
 		list($tester, $presenterPost) = $this->getPresenter();
 		$form = $this->contents->createForm($dataObject, [
-			'a' => [
+			'fields' => [
 				'a' => [
-					'class' => 'foo',
+					'child' => [
+						'a' => [
+							'class' => 'foo',
+						],
+					],
 				],
 			],
 		], 'testContent.update', ['a', 'c']);
@@ -336,7 +344,7 @@ class ContentsTest extends Tester\TestCase
 
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
-		Assert::true($formDom->has('form  input.foo[name=\'a[a]\']'));
+		Assert::true($formDom->has('form input.foo[name=\'a[a]\']'));
 		Assert::false($formDom->has('form input[name=\'b\']'));
 		Assert::true($formDom->has('form input[name=\'c\']'));
 	}
@@ -717,6 +725,7 @@ class ContentsTest extends Tester\TestCase
 	function getPresenter($presenterName = 'Homepage')
 	{
 		$tester = new PresenterTester($this->container->getByType('\Nette\Application\IPresenterFactory'));
+		$tester->clean();
 		$tester->setPresenter($presenterName);
 
 		$presenter = $tester->getPresenterComponent();
