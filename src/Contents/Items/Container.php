@@ -67,6 +67,10 @@ class Container extends Base
 		$out = [];
 
 		foreach ($this->data as $k => $v) {
+			if (is_null($v)) {
+				continue;
+			}
+
 			$out[$k] = $v->getContent($forceObject);
 		}
 
@@ -82,6 +86,10 @@ class Container extends Base
 		$out = [];
 
 		foreach ($this->data as $k => $v) {
+			if (is_null($v)) {
+				continue;
+			}
+
 			$out[$k] = $v->getRawContent($forceObject);
 		}
 
@@ -122,14 +130,14 @@ class Container extends Base
 	}
 
 	/**
-	 * @param Base|Container        $item
-	 * @param Nette\Forms\Container $formContainer
-	 * @param                       $name
-	 * @param                       $parentName
-	 * @param array                 $ids
-	 * @param array                 $userOptions
+	 * @param Base|Container                   $item
+	 * @param Nette\Forms\Container            $formContainer
+	 * @param                                  $name
+	 * @param                                  $parentName
+	 * @param Nette\Forms\Rules                $togglingObject
+	 * @param array                            $userOptions
 	 */
-	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, $togglingObject, array $userOptions = [])
 	{
 		$container = is_null($name) ? $formContainer : $formContainer->addContainer($name);
 
@@ -139,7 +147,7 @@ class Container extends Base
 				$container,
 				$childName,
 				$parentName . '__' . $name,
-				$ids,
+				$togglingObject,
 				isset($userOptions['child']) && isset($userOptions['child'][$childName]) && is_array($userOptions['child'][$childName]) ? $userOptions['child'][$childName] : []
 			);
 		}
@@ -165,6 +173,12 @@ class Container extends Base
 		$this->updated = [];
 
 		foreach ($this->getChild() as $childName => $child) {
+			if (is_null($child)) {
+				$this->isUpdated = TRUE;
+
+				continue;
+			}
+
 			$updated = $child->getUpdated();
 
 			if (!is_null($updated) || (is_array($updated) && count($updated) > 0)) {

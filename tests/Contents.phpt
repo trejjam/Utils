@@ -349,10 +349,13 @@ class ContentsTest extends Tester\TestCase
 		Assert::true($formDom->has('form input[name=\'c\']'));
 	}
 
-	function testList1()
+	/**
+	 * @return Contents\Items\ListContainer $listItem
+	 */
+	function createList()
 	{
-		/** @var Contents\Items\ListContainer $listItem */
-		$listItem = Contents\Factory::getItemObject([
+
+		return Contents\Factory::getItemObject([
 			'type'     => 'list',
 			'listHead' => 'name',
 			'listItem' => [
@@ -363,9 +366,15 @@ class ContentsTest extends Tester\TestCase
 			['content' => 'abcd'],
 			['content' => 'abcd', 'name' => 'abcdef'],
 		]);
+	}
+
+	function testList1()
+	{
+		$listItem = $this->createList();
 
 		$listItem2 = clone $listItem;
 		$listItem3 = clone $listItem;
+		$listItem4 = clone $listItem;
 
 		Assert::same([0, 1], array_keys($listItem->getChild()));
 		Assert::same([
@@ -393,7 +402,7 @@ class ContentsTest extends Tester\TestCase
 
 		$form->setValues([
 			'root' => [
-				['name' => 'new_value', 'content' => 'new_value2']
+				['name' => 'new_value', 'content' => 'new_value2'],
 			],
 		]);
 		$form->onSuccess($form);
@@ -407,7 +416,8 @@ class ContentsTest extends Tester\TestCase
 		Assert::true($formDom->has('form'));
 		Assert::true($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
 		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
-		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
+		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
+		Assert::same('abcdef', (string)$formDom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']')[0]);
 		Assert::true($formDom->has('form input[id=__root__new_container__button__]'));
 
 		Assert::same([
@@ -423,8 +433,19 @@ class ContentsTest extends Tester\TestCase
 			['name' => Contents\Items\Base::EMPTY_VALUE, 'content' => 'abcd'],
 		], $listItem->getUpdated());
 
+	}
+	function testList12()
+	{
+		$listItem2 = $this->createList();
+		/**
+		 * @var $tester        PresenterTester
+		 * @var $presenterPost Nette\Application\UI\Presenter
+		 */
+		list($tester, $presenterPost) = $this->getPresenter();
 		$form2 = $this->contents->createForm($listItem2, [], 'testContent.update');
 		$presenterPost->addComponent($form2, 'contentsForm2');
+
+		$tester->run();
 
 		/** @var Nette\Forms\Controls\SubmitButton $newButton */
 		$newButton = $form2->getComponent('root')
@@ -442,9 +463,12 @@ class ContentsTest extends Tester\TestCase
 
 		Assert::true($form2Dom->has('form'));
 		Assert::true($form2Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
-		Assert::false($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
-		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
-		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'' . Contents\Items\ListContainer::NEW_ITEM_CONTENT . '\']'));
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::same('0', (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']')[0]);
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
+		Assert::same('abcdef', (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']')[0]);
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'2\']'));
+		Assert::same(Contents\Items\ListContainer::NEW_ITEM_BUTTON_LABEL, (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'2\']')[0]);
 
 		$form2->setValues([
 			'root' => [
@@ -487,14 +511,29 @@ class ContentsTest extends Tester\TestCase
 
 		Assert::true($form22Dom->has('form'));
 		Assert::true($form22Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
-		Assert::false($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
-		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
-		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_item_name\']'));
+		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::same('0', (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']')[0]);
+		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
+		Assert::same('abcdef', (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']')[0]);
+		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'2\']'));
+		Assert::same(Contents\Items\ListContainer::NEW_ITEM_BUTTON_LABEL, (string)$form2Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'2\']')[0]);
+
+	}
+	function testList13()
+	{
+		$listItem3 = $this->createList();
+		/**
+		 * @var $tester        PresenterTester
+		 * @var $presenterPost Nette\Application\UI\Presenter
+		 */
+		list($tester, $presenterPost) = $this->getPresenter();
 
 		$form3 = $this->contents->createForm($listItem3, [
 			'listHead' => 'not.exist.key',
 		], 'testContent.update');
 		$presenterPost->addComponent($form3, 'contentsForm3');
+
+		$tester->run();
 
 		ob_start();
 		$form3->render();
@@ -512,6 +551,58 @@ class ContentsTest extends Tester\TestCase
 				'notExistKey'
 			]);
 		}, Trejjam\Utils\LogicException::class, NULL, Trejjam\Utils\Exception::CONTENTS_CHILD_NOT_EXIST);
+
+	}
+	function testList14()
+	{
+		$listItem4 = $this->createList();
+
+		/**
+		 * @var $tester        PresenterTester
+		 * @var $presenterPost Nette\Application\UI\Presenter
+		 */
+		list($tester, $presenterPost) = $this->getPresenter();
+		$form4 = $this->contents->createForm($listItem4, [], 'testContent.update');
+		$presenterPost->addComponent($form4, 'contentsForm');
+
+		$tester->run();
+
+		$form4->setValues([
+			'root' => [
+				Contents\Items\ListContainer::DELETE_ITEM => [
+					0 => FALSE,
+					1 => TRUE,
+				],
+			],
+		]);
+		$form4->onSuccess($form4);
+
+		ob_start();
+		$form4->render();
+		$form4Html = ob_get_clean();
+
+		$form4Dom = Tester\DomQuery::fromHtml($form4Html);
+
+		Assert::true($form4Dom->has('form'));
+		Assert::true($form4Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
+		Assert::true($form4Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
+		Assert::true($form4Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
+		Assert::same('abcdef', (string)$form4Dom->find('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']')[0]);
+		Assert::true($form4Dom->has('form input[id=__root__new_container__button__]'));
+
+		Assert::same([
+			['name' => '', 'content' => 'abcd'],
+		], $listItem4->getRawContent());
+		Assert::same([
+			['name' => '', 'content' => 'abcd'],
+		], $listItem4->getContent());
+		Assert::same([
+			1 => ['name' => 'abcdef', 'content' => 'abcd'],
+		], $listItem4->getRemovedItems());
+
+		Assert::same([
+			['name' => Contents\Items\Base::EMPTY_VALUE],
+		], $listItem4->getUpdated());
 	}
 	function testList2()
 	{

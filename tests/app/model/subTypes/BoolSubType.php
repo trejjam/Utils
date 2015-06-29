@@ -50,11 +50,15 @@ class BoolSubType extends Items\SubType implements Items\IEditItem
 	}
 
 
-	public function generateForm(Items\Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	public function generateForm(Items\Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, $togglingObject, array $userOptions = [])
 	{
 		$input = $formContainer->addCheckbox($name, $name);
-		$input->setOption('id', $ids[] = $parentName . '__' . $name);
+		$input->setOption('id', $parentName . '__' . $name);
 		$input->setValue($item->getContent());
+
+		if (!is_null($togglingObject)) {
+			$togglingObject->toggle($input->getOption('id'));
+		}
 
 		$item->applyUserOptions($input, $userOptions);
 	}

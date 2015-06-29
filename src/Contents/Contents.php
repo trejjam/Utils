@@ -125,18 +125,16 @@ class Contents
 
 	protected function createFieldContainer(Trejjam\Utils\Contents\Items\Base $itemContainer, UI\Form &$form, $userOptions = [], $field, $contentName = NULL)
 	{
-		$ids = [];
-		$itemContainer->generateForm($itemContainer, $form, $field, '', $ids, $userOptions);
+		$itemContainer->generateForm($itemContainer, $form, $field, '', $ids = NULL, $userOptions);
 
 		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $field, $contentName) {
-			dump($form->getValues());
 			return $this->proceedEditForm($form, $itemContainer, $field, $contentName);
 		};
 	}
 
 	public function proceedEditForm(UI\Form $form, Trejjam\Utils\Contents\Items\Base $itemContainer, $field, $contentName)
 	{
-		$values = $form->getValues();
+		$values = $form->getValues(TRUE);
 
 		$itemContainer->update($values[$field]);
 

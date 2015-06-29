@@ -84,7 +84,6 @@ class UrlSubType extends Items\SubType
 				$parameters = Nette\Utils\Json::decode('{' . $rawParameters . '}', Nette\Utils\Json::FORCE_ARRAY);
 			}
 			catch (Nette\Utils\JsonException $e) {
-				dump($rawParameters);
 				$parameters = [];
 			}
 			if (is_null($parameters)) {

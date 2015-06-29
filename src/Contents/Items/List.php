@@ -15,7 +15,8 @@ use Nette,
 class ListContainer extends Container
 {
 	const
-		LIST_BOX = '__list__';
+		LIST_BOX = '__list__',
+		DELETE_ITEM = '__delete__';
 
 	protected $removedData = [];
 
@@ -48,8 +49,12 @@ class ListContainer extends Container
 				continue;
 			}
 
-			if (isset($out[$k])) {
+			if (isset($out[$k]) && isset($this->data[$k]) && !is_null($this->data[$k])) {
 				$out[$k]->update(isset($data[$k]) ? $data[$k] : NULL);
+			}
+			else if (isset($out[$k]) && isset($this->data[$k]) && is_null($out[$k])) {
+				$this->removedData[$k] = $v;
+				//manually deleted item
 			}
 			else {
 				$out[$k] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], $v, $this->subTypes);
@@ -76,6 +81,10 @@ class ListContainer extends Container
 			$out = [];
 
 			foreach ($this->data as $k => $v) {
+				if (is_null($v)) {
+					continue;
+				}
+
 				$tempSubRemoved = $v->getRemovedItems();
 
 				if (!is_null($tempSubRemoved) && (!is_array($tempSubRemoved) || count($tempSubRemoved) > 0)) {
@@ -92,14 +101,14 @@ class ListContainer extends Container
 	}
 
 	/**
-	 * @param Base|ListContainer    $item
-	 * @param Nette\Forms\Container $formContainer
-	 * @param                       $name
-	 * @param                       $parentName
-	 * @param array                 $ids
-	 * @param array                 $userOptions
+	 * @param Base|ListContainer                 $item
+	 * @param Nette\Forms\Container              $formContainer
+	 * @param                                    $name
+	 * @param                                    $parentName
+	 * @param Nette\Forms\Rules                  $togglingObject
+	 * @param array                              $userOptions
 	 */
-	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, $togglingObject, array $userOptions = [])
 	{
 		$container = $formContainer->addContainer($name);
 
@@ -108,49 +117,82 @@ class ListContainer extends Container
 
 			$new = $container->addSubmit(Base::NEW_ITEM_BUTTON, $this->getConfigValue('addItemLabel', 'new', $userOptions));
 			$new->setValidationScope(FALSE)
-				->setAttribute('id', $ids[] = $newParent . Base::NEW_ITEM_BUTTON);
+				->setAttribute('id', $newParent . Base::NEW_ITEM_BUTTON);
 
 			$new->onClick[] = function (Nette\Forms\Controls\SubmitButton $button) use ($container) {
 				if (count($container->getComponent(Base::NEW_ITEM_CONTENT)->getComponents()) < 1) {
-					$button->parent->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
+					$button->getParent()->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
 
 					/** @var Nette\Forms\Controls\SelectBox $listSelect */
 					$listSelect = $container->getComponent(self::LIST_BOX);
 					$items = $listSelect->getItems();
-					$items[Base::NEW_ITEM_CONTENT] = Base::NEW_ITEM_CONTENT;
+					$items[$newItemId = count($items)] = Base::NEW_ITEM_BUTTON_LABEL;
 					$listSelect->setItems($items);
-					$listSelect->setDefaultValue(Base::NEW_ITEM_CONTENT);
+					$listSelect->setDefaultValue($newItemId);
 
 					$button->getForm()->onSuccess = [];
 				}
 			};
 
-			$container->addDynamic($item::NEW_ITEM_CONTENT, function (Nette\Forms\Container $container) use ($item, $newParent, $ids, $userOptions) {
+			$container->addDynamic($item::NEW_ITEM_CONTENT, function (Nette\Forms\Container $container) use ($item, $newParent, $togglingObject, $userOptions) {
 				$child = isset($this->configuration['child'])
 					? $this->configuration['child']
 					: (isset($this->configuration['listItem']) ? $this->configuration['listItem'] : []);
 
+				/** @var Nette\Forms\Controls\SelectBox $listSelect */
+				$listSelect = $container->getParent()->getParent()->getComponent(self::LIST_BOX);
+				$items = $listSelect->getItems();
+
+				if (is_null($togglingObject)) {
+					$subTogglingObject = $listSelect->addCondition(Nette\Application\UI\Form::EQUAL, count($items) - 1);
+				}
+				else {
+					$subTogglingObject = $togglingObject->addConditionOn($listSelect, Nette\Application\UI\Form::EQUAL, count($items) - 1);
+				}
+
 				$newListItem = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $item->subTypes);
 
-				$subIds = [];
-				$newListItem->generateForm($newListItem, $container, NULL, $newParent, $subIds, $userOptions);
+				$newListItem->generateForm($newListItem, $container, NULL, $newParent, $subTogglingObject, $userOptions);
 			});
 		}
 
+		if (!isset($item->configuration['count'])) {
+			$deleteContainer = $container->addContainer(ListContainer::DELETE_ITEM);
+		}
+
 		$listSelect = $container->addSelect(self::LIST_BOX, $this->getConfigValue('listLabel', 'list', $userOptions));
+		$listSelect->setOption('id', $parentName . self::LIST_BOX . $name);
+		if (!is_null($togglingObject)) {
+			$togglingObject->toggle($listSelect->getOption('id'));
+		}
+
+		/** @var Nette\Forms\Rules $subTogglingObject */
+		$subTogglingObject = $togglingObject;
 
 		$items = [];
 
 		$listHead = $this->getConfigValue('listHead', NULL, $userOptions);
 
 		foreach ($this->getChild() as $childName => $child) {
-			$subIds = [];
+			if (is_null($togglingObject)) {
+				$subTogglingObject = $listSelect->addCondition(Nette\Application\UI\Form::EQUAL, $childName);
+			}
+			else {
+				$subTogglingObject = $subTogglingObject->addConditionOn($listSelect, Nette\Application\UI\Form::EQUAL, $childName);
+			}
+
+			if (!isset($item->configuration['count'])) {
+				$removeButton = $deleteContainer->addCheckbox($childName, $this->getConfigValue('deleteLabel', 'remove item', $userOptions));
+				$removeButton->setOption('id', $parentName . ListContainer::DELETE_ITEM . $childName);
+				$subTogglingObject->toggle($removeButton->getOption('id'));
+			}
+
 			$child->generateForm(
 				$child,
 				$container,
 				$childName,
 				$parentName . '__' . $name,
-				$subIds,
+				$subTogglingObject,
 				isset($userOptions['child']) && isset($userOptions['child'][$childName]) && is_array($userOptions['child'][$childName]) ? $userOptions['child'][$childName] : []
 			);
 
@@ -170,7 +212,7 @@ class ListContainer extends Container
 				$itemName = $childName;
 			}
 
-			$items[$itemName] = $itemName;
+			$items[$childName] = $itemName;
 		}
 
 		$listSelect->setItems($items);
@@ -183,6 +225,9 @@ class ListContainer extends Container
 
 	public function update($data)
 	{
+		if (isset($data[ListContainer::LIST_BOX])) {
+			unset($data[ListContainer::LIST_BOX]);
+		}
 		if (isset($data[Base::NEW_ITEM_CONTENT])) {
 			foreach ($data[Base::NEW_ITEM_CONTENT] as $newData) {
 				$child = isset($this->configuration['child'])
@@ -201,6 +246,18 @@ class ListContainer extends Container
 			}
 
 			unset($data[Base::NEW_ITEM_CONTENT]);
+		}
+
+		if (isset($data[ListContainer::DELETE_ITEM])) {
+			foreach ($data[ListContainer::DELETE_ITEM] as $k => $v) {
+				if ($v) {
+					unset($data[$k]);
+					$this->removedData[$k] = $this->data[$k]->getRawContent();
+					$this->data[$k] = NULL;
+				}
+			}
+
+			unset($data[ListContainer::DELETE_ITEM]);
 		}
 
 		parent::update($data);

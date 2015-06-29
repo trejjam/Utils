@@ -79,11 +79,19 @@ class Text extends Base
 		return $out === FALSE ? NULL : $out;
 	}
 
-	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
+	/**
+	 * @param Base|Text                        $item
+	 * @param Nette\Forms\Container            $formContainer
+	 * @param                                  $name
+	 * @param                                  $parentName
+	 * @param Nette\Forms\Rules                $togglingObject
+	 * @param array                            $userOptions
+	 */
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, $togglingObject, array $userOptions = [])
 	{
-		$addFormItem = $this->useSubType(function (SubType $subType, $addFormItem) use ($formContainer, $name, $parentName, $ids, $userOptions) {
+		$addFormItem = $this->useSubType(function (SubType $subType, $addFormItem) use ($formContainer, $name, $parentName, $togglingObject, $userOptions) {
 			if ($subType instanceof IEditItem) {
-				$subType->generateForm($this, $formContainer, $name, $parentName, $ids, $userOptions);
+				$subType->generateForm($this, $formContainer, $name, $parentName, $togglingObject, $userOptions);
 
 				return FALSE;
 			}
@@ -93,8 +101,12 @@ class Text extends Base
 
 		if ($addFormItem) {
 			$input = $formContainer->addText($name, $name);
-			$input->setOption('id', $ids[] = $parentName . '__' . $name);
+			$input->setOption('id', $parentName . '__' . $name);
 			$input->setValue($item->getValidRawContent());
+
+			if (!is_null($togglingObject)) {
+				$togglingObject->toggle($input->getOption('id'));
+			}
 
 			$item->applyUserOptions($input, $userOptions);
 		}

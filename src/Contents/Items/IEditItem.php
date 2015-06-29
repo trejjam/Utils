@@ -12,5 +12,5 @@ use Nette;
 
 interface IEditItem
 {
-	public function generateForm(Base $item,  Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = []);
+	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, $togglingObject, array $userOptions = []);
 }

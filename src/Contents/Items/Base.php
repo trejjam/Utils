@@ -17,6 +17,7 @@ abstract class Base implements IEditItem
 	const
 		NEW_CONTAINER = '__new_container',
 		NEW_ITEM_BUTTON = '__button__',
+		NEW_ITEM_BUTTON_LABEL = 'New item',
 		NEW_ITEM_CONTENT = '__content__',
 		EMPTY_VALUE = '__empty__';
 
