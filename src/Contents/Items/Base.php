@@ -43,13 +43,13 @@ abstract class Base implements IEditItem
 		$this->rawData = $data;
 		$this->subTypes = $subTypes;
 
-		$this->init();
+		$this->init(true);
 	}
 
-	protected function init()
+	protected function init($first = FALSE)
 	{
 		$this->data = $this->sanitizeSubTypeData(
-			$this->sanitizeData($this->rawData)
+			$this->sanitizeData($this->rawData, $first)
 		);
 	}
 

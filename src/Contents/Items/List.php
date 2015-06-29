@@ -20,7 +20,7 @@ class ListContainer extends Container
 
 	protected $removedData = [];
 
-	protected function sanitizeData($data)
+	protected function sanitizeData($data, $first = FALSE)
 	{
 		$count = isset($this->configuration['count']) ? $this->configuration['count'] : NULL;
 		$max = isset($this->configuration['max']) ? $this->configuration['max'] : NULL;
@@ -37,6 +37,16 @@ class ListContainer extends Container
 
 		/** @var Base[] $out */
 		$out = $this->data;
+
+		if ($first) {
+			$i = 0;
+
+			$dataNew = [];
+			foreach ($data as $v) {
+				$dataNew[$i++] = $v;
+			}
+			$data = $dataNew;
+		}
 
 		$i = 0;
 		foreach (is_null($data) ? [] : $data as $k => $v) {
@@ -160,7 +170,8 @@ class ListContainer extends Container
 			$deleteContainer = $container->addContainer(ListContainer::DELETE_ITEM);
 		}
 
-		$listSelect = $container->addSelect(self::LIST_BOX, $this->getConfigValue('listLabel', 'list', $userOptions));
+		$listSelect = new Trejjam\Utils\Contents\NoValidateSelectBox($this->getConfigValue('listLabel', 'list', $userOptions), NULL);
+		$container[self::LIST_BOX] = $listSelect;
 		$listSelect->setOption('id', $parentName . self::LIST_BOX . $name);
 		if (!is_null($togglingObject)) {
 			$togglingObject->toggle($listSelect->getOption('id'));
@@ -213,6 +224,11 @@ class ListContainer extends Container
 			}
 
 			$items[$childName] = $itemName;
+		}
+
+		$postedValue = (string)$listSelect->getRawValue();
+		if ($postedValue != '' && !isset($items[$postedValue])) {
+			$items[$postedValue] = '';
 		}
 
 		$listSelect->setItems($items);

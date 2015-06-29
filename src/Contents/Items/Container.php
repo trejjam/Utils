@@ -28,7 +28,7 @@ class Container extends Base
 		}
 	}
 
-	protected function sanitizeData($data)
+	protected function sanitizeData($data, $first=false)
 	{
 		if (!isset($this->configuration['child'])) {
 			throw new Trejjam\Utils\DomainException('Container has not defined child.', Trejjam\Utils\Exception::CONTENTS_INCOMPLETE_CONFIGURATION);

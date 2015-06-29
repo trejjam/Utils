@@ -14,7 +14,7 @@ use Nette,
 
 class Text extends Base
 {
-	protected function sanitizeData($data)
+	protected function sanitizeData($data, $first = FALSE)
 	{
 		if (is_scalar($data)) {
 			return $data;
