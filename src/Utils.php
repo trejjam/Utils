@@ -145,4 +145,24 @@ class Utils
 
 		return $out;
 	}
+
+	public static function getModuleFromRequest(Nette\Application\Request $request, $outputModuleDelimiter = ':')
+	{
+		$presenterArr = explode(':', $request->getPresenterName());
+		array_pop($presenterArr);
+		foreach ($presenterArr as $k => $v) {
+			$presenterArr[$k] = Nette\Utils\Strings::firstLower($v);
+		}
+
+		$module = implode($outputModuleDelimiter, $presenterArr);
+
+		return $module;
+	}
+
+	public static function getPresenterFromRequest(Nette\Application\Request $request)
+	{
+		$presenterArr = explode(':', $request->getPresenterName());
+
+		return array_pop($presenterArr);
+	}
 }
