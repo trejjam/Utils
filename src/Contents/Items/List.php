@@ -121,14 +121,14 @@ class ListContainer extends Container
 
 			$new->onClick[] = function (Nette\Forms\Controls\SubmitButton $button) use ($container) {
 				if (count($container->getComponent(Base::NEW_ITEM_CONTENT)->getComponents()) < 1) {
-					$button->getParent()->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
-
 					/** @var Nette\Forms\Controls\SelectBox $listSelect */
 					$listSelect = $container->getComponent(self::LIST_BOX);
 					$items = $listSelect->getItems();
 					$items[$newItemId = count($items)] = Base::NEW_ITEM_BUTTON_LABEL;
 					$listSelect->setItems($items);
 					$listSelect->setDefaultValue($newItemId);
+
+					$button->getParent()->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
 
 					$button->getForm()->onSuccess = [];
 				}
