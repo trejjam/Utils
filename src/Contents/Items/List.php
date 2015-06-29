@@ -92,7 +92,7 @@ class ListContainer extends Container
 	}
 
 	/**
-	 * @param Base|Container        $item
+	 * @param Base|ListContainer    $item
 	 * @param Nette\Forms\Container $formContainer
 	 * @param                       $name
 	 * @param                       $parentName
@@ -104,12 +104,41 @@ class ListContainer extends Container
 		$container = $formContainer->addContainer($name);
 
 		if (!isset($item->configuration['count']) && (!isset($item->configuration['max']) || $item->configuration['max'] > count($item->getChild()))) {
-			$new = $container->addSubmit($item::NEW_ITEM, $this->getConfigValue('addItemLabel', 'new', $userOptions));
+			$newParent = $parentName . '__' . $name . Base::NEW_CONTAINER;
+
+			$new = $container->addSubmit(Base::NEW_ITEM_BUTTON, $this->getConfigValue('addItemLabel', 'new', $userOptions));
 			$new->setValidationScope(FALSE)
-				->setAttribute('id', $ids[] = $parentName . '__' . $name . $item::NEW_ITEM);
+				->setAttribute('id', $ids[] = $newParent . Base::NEW_ITEM_BUTTON);
+
+			$new->onClick[] = function (Nette\Forms\Controls\SubmitButton $button) use ($container) {
+				if (count($container->getComponent(Base::NEW_ITEM_CONTENT)->getComponents()) < 1) {
+					$button->parent->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
+
+					/** @var Nette\Forms\Controls\SelectBox $listSelect */
+					$listSelect = $container->getComponent(self::LIST_BOX);
+					$items = $listSelect->getItems();
+					$items[Base::NEW_ITEM_CONTENT] = Base::NEW_ITEM_CONTENT;
+					$listSelect->setItems($items);
+					$listSelect->setDefaultValue(Base::NEW_ITEM_CONTENT);
+
+					$button->getForm()->onSuccess = [];
+				}
+			};
+
+			$container->addDynamic($item::NEW_ITEM_CONTENT, function (Nette\Forms\Container $container) use ($item, $newParent, $ids, $userOptions) {
+				$child = isset($this->configuration['child'])
+					? $this->configuration['child']
+					: (isset($this->configuration['listItem']) ? $this->configuration['listItem'] : []);
+
+				$newListItem = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $item->subTypes);
+
+				$subIds = [];
+				$newListItem->generateForm($newListItem, $container, NULL, $newParent, $subIds, $userOptions);
+			});
 		}
 
-		$listSelect = $container->addSelect(self::LIST_BOX, $this->getConfigValue('listLabel', 'new', $userOptions));
+		$listSelect = $container->addSelect(self::LIST_BOX, $this->getConfigValue('listLabel', 'list', $userOptions));
+
 		$items = [];
 
 		$listHead = $this->getConfigValue('listHead', NULL, $userOptions);
@@ -145,7 +174,37 @@ class ListContainer extends Container
 		}
 
 		$listSelect->setItems($items);
+		if (count($items) > 0) {
+			$listSelect->setDefaultValue('0');
+		}
 
 		$item->applyUserOptions($container, $userOptions);
+	}
+
+	public function update($data)
+	{
+		if (isset($data[Base::NEW_ITEM_CONTENT])) {
+			foreach ($data[Base::NEW_ITEM_CONTENT] as $newData) {
+				$child = isset($this->configuration['child'])
+					? $this->configuration['child']
+					: (isset($this->configuration['listItem']) ? $this->configuration['listItem'] : NULL);
+
+				$maxDataI = 0;
+				for ($i = 0; $i < count($this->data); $i++) {
+					if (isset($this->data[$i]) && $i > $maxDataI) {
+						$maxDataI = $i;
+					}
+				}
+
+				$this->data[$maxDataI + 1] = Trejjam\Utils\Contents\Factory::getItemObject(['type' => 'container', 'child' => $child], NULL, $this->subTypes);
+				$data[$maxDataI + 1] = $newData;
+			}
+
+			unset($data[Base::NEW_ITEM_CONTENT]);
+		}
+
+		parent::update($data);
+
+		return;
 	}
 }

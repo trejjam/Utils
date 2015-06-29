@@ -97,7 +97,7 @@ class Contents
 	 * @param array       $userOptions
 	 * @param null|string $contentName
 	 * @param array       $fields
-	 * @return UI\Form
+	 * @return Nette\Application\UI\Form
 	 */
 	public function createForm(Trejjam\Utils\Contents\Items\Base $itemContainer, $userOptions = [], $contentName = NULL, array $fields = NULL)
 	{
@@ -129,6 +129,7 @@ class Contents
 		$itemContainer->generateForm($itemContainer, $form, $field, '', $ids, $userOptions);
 
 		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $field, $contentName) {
+			dump($form->getValues());
 			return $this->proceedEditForm($form, $itemContainer, $field, $contentName);
 		};
 	}

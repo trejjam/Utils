@@ -21,6 +21,13 @@ class Container extends Base
 
 	protected $updated = [];
 
+	public function __clone()
+	{
+		foreach ($this->data as $k => $v) {
+			$this->data[$k] = clone $v;
+		}
+	}
+
 	protected function sanitizeData($data)
 	{
 		if (!isset($this->configuration['child'])) {
@@ -124,7 +131,7 @@ class Container extends Base
 	 */
 	public function generateForm(Base $item, Nette\Forms\Container &$formContainer, $name, $parentName, array &$ids, array $userOptions = [])
 	{
-		$container = $formContainer->addContainer($name);
+		$container = is_null($name) ? $formContainer : $formContainer->addContainer($name);
 
 		foreach ($this->getChild() as $childName => $child) {
 			$child->generateForm(

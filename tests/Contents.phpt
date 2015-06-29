@@ -364,6 +364,9 @@ class ContentsTest extends Tester\TestCase
 			['content' => 'abcd', 'name' => 'abcdef'],
 		]);
 
+		$listItem2 = clone $listItem;
+		$listItem3 = clone $listItem;
+
 		Assert::same([0, 1], array_keys($listItem->getChild()));
 		Assert::same([
 			['name' => '', 'content' => 'abcd'],
@@ -402,10 +405,10 @@ class ContentsTest extends Tester\TestCase
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
 		Assert::true($formDom->has('form'));
-		Assert::true($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
 		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
 		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
-		Assert::true($formDom->has('form input[id=__root__new__]'));
+		Assert::true($formDom->has('form input[id=__root__new_container__button__]'));
 
 		Assert::same([
 			['name' => 'new_value', 'content' => 'new_value2',],
@@ -420,9 +423,16 @@ class ContentsTest extends Tester\TestCase
 			['name' => Contents\Items\Base::EMPTY_VALUE, 'content' => 'abcd'],
 		], $listItem->getUpdated());
 
-
-		$form2 = $this->contents->createForm($listItem, [], 'testContent.update');
+		$form2 = $this->contents->createForm($listItem2, [], 'testContent.update');
 		$presenterPost->addComponent($form2, 'contentsForm2');
+
+		/** @var Nette\Forms\Controls\SubmitButton $newButton */
+		$newButton = $form2->getComponent('root')
+						   ->getComponent(Contents\Items\Base::NEW_ITEM_BUTTON);
+
+		$onSuccess = $form2->onSuccess;
+		$newButton->onClick($newButton);
+		$form2->onSuccess = $onSuccess;
 
 		ob_start();
 		$form2->render();
@@ -431,12 +441,57 @@ class ContentsTest extends Tester\TestCase
 		$form2Dom = Tester\DomQuery::fromHtml($form2Html);
 
 		Assert::true($form2Dom->has('form'));
-		Assert::true($form2Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
-		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
+		Assert::true($form2Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
+		Assert::false($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
 		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
+		Assert::true($form2Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'' . Contents\Items\ListContainer::NEW_ITEM_CONTENT . '\']'));
 
+		$form2->setValues([
+			'root' => [
+				Contents\Items\ListContainer::LIST_BOX         => '0',
+				Contents\Items\ListContainer::NEW_ITEM_CONTENT => [
+					[
+						'name'    => 'new_item_name',
+						'content' => 'new_item_content',
+					],
+				],
+			],
+		]);
 
-		$form3 = $this->contents->createForm($listItem, [
+		Assert::same([
+			['name' => '', 'content' => 'abcd',],
+			['name' => 'abcdef', 'content' => 'abcd'],
+		], $listItem2->getContent());
+
+		$form2->onSuccess($form2);
+
+		Assert::same([
+			['name' => '', 'content' => 'abcd',],
+			['name' => 'abcdef', 'content' => 'abcd'],
+			['name' => 'new_item_name', 'content' => 'new_item_content'],
+		], $listItem2->getContent());
+
+		Assert::same([
+			['name' => Contents\Items\Base::EMPTY_VALUE],
+			2 => ['name' => Contents\Items\Base::EMPTY_VALUE, 'content' => Contents\Items\Base::EMPTY_VALUE],
+		], $listItem2->getUpdated());
+
+		$form22 = $this->contents->createForm($listItem2, [], 'testContent.update');
+		$presenterPost->addComponent($form22, 'contentsForm22');
+
+		ob_start();
+		$form22->render();
+		$form22Html = ob_get_clean();
+
+		$form22Dom = Tester\DomQuery::fromHtml($form22Html);
+
+		Assert::true($form22Dom->has('form'));
+		Assert::true($form22Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
+		Assert::false($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_value\']'));
+		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcdef\']'));
+		Assert::true($form22Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'new_item_name\']'));
+
+		$form3 = $this->contents->createForm($listItem3, [
 			'listHead' => 'not.exist.key',
 		], 'testContent.update');
 		$presenterPost->addComponent($form3, 'contentsForm3');
@@ -448,12 +503,12 @@ class ContentsTest extends Tester\TestCase
 		$form3Dom = Tester\DomQuery::fromHtml($form3Html);
 
 		Assert::true($form3Dom->has('form'));
-		Assert::true($form3Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::true($form3Dom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
 		Assert::true($form3Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
 		Assert::true($form3Dom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'1\']'));
 
-		Assert::throws(function () use ($listItem) {
-			$this->contents->createForm($listItem, [], 'testContent.update', [
+		Assert::throws(function () use ($listItem3) {
+			$this->contents->createForm($listItem3, [], 'testContent.update', [
 				'notExistKey'
 			]);
 		}, Trejjam\Utils\LogicException::class, NULL, Trejjam\Utils\Exception::CONTENTS_CHILD_NOT_EXIST);
@@ -542,7 +597,7 @@ class ContentsTest extends Tester\TestCase
 		$formDom = Tester\DomQuery::fromHtml($formHtml);
 
 		Assert::true($formDom->has('form'));
-		Assert::false($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM . ']\']'));
+		Assert::false($formDom->has('form input[name=\'root[' . Contents\Items\ListContainer::NEW_ITEM_BUTTON . ']\']'));
 		Assert::true($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'0\']'));
 		Assert::false($formDom->has('form select[name=\'root[' . Contents\Items\ListContainer::LIST_BOX . ']\'] option[value=\'abcd\']'));
 

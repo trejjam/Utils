@@ -13,6 +13,7 @@ application:
 
 extensions:
 	console: Kdyby\Console\DI\ConsoleExtension
+	replicator: Kdyby\Replicator\DI\ReplicatorExtension
 	utils: Trejjam\Utils\DI\UtilsExtension
 
 utils:

@@ -15,7 +15,9 @@ use Nette,
 abstract class Base implements IEditItem
 {
 	const
-		NEW_ITEM = '__new__',
+		NEW_CONTAINER = '__new_container',
+		NEW_ITEM_BUTTON = '__button__',
+		NEW_ITEM_CONTENT = '__content__',
 		EMPTY_VALUE = '__empty__';
 
 	protected $isRawValid = TRUE;
