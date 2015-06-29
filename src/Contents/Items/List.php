@@ -126,7 +126,7 @@ class ListContainer extends Container
 					$items = $listSelect->getItems();
 					$items[$newItemId = count($items)] = Base::NEW_ITEM_BUTTON_LABEL;
 					$listSelect->setItems($items);
-					$listSelect->setDefaultValue($newItemId);
+					$listSelect->setValue($newItemId);
 
 					$button->getParent()->getComponent(Base::NEW_ITEM_CONTENT)->createOne();
 
