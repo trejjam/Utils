@@ -38,7 +38,7 @@ class ListContainer extends Container
 		/** @var Base[] $out */
 		$out = $this->data;
 
-		if ($first) {
+		if ($first && is_array($data)) {
 			$i = 0;
 
 			$dataNew = [];
