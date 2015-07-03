@@ -42,7 +42,11 @@ class ListContainer extends Container
 			$i = 0;
 
 			$dataNew = [];
-			foreach ($data as $v) {
+			foreach ($data as $k => $v) {
+				if (!is_numeric($k)) {
+					$this->removedData[$k] = $v;
+					continue;
+				}
 				$dataNew[$i++] = $v;
 			}
 			$data = $dataNew;
@@ -204,7 +208,7 @@ class ListContainer extends Container
 				$childName,
 				$parentName . '__' . $name,
 				$subTogglingObject,
-				isset($userOptions['child']) && isset($userOptions['child'][$childName]) && is_array($userOptions['child'][$childName]) ? $userOptions['child'][$childName] : []
+				isset($userOptions['child']) && is_array($userOptions['child']) ? ['child' => $userOptions['child']] : []
 			);
 
 			try {

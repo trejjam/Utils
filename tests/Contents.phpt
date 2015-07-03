@@ -112,7 +112,16 @@ class ContentsTest extends Tester\TestCase
 	{
 		/** @var Contents\Items\Container $dataObject */
 		$dataObject = $this->contents->getDataObject('testContent', Nette\Utils\Json::encode([
-			'a' => ['a' => 'bcd', 'c' => ['abc' => 'foo', 'foo2', ['b' => ['a' => 'de', 'b' => 'foo']]]],
+			'a' => [
+				'a' => 'bcd',
+				'c' => [
+					'abc' => 'foo',
+					0     => 'foo2',
+					1     => [
+						'b' => ['a' => 'de', 'b' => 'foo']
+					],
+				],
+			],
 			'c' => 'foo',
 		]));
 
@@ -121,8 +130,8 @@ class ContentsTest extends Tester\TestCase
 				'a' => 'bcd',
 				'b' => '',
 				'c' => [
-					['a' => '', 'b' => ['a' => '']],
-					['a' => '', 'b' => ['a' => 'de']],
+					0 => ['a' => '', 'b' => ['a' => '']],
+					1 => ['a' => '', 'b' => ['a' => 'de']],
 				],
 			],
 			'b' => [],
