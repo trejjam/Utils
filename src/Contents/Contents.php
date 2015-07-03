@@ -125,7 +125,7 @@ class Contents
 
 	protected function createFieldContainer(Trejjam\Utils\Contents\Items\Base $itemContainer, UI\Form &$form, $userOptions = [], $field, $contentName = NULL)
 	{
-		$itemContainer->generateForm($itemContainer, $form, $field, '', $ids = NULL, $userOptions);
+		$itemContainer->generateForm($itemContainer, $form, $field, '', NULL, $userOptions);
 
 		$form->onSuccess[] = function (UI\Form $form) use ($itemContainer, $field, $contentName) {
 			return $this->proceedEditForm($form, $itemContainer, $field, $contentName);
