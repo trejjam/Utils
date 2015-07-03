@@ -43,7 +43,7 @@ abstract class Base implements IEditItem
 		$this->rawData = $data;
 		$this->subTypes = $subTypes;
 
-		$this->init(true);
+		$this->init(TRUE);
 	}
 
 	protected function init($first = FALSE)
@@ -115,10 +115,17 @@ abstract class Base implements IEditItem
 
 	public function update($data)
 	{
+		$data = $this->useSubType(function (SubType $subType, $data) {
+			return $subType->update($this, $data);
+		}, $data);
+
 		$this->isUpdated = $this->rawData !== $data;
 
 		$this->rawData = $data;
+
 		$this->init();
+
+		return $data;
 	}
 
 	public function getUpdated()

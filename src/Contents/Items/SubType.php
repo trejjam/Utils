@@ -40,6 +40,16 @@ abstract class SubType
 	public abstract function applyOn(Base $base);
 
 	/**
+	 * @param Base $base
+	 * @param      $data
+	 * @return mixed
+	 */
+	public function update(Base $base, $data)
+	{
+		return $data;
+	}
+
+	/**
 	 * @param mixed $data
 	 * @return mixed
 	 */
