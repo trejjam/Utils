@@ -148,7 +148,8 @@ class Contents
 		if (!is_null($this->logDirectory) && !is_null($this->logger) && ((!is_array($object) && $object != '') || count($object) > 0)) {
 			@mkdir($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
 			chmod($this->logger->directory . '/' . $this->logDirectory . '/', 0770);
-			$this->logger->log(var_export($object, TRUE), $this->logDirectory . '/' . (is_null($fileName) ? __CLASS__ : $fileName));
+			$fileName = is_null($fileName) ? __CLASS__ : str_replace('/', '__', $fileName);
+			$this->logger->log(var_export($object, TRUE), $this->logDirectory . '/' . $fileName);
 		}
 	}
 }
