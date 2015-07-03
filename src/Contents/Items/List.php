@@ -126,6 +126,7 @@ class ListContainer extends Container
 	{
 		$container = $formContainer->addContainer($name);
 
+		$newParent = NULL;
 		if (!isset($item->configuration['count']) && (!isset($item->configuration['max']) || $item->configuration['max'] > count($item->getChild()))) {
 			$newParent = $parentName . '__' . $name . Base::NEW_CONTAINER;
 
@@ -179,10 +180,10 @@ class ListContainer extends Container
 		$listSelect->setOption('id', $parentName . self::LIST_BOX . $name);
 		if (!is_null($togglingObject)) {
 			$togglingObject->toggle($listSelect->getOption('id'));
+			if (!is_null($newParent)) {
+				$togglingObject->toggle($newParent . Base::NEW_ITEM_BUTTON);
 		}
-
-		/** @var Nette\Forms\Rules $subTogglingObject */
-		$subTogglingObject = $togglingObject;
+		}
 
 		$items = [];
 
@@ -190,10 +191,12 @@ class ListContainer extends Container
 
 		foreach ($this->getChild() as $childName => $child) {
 			if (is_null($togglingObject)) {
+				/** @var Nette\Forms\Rules $subTogglingObject */
 				$subTogglingObject = $listSelect->addCondition(Nette\Application\UI\Form::EQUAL, $childName);
 			}
 			else {
-				$subTogglingObject = $subTogglingObject->addConditionOn($listSelect, Nette\Application\UI\Form::EQUAL, $childName);
+				/** @var Nette\Forms\Rules $subTogglingObject */
+				$subTogglingObject = $togglingObject->addConditionOn($listSelect, Nette\Application\UI\Form::EQUAL, $childName);
 			}
 
 			if (!isset($item->configuration['count'])) {
