@@ -201,7 +201,7 @@ class ListContainer extends Container
 
 			if (!isset($item->configuration['count'])) {
 				$removeButton = $deleteContainer->addCheckbox($childName, $this->getConfigValue('deleteLabel', 'remove item', $userOptions));
-				$removeButton->setOption('id', $parentName . ListContainer::DELETE_ITEM . $childName);
+				$removeButton->setOption('id', $parentName . '__' . $name . ListContainer::DELETE_ITEM . $childName);
 				$subTogglingObject->toggle($removeButton->getOption('id'));
 			}
 
