@@ -48,11 +48,6 @@ utils:
 				default : default
 			name      : name
 			value     : value
-	contents:
-		enable                : FALSE,
-		configurationDirectory: '%appDir%/config/contents'
-		logDirectory          : NULL
-		subTypes              : []
 ```
 Config
 ------
