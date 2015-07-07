@@ -13,8 +13,6 @@ use Trejjam\Utils\Contents\Contents;
 
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
-	const TAG_CONTENTS_SUBTYPES = 'trejjam.utils.contents';
-
 	protected $defaults = [
 		'flashes'  => [
 			'enable' => FALSE,
@@ -35,12 +33,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 				'name'      => 'name',
 				'value'     => 'value',
 			],
-		],
-		'contents' => [
-			'enable'                 => FALSE,
-			'configurationDirectory' => '%appDir%/config/contents',
-			'logDirectory'           => NULL,
-			'subTypes'               => [],
 		],
 	];
 
@@ -74,31 +66,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 							   ->setClass('Browser\Browser');
 		}
 
-		if ($config['contents']['enable']) {
-			$contentsArguments = [
-				$config['contents']['configurationDirectory'],
-				$config['contents']['logDirectory'],
-			];
-			if (!is_null($config['contents']['logDirectory'])) {
-				$contentsArguments[2] = '@tracy.logger';
-			}
-
-			$contents = $builder->addDefinition($this->prefix('contents'))
-								->setClass('Trejjam\Utils\Contents\Contents')
-								->setArguments($contentsArguments);
-
-			foreach ($config['contents']['subTypes'] as $subTypeName => $subType) {
-				$def = $builder->addDefinition($this->prefix('contents.' . md5(Nette\Utils\Json::encode($subType))));
-				$def->addSetup('setName', [$subTypeName]);
-				list($def->factory) = Nette\DI\Compiler::filterArguments([
-					is_string($subType) ? new Nette\DI\Statement($subType) : $subType
-				]);
-				$def->setAutowired(FALSE);
-				$def->setInject(FALSE);
-				$def->addTag(self::TAG_CONTENTS_SUBTYPES);
-			}
-		}
-
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
 				"cli.install" => "Install",
@@ -111,19 +78,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 				$builder->addDefinition($this->prefix($k))
 						->setClass('Trejjam\Utils\Cli\\' . $v)
 						->addTag("kdyby.console.command");
-			}
-		}
-	}
-
-	public function beforeCompile()
-	{
-		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->defaults);
-
-		if ($config['contents']['enable']) {
-			$contents = $builder->getDefinition($this->prefix('contents'));
-			foreach (array_keys($builder->findByTag(self::TAG_CONTENTS_SUBTYPES)) as $serviceName) {
-				$contents->addSetup('addSubType', ['@' . $serviceName]);
 			}
 		}
 	}

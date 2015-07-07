@@ -15,13 +15,7 @@ use Nette,
 interface Exception
 {
 	const
-		CONTENTS_UNKNOWN_ITEM_TYPE = 1,
-		CONTENTS_INCOMPLETE_CONFIGURATION = 2,
-		CONTENTS_COLLISION_CONFIGURATION = 4,
-		CONTENTS_MISSING_CONFIGURATION = 8,
-		CONTENTS_JSON_DECODE = 16,
-		CONTENTS_CHILD_NOT_EXIST = 32,
-		UTILS_KEY_NOT_FOUND = 64;
+		UTILS_KEY_NOT_FOUND = 1;
 }
 
 class InvalidArgumentException extends \InvalidArgumentException implements Exception
