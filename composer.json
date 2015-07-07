@@ -30,9 +30,6 @@
 		"nette/robot-loader": "~2.3",
 		"nette/database": "~2.3",
 
-		"nette/forms": "~2.3",
-		"kdyby/forms-replicator": "~1.2@dev",
-
 		"tracy/tracy": "~2.3",
 
 		"kdyby/console": "~2.4",
@@ -59,7 +56,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "v1.0-dev"
+			"dev-master": "v1.2-dev"
 		}
 	}
 }
