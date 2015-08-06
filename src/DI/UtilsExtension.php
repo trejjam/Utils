@@ -58,7 +58,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 								  "configurations" => $config["labels"],
 							  ]);
 
-			$layout->setArguments([$this->prefix('labels')]);
+			$layout->setArguments([$this->prefix('@labels')]);
 		}
 
 		if ($config['browser']['enable']) {
