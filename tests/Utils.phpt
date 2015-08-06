@@ -76,6 +76,11 @@ class UtilsTest extends Tester\TestCase
 
 		Assert::same(Utils::getTextServerInfo(), print_r(Utils::getServerInfo(), TRUE));
 	}
+
+	function testUnifyDir() {
+		Assert::equal('/a/b/', Utils::unifyDir('/a/b'));
+		Assert::equal('/a/b/', Utils::unifyDir('/a/b/'));
+	}
 }
 
 $test = new UtilsTest($container);

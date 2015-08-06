@@ -165,4 +165,12 @@ class Utils
 
 		return array_pop($presenterArr);
 	}
+
+	public static function unifyDir($dir)
+	{
+		$dirEnds = $dir[Nette\Utils\Strings::length($dir) - 1];
+		$dir .= in_array($dirEnds, ['\\', '/']) ? '' : '/';
+
+		return $dir;
+	}
 }
