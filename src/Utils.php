@@ -14,47 +14,67 @@ use Nette,
 class Utils
 {
 	/**
-	 * @param string      $freeText
-	 * @param double      $price
-	 * @param null|string $units
-	 * @param int         $decimalLength
-	 * @return string
+	 * @param string          $freeText
+	 * @param double|double[] $price
+	 * @param null|string     $units
+	 * @param int             $decimalLength
+	 * @return string|string[]
 	 */
 	public static function priceFreeText($freeText, $price, $units = NULL, $decimalLength = 2)
 	{
-		return $price <= 0 ? $freeText : self::priceCreate($price, $units, $decimalLength);
+		if (is_array($price)) {
+			$out = [];
+			foreach ($price as $v) {
+				$out[] = self::priceFreeText($freeText, $v, $units, $decimalLength);
+			}
+
+			return $out;
+		}
+		else {
+			return $price <= 0 ? $freeText : self::priceCreate($price, $units, $decimalLength);
+		}
 	}
 	/**
-	 * @param double      $price
-	 * @param null|string $units
-	 * @param int         $decimalLength
-	 * @return string
+	 * @param double|double[] $price
+	 * @param null|string     $units
+	 * @param int             $decimalLength
+	 * @return string|string[]
 	 */
 	public static function priceCreate($price, $units = NULL, $decimalLength = 2)
 	{
-		$workPrice = floor(abs($price * pow(10, $decimalLength)));
-		$integerPrice = floor($workPrice / pow(10, $decimalLength));
-		$integerLength = strlen($integerPrice);
-		$decimalPrice = self::numberAt($workPrice, 0, $decimalLength);
+		if (is_array($price)) {
+			$out = [];
+			foreach ($price as $v) {
+				$out[] = self::priceCreate($v, $units, $decimalLength);
+			}
 
-		$integerTernary = ceil($integerLength / 3);
-		$decimalTernary = ceil($decimalLength / 3);
-
-		$outPrice = '';
-		for ($i = $integerTernary - 1; $i >= 0; $i--) {
-			if ($outPrice != "") $outPrice .= '.';
-			$outPrice .= self::numberAt($integerPrice, $i * 3, 3);
+			return $out;
 		}
+		else {
+			$workPrice = floor(abs($price * pow(10, $decimalLength)));
+			$integerPrice = floor($workPrice / pow(10, $decimalLength));
+			$integerLength = strlen($integerPrice);
+			$decimalPrice = self::numberAt($workPrice, 0, $decimalLength);
 
-		$outDecimalPrice = '';
-		for ($i = $decimalTernary - 1; $i >= 0; $i--) {
-			if ($outDecimalPrice != "") $outPrice .= '.';
-			$decimalPosition = ($decimalLength - ($i + 1) * 3);
-			$decimalPosition = $decimalPosition < 0 ? 0 : $decimalPosition;
-			$outDecimalPrice .= self::numberAt($decimalPrice, $decimalPosition, 3);
+			$integerTernary = ceil($integerLength / 3);
+			$decimalTernary = ceil($decimalLength / 3);
+
+			$outPrice = '';
+			for ($i = $integerTernary - 1; $i >= 0; $i--) {
+				if ($outPrice != "") $outPrice .= '.';
+				$outPrice .= self::numberAt($integerPrice, $i * 3, 3);
+			}
+
+			$outDecimalPrice = '';
+			for ($i = $decimalTernary - 1; $i >= 0; $i--) {
+				if ($outDecimalPrice != "") $outPrice .= '.';
+				$decimalPosition = ($decimalLength - ($i + 1) * 3);
+				$decimalPosition = $decimalPosition < 0 ? 0 : $decimalPosition;
+				$outDecimalPrice .= self::numberAt($decimalPrice, $decimalPosition, 3);
+			}
+
+			return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($outDecimalPrice, ['', '0']) ? '-' : $outDecimalPrice) . (is_null($units) ? '' : ' ' . $units);
 		}
-
-		return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($outDecimalPrice, ['', '0']) ? '-' : $outDecimalPrice) . (is_null($units) ? '' : ' ' . $units);
 	}
 	/**
 	 * @param int $number

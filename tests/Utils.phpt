@@ -34,7 +34,6 @@ class UtilsTest extends Tester\TestCase
 	}
 	function testPriceCreate()
 	{
-
 		Assert::same('1.234,-', Utils::priceCreate(1234));
 		Assert::same('1.234,43', Utils::priceCreate(1234.43));
 		Assert::same('1.234,68', Utils::priceCreate(1234.689));
@@ -65,6 +64,65 @@ class UtilsTest extends Tester\TestCase
 		Assert::same('-1.234,40 Kč', Utils::priceCreate(-1234.40, 'Kč'));
 	}
 
+	function testPriceCreateArray()
+	{
+		Assert::same([
+			'1.234,-',
+			'1.234,43',
+			'1.234,68',
+			'1.234,68',
+			'21.234,-',
+			'21.234,43',
+			'21.234,68',
+			'21.234,68',
+			'321.234,-',
+			'321.234,43',
+			'321.234,68',
+			'321.234,68',
+			'4.561.234,-',
+			'4.561.234,43',
+			'4.561.234,68',
+			'4.561.234,68',
+			'45.621.234,-',
+			'45.621.234,43',
+			'45.621.234,68',
+			'45.621.234,68',
+			'456.321.234,-',
+			'456.321.234,43',
+			'456.321.234,68',
+			'456.321.234,68',
+		], Utils::priceCreate([
+			1234,
+			1234.43,
+			1234.689,
+			1234.684,
+			21234,
+			21234.43,
+			21234.689,
+			21234.684,
+			321234,
+			321234.43,
+			321234.689,
+			321234.684,
+			4561234,
+			4561234.43,
+			4561234.689,
+			4561234.684,
+			45621234,
+			45621234.43,
+			45621234.689,
+			45621234.684,
+			456321234,
+			456321234.43,
+			456321234.689,
+			456321234.684,
+		]));
+
+		Assert::same(['1.234,40 Kč'], Utils::priceCreate([1234.40], 'Kč'));
+		Assert::same(['1.234,40 $'], Utils::priceCreate([1234.40], '$'));
+		Assert::same(['-1.234,40 Kč'], Utils::priceCreate([-1234.40], 'Kč'));
+	}
+
 	function testServerInfo()
 	{
 		Assert::equal(Utils::getServerInfo(), [
@@ -77,7 +135,8 @@ class UtilsTest extends Tester\TestCase
 		Assert::same(Utils::getTextServerInfo(), print_r(Utils::getServerInfo(), TRUE));
 	}
 
-	function testUnifyDir() {
+	function testUnifyDir()
+	{
 		Assert::equal('/a/b/', Utils::unifyDir('/a/b'));
 		Assert::equal('/a/b/', Utils::unifyDir('/a/b/'));
 	}
