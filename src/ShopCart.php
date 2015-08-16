@@ -25,7 +25,7 @@ abstract class ShopCart extends Nette\Object
 	 */
 	protected $shopCart;
 	/**
-	 * @var Trejjam\Utils\Labels
+	 * @var Trejjam\Utils\Labels\Labels
 	 */
 	protected $labels;
 	/**
@@ -33,7 +33,7 @@ abstract class ShopCart extends Nette\Object
 	 */
 	protected $user;
 
-	public function __construct(Nette\Http\SessionSection $shopCart, Trejjam\Utils\Labels $labels, Nette\Security\User $user)
+	public function __construct(Nette\Http\SessionSection $shopCart, Trejjam\Utils\Labels\Labels $labels, Nette\Security\User $user)
 	{
 		$this->shopCart = $shopCart;
 		$this->shopCart->setExpiration('14 days');
