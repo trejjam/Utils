@@ -18,7 +18,8 @@ use Nette,
 abstract class ShopCart extends Nette\Object
 {
 	const
-		COMMENT = '_comment-';
+		COMMENT = '_comment-',
+		INFORMATION = '_information-';
 
 	/**
 	 * @var Nette\Http\SessionSection
@@ -44,7 +45,7 @@ abstract class ShopCart extends Nette\Object
 		if (isset($this->shopCart->_userId) && $this->shopCart->_userId != $this->user->getId()) {
 			$this->cartClear();
 		}
-		if (!isset($this->shopCart->userId)) {
+		if (!isset($this->shopCart->_userId)) {
 			$this->shopCart->_userId = $this->user->getId();
 		}
 	}
@@ -140,5 +141,14 @@ abstract class ShopCart extends Nette\Object
 	public function getComment($id)
 	{
 		return isset($this->shopCart->{self::COMMENT . $id}) ? $this->shopCart->{self::COMMENT . $id} : '';
+	}
+
+	public function getInformation($id)
+	{
+		return isset($this->shopCart->{self::INFORMATION . $id}) ? $this->shopCart->{self::INFORMATION . $id} : NULL;
+	}
+	public function setInformation($id, $information)
+	{
+		$this->shopCart->{self::INFORMATION . $id} = $information;
 	}
 }
