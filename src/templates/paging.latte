@@ -1,0 +1,9 @@
+<div class="paging">
+	<a n:if="isset($previous)" href="{$previous->link}" class="previous">{=__('Previous')}</a>
+	<div class="buttons">
+		<ul n:inner-foreach="$paging as $k=>$v">
+			<li><a n:tag-if="$v->hasLink" href="{$v->link}" n:class="$k==$page?'selected'">{$v->text|noescape}</a></li>
+		</ul>
+	</div>
+	<a n:if="isset($next)" href="{$next->link}" class="next">{=__('Next')}</a>
+</div>

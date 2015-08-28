@@ -8,19 +8,19 @@
 
 namespace Trejjam\Utils\DI;
 
-use Nette;
-use Trejjam\Utils\Contents\Contents;
+use Nette,
+	Trejjam;
 
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
 	protected $defaults = [
-		'flashes'  => [
+		'flashes'    => [
 			'enable' => FALSE,
 		],
-		'browser'  => [
+		'browser'    => [
 			'enable' => FALSE,
 		],
-		'labels'   => [
+		'labels'     => [
 			'enable'        => FALSE,
 			'componentName' => 'labels',
 			'table'         => 'utils__labels',
@@ -34,6 +34,17 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 				'value'     => 'value',
 			],
 		],
+		'components' => [
+			'paging'  => [
+				'template' => __DIR__ . '/../templates/paging.latte',
+			],
+			'listing' => [
+				'template' => __DIR__ . '/../templates/list.latte',
+			],
+			'filter'  => [
+				'template' => __DIR__ . '/../templates/sortLink.latte',
+			],
+		],
 	];
 
 	public function loadConfiguration()
@@ -45,26 +56,53 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		Nette\Utils\Validators::assert($config, 'array');
 
-		$layout = $builder->addDefinition($this->prefix('baseLayout'))
-						  ->setClass('Trejjam\Utils\Layout\BaseLayout')
-						  ->addSetup("setConfigurations", [
-							  "configurations" => $config,
-						  ]);
+		$classesDefinition = [
+			'baseLayout'         => 'Trejjam\Utils\Layout\BaseLayout',
+			'labels'             => 'Trejjam\Utils\Labels\Labels',
+			'browser'            => 'Browser\Browser',
+			'components.listing' => 'Trejjam\Utils\Components\ListingFactory',
+			'components.filter'  => 'Trejjam\Utils\Components\FilterFactory',
+			'components.paging'  => 'Trejjam\Utils\Components\PagingFactory',
+		];
+		$factoriesDefinition = [
+			'components.listingFactory' => 'Trejjam\Utils\Components\IListingFactory',
+			'components.filterFactory'  => 'Trejjam\Utils\Components\IFilterFactory',
+			'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
+		];
+
+		/** @var Nette\DI\ServiceDefinition[] $classes */
+		$classes = [];
+
+		foreach ($classesDefinition as $k => $v) {
+			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
+				$classes[$k] = $builder->addDefinition($this->prefix($k))
+									   ->setClass($v);
+			}
+		}
+
+		/** @var Nette\DI\ServiceDefinition[] $factories */
+		$factories = [];
+
+		foreach ($factoriesDefinition as $k => $v) {
+			$factories[$k] = $builder->addDefinition($this->prefix($k))
+									 ->setImplement($v);
+		}
+
+		$classes['baseLayout']->addSetup('setConfigurations', [
+			'configurations' => $config,
+		]);
 
 		if ($config['labels']['enable']) {
-			$labels = $builder->addDefinition($this->prefix('labels'))
-							  ->setClass('Trejjam\Utils\Labels\Labels')
-							  ->addSetup("setConfigurations", [
-								  "configurations" => $config["labels"],
-							  ]);
+			$classes['labels']->addSetup('setConfigurations', [
+				'configurations' => $config['labels'],
+			]);
 
-			$layout->setArguments([$this->prefix('@labels')]);
+			$classes['baseLayout']->setArguments([$this->prefix('@labels')]);
 		}
 
-		if ($config['browser']['enable']) {
-			$browser = $builder->addDefinition($this->prefix('browser'))
-							   ->setClass('Browser\Browser');
-		}
+		$classes['components.listing']->setArguments([$config['components']['listing']['template']]);
+		$classes['components.filter']->setArguments([$config['components']['filter']['template']]);
+		$classes['components.paging']->setArguments([$config['components']['paging']['template']]);
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [

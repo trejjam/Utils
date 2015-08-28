@@ -1,0 +1,4 @@
+<a href="{$filter->link('this', ['sort' => $filter->getNextArr($key)])}" n:class="button, filter">
+    {$name}
+    <span n:if="$filter->isSort($key)" n:class="$filter->sort($key)">{$filter->sort($key, TRUE)?'▲':'▼'}</span>
+</a>
