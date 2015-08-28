@@ -47,62 +47,48 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		],
 	];
 
+	protected $classesDefinition = [
+		'layout.baseLayout' => 'Trejjam\Utils\Layout\BaseLayout',
+		'labels.labels'     => 'Trejjam\Utils\Labels\Labels',
+		'browser'           => 'Browser\Browser',
+		//'components.listing' => 'Trejjam\Utils\Components\ListingFactory',
+		//'components.filter'  => 'Trejjam\Utils\Components\FilterFactory',
+		//'components.paging'  => 'Trejjam\Utils\Components\PagingFactory',
+	];
+
+	protected $factoriesDefinition = [
+		'components.listingFactory' => 'Trejjam\Utils\Components\IListingFactory',
+		'components.filterFactory'  => 'Trejjam\Utils\Components\IFilterFactory',
+		'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
+	];
+
+	protected function getConfiguration()
+	{
+		$config = $this->getConfig($this->defaults);
+
+		Nette\Utils\Validators::assert($config, 'array');
+
+		return $config;
+	}
+
 	public function loadConfiguration()
 	{
 		parent::loadConfiguration();
 
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->defaults);
+		$config = $this->getConfiguration();
 
-		Nette\Utils\Validators::assert($config, 'array');
-
-		$classesDefinition = [
-			'baseLayout'         => 'Trejjam\Utils\Layout\BaseLayout',
-			'labels'             => 'Trejjam\Utils\Labels\Labels',
-			'browser'            => 'Browser\Browser',
-			'components.listing' => 'Trejjam\Utils\Components\ListingFactory',
-			'components.filter'  => 'Trejjam\Utils\Components\FilterFactory',
-			'components.paging'  => 'Trejjam\Utils\Components\PagingFactory',
-		];
-		$factoriesDefinition = [
-			'components.listingFactory' => 'Trejjam\Utils\Components\IListingFactory',
-			'components.filterFactory'  => 'Trejjam\Utils\Components\IFilterFactory',
-			'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
-		];
-
-		/** @var Nette\DI\ServiceDefinition[] $classes */
-		$classes = [];
-
-		foreach ($classesDefinition as $k => $v) {
+		foreach ($this->classesDefinition as $k => $v) {
 			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
 				$classes[$k] = $builder->addDefinition($this->prefix($k))
 									   ->setClass($v);
 			}
 		}
 
-		/** @var Nette\DI\ServiceDefinition[] $factories */
-		$factories = [];
-
-		foreach ($factoriesDefinition as $k => $v) {
+		foreach ($this->factoriesDefinition as $k => $v) {
 			$factories[$k] = $builder->addDefinition($this->prefix($k))
 									 ->setImplement($v);
 		}
-
-		$classes['baseLayout']->addSetup('setConfigurations', [
-			'configurations' => $config,
-		]);
-
-		if ($config['labels']['enable']) {
-			$classes['labels']->addSetup('setConfigurations', [
-				'configurations' => $config['labels'],
-			]);
-
-			$classes['baseLayout']->setArguments([$this->prefix('@labels')]);
-		}
-
-		$classes['components.listing']->setArguments([$config['components']['listing']['template']]);
-		$classes['components.filter']->setArguments([$config['components']['filter']['template']]);
-		$classes['components.paging']->setArguments([$config['components']['paging']['template']]);
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
@@ -118,5 +104,44 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 						->addTag("kdyby.console.command");
 			}
 		}
+	}
+
+	public function beforeCompile()
+	{
+		parent::beforeCompile();
+
+		$builder = $this->getContainerBuilder();
+		$config = $this->getConfiguration();
+
+		/** @var Nette\DI\ServiceDefinition[] $classes */
+		$classes = [];
+
+		foreach ($this->classesDefinition as $k => $v) {
+			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
+				$classes[$k] = $builder->getDefinition($this->prefix($k));
+			}
+		}
+
+		/** @var Nette\DI\ServiceDefinition[] $factories */
+		$factories = [];
+		foreach ($this->factoriesDefinition as $k => $v) {
+			$factories[$k] = $builder->getDefinition($this->prefix($k));
+		}
+
+		$classes['layout.baseLayout']->addSetup('setConfigurations', [
+			'configurations' => $config,
+		]);
+
+		if ($config['labels']['enable']) {
+			$classes['labels.labels']->addSetup('setConfigurations', [
+				'configurations' => $config['labels'],
+			]);
+
+			$classes['layout.baseLayout']->setArguments([$this->prefix('@labels.labels')]);
+		}
+
+		$factories['components.listingFactory']->setArguments([$config['components']['listing']['template']]);
+		$factories['components.filterFactory']->setArguments([$config['components']['filter']['template']]);
+		$factories['components.pagingFactory']->setArguments([$config['components']['paging']['template']]);
 	}
 }
