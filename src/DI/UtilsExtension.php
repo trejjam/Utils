@@ -13,47 +13,10 @@ use Nette,
 
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
-	protected $defaults = [
-		'flashes'    => [
-			'enable' => FALSE,
-		],
-		'browser'    => [
-			'enable' => FALSE,
-		],
-		'labels'     => [
-			'enable'        => FALSE,
-			'componentName' => 'labels',
-			'table'         => 'utils__labels',
-			'keys'          => [
-				'id'        => 'id',
-				'namespace' => [
-					'name'    => 'namespace',
-					'default' => 'default'
-				],
-				'name'      => 'name',
-				'value'     => 'value',
-			],
-		],
-		'components' => [
-			'paging'  => [
-				'template' => __DIR__ . '/../templates/paging.latte',
-			],
-			'listing' => [
-				'template' => __DIR__ . '/../templates/list.latte',
-			],
-			'filter'  => [
-				'template' => __DIR__ . '/../templates/sortLink.latte',
-			],
-		],
-	];
-
 	protected $classesDefinition = [
 		'layout.baseLayout' => 'Trejjam\Utils\Layout\BaseLayout',
 		'labels.labels'     => 'Trejjam\Utils\Labels\Labels',
 		'browser'           => 'Browser\Browser',
-		//'components.listing' => 'Trejjam\Utils\Components\ListingFactory',
-		//'components.filter'  => 'Trejjam\Utils\Components\FilterFactory',
-		//'components.paging'  => 'Trejjam\Utils\Components\PagingFactory',
 	];
 
 	protected $factoriesDefinition = [
@@ -62,9 +25,41 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
 	];
 
-	protected function getConfiguration()
+	protected function createConfig()
 	{
-		$config = $this->getConfig($this->defaults);
+		$config = $this->getConfig([
+			'flashes'    => [
+				'enable' => FALSE,
+			],
+			'browser'    => [
+				'enable' => FALSE,
+			],
+			'labels'     => [
+				'enable'        => FALSE,
+				'componentName' => 'labels',
+				'table'         => 'utils__labels',
+				'keys'          => [
+					'id'        => 'id',
+					'namespace' => [
+						'name'    => 'namespace',
+						'default' => 'default'
+					],
+					'name'      => 'name',
+					'value'     => 'value',
+				],
+			],
+			'components' => [
+				'paging'  => [
+					'template' => __DIR__ . '/../templates/paging.latte',
+				],
+				'listing' => [
+					'template' => __DIR__ . '/../templates/list.latte',
+				],
+				'filter'  => [
+					'template' => __DIR__ . '/../templates/sortLink.latte',
+				],
+			],
+		]);
 
 		Nette\Utils\Validators::assert($config, 'array');
 
@@ -76,7 +71,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		parent::loadConfiguration();
 
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfiguration();
+		$config = $this->createConfig();
 
 		foreach ($this->classesDefinition as $k => $v) {
 			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
@@ -111,7 +106,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfiguration();
+		$config = $this->createConfig();
 
 		/** @var Nette\DI\ServiceDefinition[] $classes */
 		$classes = [];
