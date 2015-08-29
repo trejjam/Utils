@@ -8,12 +8,4 @@
 
 namespace Trejjam\Utils;
 
-use Nette,
-	Trejjam;
-
-interface BaseList
-{
-	function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL);
-	function getItem($id);
-	function getCount(array $filter = NULL);
-}
+class_alias('Trejjam\Utils\Helpers\IBaseList', 'Trejjam\Utils\BaseList');
