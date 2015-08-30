@@ -35,7 +35,7 @@ class ListingFactory extends UI\Control
 	public $actionButtons = [];
 
 	/**
-	 * @var Trejjam\Utils\BaseList
+	 * @var Trejjam\Utils\Helpers\IBaseList
 	 */
 	protected $list = NULL;
 
@@ -56,7 +56,7 @@ class ListingFactory extends UI\Control
 		$this->filterFactory = $filterFactory;
 	}
 
-	public function setModel(Trejjam\Utils\BaseList $list)
+	public function setModel(Trejjam\Utils\Helpers\IBaseList $list)
 	{
 		$this->list = $list;
 	}
