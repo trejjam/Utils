@@ -6,12 +6,12 @@
  * Time: 17:14
  */
 
-namespace Trejjam\Utils\Helpers;
+namespace Trejjam\Utils\Helpers\Database;
 
 use Nette,
 	Trejjam;
 
-abstract class ADatabaseBaseList implements IBaseList
+abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 {
 	const
 		ROW = '__row__';

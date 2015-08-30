@@ -6,7 +6,7 @@
  * Time: 17:18
  */
 
-namespace Trejjam\Utils\Helpers;
+namespace Trejjam\Utils\Helpers\Database;
 
 
 use Nette,
