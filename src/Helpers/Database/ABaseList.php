@@ -25,9 +25,9 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	{
 		$query = $this->getTable();
 
-		IBaseQuery::appendSort($query, $sort);
-		IBaseQuery::appendFilter($query, $filter);
-		IBaseQuery::appendLimit($query, $limit, $offset);
+		BaseQuery::appendSort($query, $sort);
+		BaseQuery::appendFilter($query, $filter);
+		BaseQuery::appendLimit($query, $limit, $offset);
 
 		return $query;
 	}
@@ -62,7 +62,7 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	{
 		$query = $this->getTable()->select('COUNT(*) count');
 
-		IBaseQuery::appendFilter($query, $filter);
+		BaseQuery::appendFilter($query, $filter);
 
 		return $query->fetch()->count;
 	}

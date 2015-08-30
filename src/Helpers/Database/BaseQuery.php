@@ -12,7 +12,7 @@ namespace Trejjam\Utils\Helpers\Database;
 use Nette,
 	Trejjam;
 
-class IBaseQuery
+class BaseQuery
 {
 	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL)
 	{

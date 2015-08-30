@@ -8,4 +8,4 @@
 
 namespace Trejjam\Utils;
 
-class_alias('Trejjam\Utils\Helpers\Database\IBaseQuery', 'Trejjam\Utils\BaseQuery');
+class_alias('Trejjam\Utils\Helpers\Database\BaseQuery', 'Trejjam\Utils\BaseQuery');
