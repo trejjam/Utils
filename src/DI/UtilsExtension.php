@@ -15,7 +15,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 {
 	protected $classesDefinition = [
 		'layout.baseLayout' => 'Trejjam\Utils\Layout\BaseLayout',
-		'labels.labels'     => 'Trejjam\Utils\Labels\Labels',
+		'labels'            => 'Trejjam\Utils\Labels\Labels',
 		'browser'           => 'Browser\Browser',
 	];
 
@@ -128,11 +128,11 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		]);
 
 		if ($config['labels']['enable']) {
-			$classes['labels.labels']->addSetup('setConfigurations', [
+			$classes['labels']->addSetup('setConfigurations', [
 				'configurations' => $config['labels'],
 			]);
 
-			$classes['layout.baseLayout']->setArguments([$this->prefix('@labels.labels')]);
+			$classes['layout.baseLayout']->setArguments([$this->prefix('@labels')]);
 		}
 
 		$factories['components.listingFactory']->setArguments([$config['components']['listing']['template']]);

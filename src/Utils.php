@@ -52,28 +52,32 @@ class Utils
 		}
 		else {
 			$workPrice = floor(abs($price * pow(10, $decimalLength)));
+			$workDecimalPrice = floor(abs($price * pow(10, $decimalLength + 1)));
 			$integerPrice = floor($workPrice / pow(10, $decimalLength));
 			$integerLength = strlen($integerPrice);
-			$decimalPrice = self::numberAt($workPrice, 0, $decimalLength);
+			$decimalPrice = Nette\Utils\Strings::padLeft(
+				round(self::numberAt($workDecimalPrice, 0, $decimalLength + 1) / 10),
+				$decimalLength,
+				'0'
+			);
 
 			$integerTernary = ceil($integerLength / 3);
-			$decimalTernary = ceil($decimalLength / 3);
 
 			$outPrice = '';
 			for ($i = $integerTernary - 1; $i >= 0; $i--) {
 				if ($outPrice != "") $outPrice .= '.';
-				$outPrice .= self::numberAt($integerPrice, $i * 3, 3);
+				$outPrice .=
+					Nette\Utils\Strings::padLeft(
+						self::numberAt($integerPrice, $i * 3, 3),
+						3,
+						'0'
+					);
 			}
+			$outPrice = Nette\Utils\Strings::replace($outPrice, [
+				'~^[0]*~' => '',
+			]);
 
-			$outDecimalPrice = '';
-			for ($i = $decimalTernary - 1; $i >= 0; $i--) {
-				if ($outDecimalPrice != "") $outPrice .= '.';
-				$decimalPosition = ($decimalLength - ($i + 1) * 3);
-				$decimalPosition = $decimalPosition < 0 ? 0 : $decimalPosition;
-				$outDecimalPrice .= self::numberAt($decimalPrice, $decimalPosition, 3);
-			}
-
-			return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($outDecimalPrice, ['', '0']) ? '-' : $outDecimalPrice) . (is_null($units) ? '' : ' ' . $units);
+			return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($decimalPrice, ['', '0']) ? '-' : $decimalPrice) . (is_null($units) ? '' : ' ' . $units);
 		}
 	}
 	/**

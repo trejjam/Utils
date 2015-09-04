@@ -40,7 +40,7 @@ class LabelsTest extends Tester\TestCase
 		$install = $this->container->getService('console.application');
 		$install->run(new Symfony\Component\Console\Input\ArgvInput(['', 'Utils:install']), new Symfony\Component\Console\Output\NullOutput());
 
-		$this->labels = $this->container->getService("utils.labels");
+		$this->labels = $this->container->getService('utils.labels');
 
 		foreach ($this->labels->getNamespaces() as $v) {
 			foreach ($this->labels->getKeys($v) as $v2) {
