@@ -97,7 +97,6 @@ class FilterFactory extends UI\Control
 				continue;
 			}
 		}
-
 		foreach ($this->filter as $k => $v) {
 			if (!in_array($k, $this->enableFilter)) {
 				unset($this->filter[$k]);
@@ -106,7 +105,7 @@ class FilterFactory extends UI\Control
 		}
 
 		if (!is_null($this->countCallback)) {
-			$this->count = $this->countCallback($this->filter);
+			$this->count = $this->countCallback($this->getDbFilter());
 		}
 		else {
 			throw new \LogicException('Missing count callback');
@@ -183,6 +182,10 @@ class FilterFactory extends UI\Control
 	{
 		$this->enableFilter = $enableFilter;
 	}
+	public function setFilterDbTranslate(array $filterDbTranslate)
+	{
+		$this->filterDbTranslate = $filterDbTranslate;
+	}
 
 	public function createComponentForm()
 	{
@@ -220,6 +223,17 @@ class FilterFactory extends UI\Control
 	public function getFilter()
 	{
 		return $this->filter;
+	}
+
+	public function getDbFilter()
+	{
+		$out = [];
+
+		foreach ($this->filter as $k => $v) {
+			$out[isset($this->filterDbTranslate[$k]) ? $this->filterDbTranslate[$k] : $k] = $v;
+		}
+
+		return $out;
 	}
 
 	public function setLimit($limit)

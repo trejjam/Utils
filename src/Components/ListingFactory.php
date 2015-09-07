@@ -19,13 +19,14 @@ use Nette,
  */
 class ListingFactory extends UI\Control
 {
-	public $defaultSort = [];
-	public $sort        = [];
-	public $enabledSort = [
+	public $defaultSort       = [];
+	public $sort              = [];
+	public $enabledSort       = [
 		'asc'  => TRUE,
 		'desc' => FALSE,
 	];
-	public $filter      = [];
+	public $filter            = [];
+	public $filterDbTranslate = [];
 
 	public $columns;
 	public $columnsHead;
@@ -74,9 +75,9 @@ class ListingFactory extends UI\Control
 		/** @var FilterFactory $filter */
 		$filter = $this->getComponent('filter');
 
-		$template->listData = $this->list->getList($filter->getSort(), $filter->getFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
+		$template->listData = $this->list->getList($filter->getSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
 		$template->sort = $this->sort;
-		$template->filter = $this->filter;
+		$template->filter = array_combine($this->filter, $this->filter);
 		$template->columns = $this->columns;
 		$template->columnsHead = $this->columnsHead;
 		$template->actionButtons = $this->actionButtons;
@@ -92,6 +93,7 @@ class ListingFactory extends UI\Control
 		$filter->defaultSort($this->defaultSort);
 
 		$filter->setFilter($this->filter);
+		$filter->setFilterDbTranslate($this->filterDbTranslate);
 
 		$filter->countCallback = function ($filter) {
 			return $this->list->getCount($filter);

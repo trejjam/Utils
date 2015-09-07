@@ -1,5 +1,4 @@
-<table class="table table-list" n:inner-foreach="$listData as $k=>$v">
-		{first}
+<table class="table table-list">
 	<tr class="table-head" n:inner-foreach="is_null($columnsHead)?$columns:$columnsHead as $k2=>$v2">
 		{var $columnName=is_numeric($k2)?$v2:$k2}
 		{var $columnValue=is_scalar($v2)?$v2:$k2}
@@ -17,12 +16,12 @@
 		{form filter-form}
 				{foreach $columns as $k2=>$v2}
 					{var $columnName=is_numeric($k2)?$v2:$k2}
-			<td>{if isset($filter[$columnName])}{input $columnName}{/if}</td>
+			<td>{if isset($filter[$columnName])}{input $filter[$columnName]}{/if}</td>
 				{/foreach}
 			<td>{input send}</td>
 		{/form}
 	</tr>
-		{/first}
+		{foreach $listData as $k=>$v}
 	<tr n:class="list-item, $iterator->isEven()?odd:even" n:inner-foreach="$columns as $k2=>$v2">
 		{var $columnName=is_numeric($k2)?$v2:$k2}
 		{var $columnValue=is_callable($v2)?$v2($v):$v[$columnName]}
@@ -30,9 +29,16 @@
 		<td>{$columnValue}</td>
 			{last}
 		<td n:inner-foreach="$actionButtons as $k3=>$v3">
-			<span><a href="{$v3($v)}">{$k3}</a></span>
+			<span>
+				{if $v3 instanceof Trejjam\Utils\Components\IRenderable}
+					{$v3->render($v)}
+				{else}
+				<a href="{$v3($v)}">{$k3}</a>
+				{/if}
+			</span>
 		</td>
 			{/last}
 	</tr>
+		{/foreach}
 </table>
 {control filter-paging}
