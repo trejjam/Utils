@@ -38,6 +38,10 @@ class FilterFactory extends UI\Control
 	/**
 	 * @var array
 	 */
+	protected $cleanSortKeys = [];
+	/**
+	 * @var array
+	 */
 	public $filter = [];
 	/**
 	 * @var array
@@ -88,14 +92,16 @@ class FilterFactory extends UI\Control
 	{
 		parent::loadState($params);
 
-		foreach ($this->defaultSort as $k => $v) {
-			if (!isset($this->sort[$k])) {
-				$this->sort[$k] = $v;
+		if (count($this->sort) == 0) {
+			foreach ($this->defaultSort as $k => $v) {
+				if (!isset($this->sort[$k])) {
+					$this->sort[$k] = $v;
+				}
 			}
 		}
 
 		foreach ($this->sort as $k => $v) {
-			if (!in_array($k, $this->enabledSort)) {
+			if (!in_array($k, $this->enabledSort) && !isset($this->defaultSort[$k])) {
 				unset($this->sort[$k]);
 				continue;
 			}
@@ -105,6 +111,7 @@ class FilterFactory extends UI\Control
 				continue;
 			}
 		}
+
 		foreach ($this->filter as $k => $v) {
 			if (!in_array($k, $this->enableFilter)) {
 				unset($this->filter[$k]);
@@ -121,6 +128,13 @@ class FilterFactory extends UI\Control
 
 		$this->limit = Nette\Utils\Validators::isNumericInt($this->limit) ? $this->limit : self::DEFAULT_LIMIT;
 		$this->page = (Nette\Utils\Validators::isNumericInt($this->page) && $this->page <= ceil($this->count / $this->limit) && $this->page > 0) ? $this->page : 1;
+
+		$this->cleanSortKeys = $this->defaultSort;
+		foreach ($this->enabledSort as $k => $v) {
+			if (isset($this->cleanSortKeys[$k])) {
+				unset($this->cleanSortKeys[$k]);
+			}
+		}
 	}
 
 	public function setSort(array $enableSort, array $enableValues)
@@ -167,6 +181,12 @@ class FilterFactory extends UI\Control
 	public function getNextArr($name)
 	{
 		$sort = $this->sort;
+
+		foreach ($this->cleanSortKeys as $k => $v) {
+			if (isset($sort[$k])) {
+				unset($sort[$k]);
+			}
+		}
 
 		$sort[$name] = $this->getNextSort($name);
 
