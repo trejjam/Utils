@@ -52,8 +52,13 @@ class ListingFactory extends UI\Control
 	{
 		parent::__construct();
 
-		$this->templateFile = $templateFile;
+		$this->setTemplate($templateFile);
 		$this->filterFactory = $filterFactory;
+	}
+
+	public function setTemplate($templateFile)
+	{
+		$this->templateFile = $templateFile;
 	}
 
 	public function setModel(Trejjam\Utils\Helpers\IBaseList $list)
