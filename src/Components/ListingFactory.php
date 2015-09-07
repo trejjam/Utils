@@ -21,6 +21,7 @@ class ListingFactory extends UI\Control
 {
 	public $defaultSort       = [];
 	public $sort              = [];
+	public $sortDbTranslate   = [];
 	public $enabledSort       = [
 		'asc'  => TRUE,
 		'desc' => FALSE,
@@ -75,7 +76,7 @@ class ListingFactory extends UI\Control
 		/** @var FilterFactory $filter */
 		$filter = $this->getComponent('filter');
 
-		$template->listData = $this->list->getList($filter->getSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
+		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
 		$template->sort = $this->sort;
 		$template->filter = array_combine($this->filter, $this->filter);
 		$template->columns = $this->columns;
@@ -90,6 +91,7 @@ class ListingFactory extends UI\Control
 		$filter = $this->filterFactory->create();
 
 		$filter->setSort($this->sort, $this->enabledSort);
+		$filter->setSortDbTranslate($this->sortDbTranslate);
 		$filter->defaultSort($this->defaultSort);
 
 		$filter->setFilter($this->filter);

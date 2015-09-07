@@ -34,7 +34,15 @@ class FilterFactory extends UI\Control
 	/**
 	 * @var array
 	 */
+	public $sortDbTranslate = [];
+	/**
+	 * @var array
+	 */
 	public $filter = [];
+	/**
+	 * @var array
+	 */
+	public $filterDbTranslate = [];
 	/**
 	 * @var int
 	 */
@@ -120,6 +128,10 @@ class FilterFactory extends UI\Control
 		$this->enabledSort = $enableSort;
 		$this->enableValues = $enableValues;
 	}
+	public function setSortDbTranslate(array $sortDbTranslate)
+	{
+		$this->sortDbTranslate = $sortDbTranslate;
+	}
 
 	public function defaultSort(array $defaultSort)
 	{
@@ -176,6 +188,16 @@ class FilterFactory extends UI\Control
 	public function getSort()
 	{
 		return $this->sort;
+	}
+	public function getDbSort()
+	{
+		$out = [];
+
+		foreach ($this->sort as $k => $v) {
+			$out[isset($this->sortDbTranslate[$k]) ? $this->sortDbTranslate[$k] : $k] = $v;
+		}
+
+		return $out;
 	}
 
 	public function setFilter(array $enableFilter)
