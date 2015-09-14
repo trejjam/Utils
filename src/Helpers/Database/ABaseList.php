@@ -14,7 +14,8 @@ use Nette,
 abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 {
 	const
-		ROW = '__row__';
+		ROW = '__row__',
+		STRICT = '__strict__';
 
 	/**
 	 * @return Nette\Database\Table\Selection
@@ -24,6 +25,11 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	protected function prepareListQuery(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL)
 	{
 		$query = $this->getTable();
+
+		if (isset($filter[self::STRICT])) {
+			$query->where($filter[self::STRICT]);
+			unset($filter[self::STRICT]);
+		}
 
 		BaseQuery::appendSort($query, $sort);
 		BaseQuery::appendFilter($query, $filter);
@@ -62,6 +68,11 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	{
 		$query = $this->getTable()->select('COUNT(*) count');
 
+		if (isset($filter[self::STRICT])) {
+			$query->where($filter[self::STRICT]);
+			unset($filter[self::STRICT]);
+		}
+
 		BaseQuery::appendFilter($query, $filter);
 
 		return $query->fetch()->count;
@@ -82,7 +93,13 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 			$row = $row->{self::ROW};
 		}
 
+		/** @var Nette\Database\Table\GroupedSelection $query */
 		$query = $row->related($this->getTable()->getName(), $throughColumn);
+
+		if (isset($filter[self::STRICT])) {
+			$query->where($filter[self::STRICT]);
+			unset($filter[self::STRICT]);
+		}
 
 		BaseQuery::appendSort($query, $sort);
 		BaseQuery::appendFilter($query, $filter);

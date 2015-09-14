@@ -61,6 +61,7 @@ class FilterFactory extends UI\Control
 	public $page = 1;
 
 	protected $defaultFilter = [];
+	protected $strictFilter  = [];
 	protected $defaultSort   = [];
 	protected $enabledSort   = [];
 	protected $enableValues  = [];
@@ -238,6 +239,10 @@ class FilterFactory extends UI\Control
 	{
 		$this->defaultFilter = $defaultFilter;
 	}
+	public function setStrictFilter(array $strictFilter)
+	{
+		$this->strictFilter = $strictFilter;
+	}
 
 	public function createComponentForm()
 	{
@@ -274,14 +279,14 @@ class FilterFactory extends UI\Control
 
 	public function getFilter()
 	{
-		return $this->filter;
+		return array_merge([Trejjam\Utils\Helpers\Database\ABaseList::STRICT => $this->strictFilter], $this->filter);
 	}
 
 	public function getDbFilter()
 	{
 		$out = [];
 
-		foreach ($this->filter as $k => $v) {
+		foreach ($this->getFilter() as $k => $v) {
 			$out[isset($this->filterDbTranslate[$k]) ? $this->filterDbTranslate[$k] : $k] = $v;
 		}
 
