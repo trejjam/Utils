@@ -35,8 +35,8 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	/**
 	 * @param array|NULL $sort
 	 * @param array|NULL $filter
-	 * @param int|null       $limit
-	 * @param int|null       $offset
+	 * @param int|null   $limit
+	 * @param int|null   $offset
 	 * @return \stdClass[]
 	 */
 	public function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL)
@@ -65,5 +65,36 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 		BaseQuery::appendFilter($query, $filter);
 
 		return $query->fetch()->count;
+	}
+
+	/**
+	 * @param \stdClass|Nette\Database\Table\IRow $row
+	 * @param string|null                         $throughColumn
+	 * @param array|NULL                          $sort
+	 * @param array|NULL                          $filter
+	 * @param int|null                            $limit
+	 * @param int|null                            $offset
+	 * @return \stdClass[]
+	 */
+	public function getRelatedList($row, $throughColumn = NULL, array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL)
+	{
+		if ($row instanceof \stdClass) {
+			$row = $row->{self::ROW};
+		}
+
+		$query = $row->related($this->getTable()->getName(), $throughColumn);
+
+		BaseQuery::appendSort($query, $sort);
+		BaseQuery::appendFilter($query, $filter);
+		BaseQuery::appendLimit($query, $limit, $offset);
+
+		$out = [];
+
+		foreach ($query as $v) {
+			$item = $this->getItem($v);
+			$out[$item->id] = $item;
+		}
+
+		return $out;
 	}
 }
