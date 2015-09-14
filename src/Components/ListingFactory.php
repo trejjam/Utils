@@ -26,6 +26,7 @@ class ListingFactory extends UI\Control
 		'asc'  => TRUE,
 		'desc' => FALSE,
 	];
+	public $defaultFilter     = [];
 	public $filter            = [];
 	public $filterDbTranslate = [];
 
@@ -96,6 +97,7 @@ class ListingFactory extends UI\Control
 
 		$filter->setFilter($this->filter);
 		$filter->setFilterDbTranslate($this->filterDbTranslate);
+		$filter->setDefaultFilter($this->defaultFilter);
 
 		$filter->countCallback = function ($filter) {
 			return $this->list->getCount($filter);

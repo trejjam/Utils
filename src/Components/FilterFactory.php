@@ -60,9 +60,10 @@ class FilterFactory extends UI\Control
 	 */
 	public $page = 1;
 
-	protected $defaultSort  = [];
-	protected $enabledSort  = [];
-	protected $enableValues = [];
+	protected $defaultFilter = [];
+	protected $defaultSort   = [];
+	protected $enabledSort   = [];
+	protected $enableValues  = [];
 
 	protected $enableFilter = [];
 
@@ -112,6 +113,11 @@ class FilterFactory extends UI\Control
 			}
 		}
 
+		foreach ($this->defaultFilter as $k => $v) {
+			if (!isset($this->filter[$k])) {
+				$this->filter[$k] = $v;
+			}
+		}
 		foreach ($this->filter as $k => $v) {
 			if (!in_array($k, $this->enableFilter)) {
 				unset($this->filter[$k]);
@@ -227,6 +233,10 @@ class FilterFactory extends UI\Control
 	public function setFilterDbTranslate(array $filterDbTranslate)
 	{
 		$this->filterDbTranslate = $filterDbTranslate;
+	}
+	public function setDefaultFilter(array $defaultFilter)
+	{
+		$this->defaultFilter = $defaultFilter;
 	}
 
 	public function createComponentForm()
