@@ -17,6 +17,11 @@ class BaseQuery
 	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL)
 	{
 		if (!is_null($filter)) {
+			if (isset($filter[ABaseList::STRICT])) {
+				$query->where($filter[ABaseList::STRICT]);
+				unset($filter[ABaseList::STRICT]);
+			}
+
 			foreach ($filter as $k => $v) {
 				$query->where([
 					$k . ' LIKE' => '%' . $v . '%',

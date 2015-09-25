@@ -26,11 +26,6 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	{
 		$query = $this->getTable();
 
-		if (isset($filter[self::STRICT])) {
-			$query->where($filter[self::STRICT]);
-			unset($filter[self::STRICT]);
-		}
-
 		BaseQuery::appendSort($query, $sort);
 		BaseQuery::appendFilter($query, $filter);
 		BaseQuery::appendLimit($query, $limit, $offset);
@@ -68,11 +63,6 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	{
 		$query = $this->getTable()->select('COUNT(*) count');
 
-		if (isset($filter[self::STRICT])) {
-			$query->where($filter[self::STRICT]);
-			unset($filter[self::STRICT]);
-		}
-
 		BaseQuery::appendFilter($query, $filter);
 
 		return $query->fetch()->count;
@@ -90,16 +80,11 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	public function getRelatedList($row, $throughColumn = NULL, array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL)
 	{
 		if ($row instanceof \stdClass) {
-			$row = $row->{self::ROW};
+			$row = $row->{static::ROW};
 		}
 
 		/** @var Nette\Database\Table\GroupedSelection $query */
 		$query = $row->related($this->getTable()->getName(), $throughColumn);
-
-		if (isset($filter[self::STRICT])) {
-			$query->where($filter[self::STRICT]);
-			unset($filter[self::STRICT]);
-		}
 
 		BaseQuery::appendSort($query, $sort);
 		BaseQuery::appendFilter($query, $filter);
