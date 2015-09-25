@@ -132,7 +132,7 @@ abstract class AShopCart extends Nette\Object
 	 */
 	public function editComment($id, $text)
 	{
-		$this->shopCart->{self::COMMENT . $id} = $text;
+		$this->shopCart->{static::COMMENT . $id} = $text;
 	}
 	/**
 	 * @param $id
@@ -140,15 +140,15 @@ abstract class AShopCart extends Nette\Object
 	 */
 	public function getComment($id)
 	{
-		return isset($this->shopCart->{self::COMMENT . $id}) ? $this->shopCart->{self::COMMENT . $id} : '';
+		return isset($this->shopCart->{static::COMMENT . $id}) ? $this->shopCart->{static::COMMENT . $id} : '';
 	}
 
 	public function getInformation($id)
 	{
-		return isset($this->shopCart->{self::INFORMATION . $id}) ? $this->shopCart->{self::INFORMATION . $id} : NULL;
+		return isset($this->shopCart->{static::INFORMATION . $id}) ? $this->shopCart->{static::INFORMATION . $id} : NULL;
 	}
 	public function setInformation($id, $information)
 	{
-		$this->shopCart->{self::INFORMATION . $id} = $information;
+		$this->shopCart->{static::INFORMATION . $id} = $information;
 	}
 }

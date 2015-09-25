@@ -32,7 +32,7 @@ class Install extends Command
 	{
 		$connection = $this->database->getConnection();
 		$driverName = $connection->getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
-		Nette\Database\Helpers::loadFromFile($connection, $this->getFileName($driverName . '.' . self::FILE_LABELS_TABLE));
+		Nette\Database\Helpers::loadFromFile($connection, $this->getFileName($driverName . '.' . static::FILE_LABELS_TABLE));
 	}
 	protected function getFileName($file)
 	{

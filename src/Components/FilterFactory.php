@@ -133,7 +133,7 @@ class FilterFactory extends UI\Control
 			throw new \LogicException('Missing count callback');
 		}
 
-		$this->limit = Nette\Utils\Validators::isNumericInt($this->limit) ? $this->limit : self::DEFAULT_LIMIT;
+		$this->limit = Nette\Utils\Validators::isNumericInt($this->limit) ? $this->limit : static::DEFAULT_LIMIT;
 		$this->page = (Nette\Utils\Validators::isNumericInt($this->page) && $this->page <= ceil($this->count / $this->limit) && $this->page > 0) ? $this->page : 1;
 
 		$this->cleanSortKeys = $this->defaultSort;

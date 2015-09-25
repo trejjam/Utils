@@ -25,13 +25,13 @@ class Utils
 		if (is_array($price)) {
 			$out = [];
 			foreach ($price as $v) {
-				$out[] = self::priceFreeText($freeText, $v, $units, $decimalLength);
+				$out[] = static::priceFreeText($freeText, $v, $units, $decimalLength);
 			}
 
 			return $out;
 		}
 		else {
-			return $price <= 0 ? $freeText : self::priceCreate($price, $units, $decimalLength);
+			return $price <= 0 ? $freeText : static::priceCreate($price, $units, $decimalLength);
 		}
 	}
 	/**
@@ -45,7 +45,7 @@ class Utils
 		if (is_array($price)) {
 			$out = [];
 			foreach ($price as $v) {
-				$out[] = self::priceCreate($v, $units, $decimalLength);
+				$out[] = static::priceCreate($v, $units, $decimalLength);
 			}
 
 			return $out;
@@ -56,7 +56,7 @@ class Utils
 			$integerPrice = floor($workPrice / pow(10, $decimalLength));
 			$integerLength = strlen($integerPrice);
 			$decimalPrice = Nette\Utils\Strings::padLeft(
-				round(self::numberAt($workDecimalPrice, 0, $decimalLength + 1) / 10),
+				round(static::numberAt($workDecimalPrice, 0, $decimalLength + 1) / 10),
 				$decimalLength,
 				'0'
 			);
@@ -68,7 +68,7 @@ class Utils
 				if ($outPrice != "") $outPrice .= '.';
 				$outPrice .=
 					Nette\Utils\Strings::padLeft(
-						self::numberAt($integerPrice, $i * 3, 3),
+						static::numberAt($integerPrice, $i * 3, 3),
 						3,
 						'0'
 					);
@@ -149,7 +149,7 @@ class Utils
 	}
 	public static function getTextServerInfo()
 	{
-		return print_r(self::getServerInfo(), TRUE);
+		return print_r(static::getServerInfo(), TRUE);
 	}
 
 
