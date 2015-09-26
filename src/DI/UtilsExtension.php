@@ -16,7 +16,10 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 	protected $classesDefinition = [
 		'layout.baseLayout' => 'Trejjam\Utils\Layout\BaseLayout',
 		'labels'            => 'Trejjam\Utils\Labels\Labels',
-		'browser'           => 'Browser\Browser',
+		'sinergi.browser'   => 'Sinergi\BrowserDetector\Browser',
+		'sinergi.os'        => 'Sinergi\BrowserDetector\Os',
+		'sinergi.device'    => 'Sinergi\BrowserDetector\Device',
+		'sinergi.language'  => 'Sinergi\BrowserDetector\Language',
 	];
 
 	protected $factoriesDefinition = [
@@ -25,13 +28,12 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
 	];
 
-	protected function createConfig()
-	{
+	protected function createConfig() {
 		$config = $this->getConfig([
 			'flashes'    => [
 				'enable' => FALSE,
 			],
-			'browser'    => [
+			'sinergi'    => [
 				'enable' => FALSE,
 			],
 			'labels'     => [
@@ -66,15 +68,15 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		return $config;
 	}
 
-	public function loadConfiguration()
-	{
+	public function loadConfiguration() {
 		parent::loadConfiguration();
 
 		$builder = $this->getContainerBuilder();
 		$config = $this->createConfig();
 
 		foreach ($this->classesDefinition as $k => $v) {
-			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
+			list($firstKey) = explode('.', $k);
+			if (!isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
 				$classes[$k] = $builder->addDefinition($this->prefix($k))
 									   ->setClass($v);
 			}
@@ -101,8 +103,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		}
 	}
 
-	public function beforeCompile()
-	{
+	public function beforeCompile() {
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();

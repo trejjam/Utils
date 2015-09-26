@@ -32,13 +32,13 @@
 
 		"kdyby/console": "~2.4",
 
-		"gabrielbull/browser": "4.0.0-beta",
+		"sinergi/browser-detector": "^5.0",
 
 		"besanek/presenter-tester": "@dev"
 	},
 	"suggest": {
 		"nette/database": "to use Labels",
-		"gabrielbull/browser": "to get information about browser",
+		"sinergi/browser-detector": "to get information about browser",
 		"kdyby/console": "to use CLI configurator"
 	},
 	"autoload": {
