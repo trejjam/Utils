@@ -6,7 +6,7 @@
 			{if isset($sort[$columnName])}
 		<th>{control filter:sortLink $columnName, $columnValue}</th>
 			{else}
-		<th>{$columnName}</th>
+		<th>{is_null($columnsHead)?$columnName:$columnsHead[$columnName]}</th>
 			{/if}
 			{last}
 		<th>&nbsp;</th>
