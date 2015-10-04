@@ -113,7 +113,8 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		$classes = [];
 
 		foreach ($this->classesDefinition as $k => $v) {
-			if (!isset($config[$k]) || !isset($config[$k]['enable']) || $config[$k]['enable']) {
+			list($firstKey) = explode('.', $k);
+			if (!isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
 				$classes[$k] = $builder->getDefinition($this->prefix($k));
 			}
 		}
