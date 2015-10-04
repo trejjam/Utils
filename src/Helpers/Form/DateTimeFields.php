@@ -27,8 +27,11 @@ class DateTimeFields
 		if (!is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d');
 			$date->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
-			$time->setDefaultValue($dateTime->format('H:i'));
+			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i'));
 		}
+
+		$date->addConditionOn($time, UI\Form::FILLED)
+			 ->addRule(UI\Form::FILLED, __('Please, fill date otherwise you lose data.'));
 	}
 	/**
 	 * Get DateTime from ::addDateTime() container
@@ -40,11 +43,11 @@ class DateTimeFields
 		$date = static::getDateValue($dateTime[static::DATE]);
 		$time = static::getTimeValue($dateTime[static::TIME]);
 
-		if (!is_null($date) && !is_null($time)) {
+		if (!is_null($date) && $date != '' && !is_null($time) && $time != '') {
 			return $date . ' ' . $time;
 		}
 		else {
-			return (is_null($date) ? '' : $date) . (is_null($time) ? '' : $time);
+			return (is_null($date) || $date == '' ? '0000-00-00' : $date) . ' ' . (is_null($time) || $time == '' ? '00:00:00' : $time);
 		}
 	}
 
@@ -90,6 +93,6 @@ class DateTimeFields
 	 */
 	public static function getTimeValue($value)
 	{
-		return $value;
+		return $value . ':00';
 	}
 }
