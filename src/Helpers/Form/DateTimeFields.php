@@ -56,7 +56,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, __('Date from must be in format YYYY-MM-DD'), '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
+			  ->addRule(UI\Form::PATTERN, __('Date must be in format YYYY-MM-DD'), '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
 
 		return $input;
 	}
@@ -82,7 +82,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, __('Time from must be in format HH:MM'), '([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}');
+			  ->addRule(UI\Form::PATTERN, __('Time must be in format HH:MM'), '([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}');
 
 		return $input;
 	}
