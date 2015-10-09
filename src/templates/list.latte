@@ -23,10 +23,14 @@
 	</tr>
 		{foreach $listData as $k=>$v}
 	<tr n:class="list-item, $iterator->isEven()?odd:even" n:inner-foreach="$columns as $k2=>$v2">
+			{if $v2 instanceof Trejjam\Utils\Components\IRenderable}
+		{$v2->render($v)}
+			{else}
 		{var $columnName=is_numeric($k2)?$v2:$k2}
 		{var $columnValue=is_callable($v2)?$v2($v):(is_array($v)?$v[$columnName]:$v->$columnName)}
 
 		<td>{$columnValue}</td>
+			{/if}
 			{last}
 		<td n:inner-foreach="$actionButtons as $k3=>$v3">
 			<span>
