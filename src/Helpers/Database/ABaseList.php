@@ -53,8 +53,28 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 
 		return $out;
 	}
+
 	/**
-	 * @param int|Nette\Database\Table\IRow $id
+	 * @param int|\stdClass|Nette\Database\Table\IRow $id
+	 * @return Nette\Database\Table\IRow
+	 */
+	protected function getRow($id)
+	{
+		if (isset($id->{static::ROW})) {
+			$row = $id->{static::ROW};
+		}
+		else if ($id instanceof Nette\Database\Table\IRow) {
+			$row = $id;
+		}
+		else {
+			$row = $this->getTable()->get($id);
+		}
+
+		return $row;
+	}
+
+	/**
+	 * @param int|\stdClass|Nette\Database\Table\IRow $id
 	 * @return \stdClass
 	 */
 	public abstract function getItem($id);
