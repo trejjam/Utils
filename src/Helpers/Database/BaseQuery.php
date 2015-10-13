@@ -35,7 +35,12 @@ class BaseQuery
 	{
 		if (!is_null($sort)) {
 			foreach ($sort as $k => $v) {
-				$query->order($k . ' ' . strtoupper($v));
+				if (Nette\Utils\Validators::isNumericInt($k)) {
+					$query->order($v);
+				}
+				else {
+					$query->order($k . ' ' . strtoupper($v));
+				}
 			}
 		}
 
