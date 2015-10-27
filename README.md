@@ -1,6 +1,8 @@
 Utils
 =====
 
+[![Latest stable](https://img.shields.io/packagist/v/trejjam/utils.svg)](https://packagist.org/packages/trejjam/utils)
+
 Library contains 
 <ul>
 <li>basic Utils</li>
