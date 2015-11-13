@@ -19,6 +19,9 @@ class DateTimeFields
 		DATE = 'date',
 		TIME = 'time';
 
+	static public $useTranslatorRule   = TRUE;
+	static public $translatorRuleClass = 'rule';
+
 	public static function addDateTime(Nette\Forms\Container $container, $name, $label, \DateTime $dateTime = NULL)
 	{
 		$subContainer = $container->addContainer($name);
@@ -31,7 +34,7 @@ class DateTimeFields
 		}
 
 		$date->addConditionOn($time, UI\Form::FILLED)
-			 ->addRule(UI\Form::FILLED, __('Please, fill date otherwise you lose data.'));
+			 ->addRule(UI\Form::FILLED, static::$useTranslatorRule ? __('Please, fill date otherwise you lose data.') : $name . '.' . static::$translatorRuleClass . '.filled');
 	}
 	/**
 	 * Get DateTime from ::addDateTime() container
@@ -56,7 +59,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, __('Date must be in format YYYY-MM-DD'), '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Date must be in format YYYY-MM-DD') : $name . '.' . static::$translatorRuleClass . '.filled', '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
 
 		return $input;
 	}
@@ -82,7 +85,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, __('Time must be in format HH:MM'), '([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}');
 
 		return $input;
 	}
