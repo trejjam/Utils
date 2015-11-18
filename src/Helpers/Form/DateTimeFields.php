@@ -38,7 +38,7 @@ class DateTimeFields
 	}
 	/**
 	 * Get DateTime from ::addDateTime() container
-	 * @param $dateTime
+	 * @param Nette\Forms\Controls\TextInput[]|string[] $dateTime
 	 * @return string
 	 */
 	public static function getDateTimeValue($dateTime)
@@ -65,11 +65,18 @@ class DateTimeFields
 	}
 	/**
 	 * Get Date from ::addDate() field
-	 * @param $value
+	 * @param Nette\Forms\Controls\TextInput|string $input
 	 * @return string
 	 */
-	public static function getDateValue($value)
+	public static function getDateValue($input)
 	{
+		if ($input instanceof Nette\Forms\Controls\TextInput) {
+			$value = $input->getValue();
+		}
+		else {
+			$value = $input;
+		}
+
 		if (preg_match('~^\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4}$~', $value, $arr)) {
 			$dateArr = preg_split('/[.\/]{1}[ ]{0,1}/s', $arr[0]);
 			$date = new Nette\Utils\DateTime($dateArr[2] . '-' . $dateArr[1] . '-' . $dateArr[0]);
@@ -91,11 +98,18 @@ class DateTimeFields
 	}
 	/**
 	 * Get Time from ::addTime() field
-	 * @param $value
+	 * @param Nette\Forms\Controls\TextInput $input
 	 * @return mixed
 	 */
-	public static function getTimeValue($value)
+	public static function getTimeValue($input)
 	{
+		if ($input instanceof Nette\Forms\Controls\TextInput) {
+			$value = $input->getValue();
+		}
+		else {
+			$value = $input;
+		}
+
 		return $value . ':00';
 	}
 }
