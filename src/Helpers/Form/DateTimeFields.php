@@ -110,6 +110,6 @@ class DateTimeFields
 			$value = $input;
 		}
 
-		return $value . ':00';
+		return empty($value) ? '' : $value . ':00';
 	}
 }
