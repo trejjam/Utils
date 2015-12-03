@@ -22,6 +22,48 @@ class DateTimeFields
 	static public $useTranslatorRule   = TRUE;
 	static public $translatorRuleClass = 'rule';
 
+	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label, \DateTime $dateTime = NULL)
+	{
+		$input = $container->addText($name, $label);
+		$input->setType('datetime-local');
+		if (!is_null($dateTime)) {
+			$dateValue = $dateTime->format('Y-m-d\TH:i');
+			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
+		}
+
+		$input->addCondition(UI\Form::FILLED)
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}:[0-9]{1,2})');
+
+		return $input;
+	}
+
+	/**
+	 * Get DateTime from ::addDateTimeLocal() field
+	 * @param Nette\Forms\Controls\TextInput|string $input
+	 * @return string
+	 */
+	public static function getDateTimeLocalValue($input) {
+		if ($input instanceof Nette\Forms\Controls\TextInput) {
+			$value = $input->getValue();
+		}
+		else {
+			$value = $input;
+		}
+
+		if (preg_match('~^(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{4}?) (\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
+			$date = new Nette\Utils\DateTime($arr[1] . '-' . $arr[2] . '-' . $arr[3].' ' . $arr[4] . ':' . $arr[5]);
+
+			return $date->format('Y-m-d H:i');
+		}
+		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
+			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5]);
+
+			return $date->format('Y-m-d H:i');
+		}
+
+		return $value;
+	}
+
 	public static function addDateTime(Nette\Forms\Container $container, $name, $label, \DateTime $dateTime = NULL)
 	{
 		$subContainer = $container->addContainer($name);
@@ -36,6 +78,7 @@ class DateTimeFields
 		$date->addConditionOn($time, UI\Form::FILLED)
 			 ->addRule(UI\Form::FILLED, static::$useTranslatorRule ? __('Please, fill date otherwise you lose data.') : $name . '.' . static::$translatorRuleClass . '.filled');
 	}
+
 	/**
 	 * Get DateTime from ::addDateTime() container
 	 * @param Nette\Forms\Controls\TextInput[]|string[] $dateTime
