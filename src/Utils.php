@@ -158,12 +158,19 @@ class Utils
 		$out = $array;
 		$keyArray = explode($keyDelimiter, $key);
 
+		$findKeys = [];
 		foreach ($keyArray as $v) {
 			if (isset($out[$v])) {
 				$out = $out[$v];
+				$findKeys[] = $v;
 			}
 			else {
-				throw new Trejjam\Utils\LogicException("Key '$v' from '$key' not exist in array.", Exception::UTILS_KEY_NOT_FOUND);
+				$magicArrayAccessException = new Trejjam\Utils\MagicArrayAccessException("Key '$v' from '$key' not exist in array.", Exception::UTILS_KEY_NOT_FOUND);
+				$magicArrayAccessException->setUsedKeys($findKeys);
+				$magicArrayAccessException->setAllKeys($keyArray);
+				$magicArrayAccessException->setLastItem($out);
+
+				throw $magicArrayAccessException;
 			}
 		}
 
