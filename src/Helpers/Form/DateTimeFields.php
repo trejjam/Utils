@@ -27,7 +27,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
 		if (!is_null($dateTime)) {
-			$dateValue = $dateTime->format('Y-m-d\TH:i');
+			$dateValue = $dateTime->format('Y-m-d\TH:i:s');
 			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 		}
 
@@ -53,12 +53,12 @@ class DateTimeFields
 		if (preg_match('~^(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{4}?) (\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
 			$date = new Nette\Utils\DateTime($arr[1] . '-' . $arr[2] . '-' . $arr[3].' ' . $arr[4] . ':' . $arr[5]);
 
-			return $date->format('Y-m-d H:i');
+			return $date->format('Y-m-d H:i:s');
 		}
 		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
 			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5]);
 
-			return $date->format('Y-m-d H:i');
+			return $date->format('Y-m-d H:i:s');
 		}
 
 		return $value;
@@ -72,7 +72,7 @@ class DateTimeFields
 		if (!is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d');
 			$date->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
-			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i'));
+			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i:s'));
 		}
 
 		$date->addConditionOn($time, UI\Form::FILLED)
