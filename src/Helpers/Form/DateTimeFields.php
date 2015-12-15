@@ -32,7 +32,7 @@ class DateTimeFields
 		}
 
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}:[0-9]{1,2})');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}(:[0-9]{1,2}){1,2})');
 
 		return $input;
 	}
@@ -42,7 +42,8 @@ class DateTimeFields
 	 * @param Nette\Forms\Controls\TextInput|string $input
 	 * @return string
 	 */
-	public static function getDateTimeLocalValue($input) {
+	public static function getDateTimeLocalValue($input)
+	{
 		if ($input instanceof Nette\Forms\Controls\TextInput) {
 			$value = $input->getValue();
 		}
@@ -50,13 +51,14 @@ class DateTimeFields
 			$value = $input;
 		}
 
-		if (preg_match('~^(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{4}?) (\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
-			$date = new Nette\Utils\DateTime($arr[1] . '-' . $arr[2] . '-' . $arr[3].' ' . $arr[4] . ':' . $arr[5]);
+		if (preg_match('~^(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{4}?) (\d{1,2}?)[:]{1}(\d{1,2}?)([:]{1}(\d{1,2}?)){0,1}$~', $value, $arr)) {
+			$date = new Nette\Utils\DateTime($arr[1] . '-' . $arr[2] . '-' . $arr[3] . ' ' . $arr[4] . ':' . $arr[5] . (isset($arr[7]) ? ':' . $arr[7] : ''));
 
 			return $date->format('Y-m-d H:i:s');
 		}
-		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)$~', $value, $arr)) {
-			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5]);
+		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)([:]{1}(\d{1,2}?)){0,1}$~', $value, $arr)) {
+			bd($arr);
+			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5] . (isset($arr[7]) ? ':' . $arr[7] : ''));
 
 			return $date->format('Y-m-d H:i:s');
 		}
@@ -135,7 +137,7 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1})(:[0-5]{1}[0-9]{1}){1,2}');
 
 		return $input;
 	}
