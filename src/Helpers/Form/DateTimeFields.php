@@ -57,7 +57,6 @@ class DateTimeFields
 			return $date->format('Y-m-d H:i:s');
 		}
 		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)([:]{1}(\d{1,2}?)){0,1}$~', $value, $arr)) {
-			bd($arr);
 			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5] . (isset($arr[7]) ? ':' . $arr[7] : ''));
 
 			return $date->format('Y-m-d H:i:s');
