@@ -18,11 +18,11 @@ abstract class AItem implements IItem
 	protected $parentId = NULL;
 
 	/**
-	 * @var static[]
+	 * @var $this[]
 	 */
 	protected $child = [];
 	/**
-	 * @var static
+	 * @var $this
 	 */
 	protected $parent = NULL;
 
@@ -95,14 +95,14 @@ abstract class AItem implements IItem
 	}
 
 	/**
-	 * @return null|static
+	 * @return null|$this
 	 */
 	public function getParent()
 	{
 		return $this->parent;
 	}
 	/**
-	 * @return static[]
+	 * @return $this[]
 	 */
 	public function getChild()
 	{
@@ -110,17 +110,17 @@ abstract class AItem implements IItem
 	}
 
 	/**
-	 * @return static[]
+	 * @return $this[]
 	 */
 	public function createRootWay()
 	{
-		/** @var static[] $way */
+		/** @var $this[] $way */
 		$way = [];
 
 		if ($this->hasParent()) {
 			$parent = $this->getParent();
 
-			/** @var static[] $way */
+			/** @var $this[] $way */
 			$way = $parent->createRootWay();
 		}
 
