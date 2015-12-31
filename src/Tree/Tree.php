@@ -17,27 +17,28 @@ class Tree
 	 * @param string                                    $itemClass extends Trejjam\Utils\Tree\AItem or implement Trejjam\Utils\Tree\IItem
 	 * @param array|\stdClass|Nette\Database\Table\IRow $items
 	 * @param null|array                                $properties
+	 * @param AItem[]                                   $allItems
+	 * @param AItem[]                                   $rootItems
 	 * @return AItem[][] (tree, list)
 	 */
-	public static function createTree($itemClass, $items, $properties = NULL)
+	public static function createTree($itemClass, $items, $properties = NULL, $allItems = [], $rootItems = [])
 	{
-		/** @var AItem[] $item */
-		$allItems = [];
-		/** @var AItem[] $rootItems */
-		$rootItems = [];
+		/** @var int[] $newItems */
+		$newItems = [];
 
 		foreach ($items as $v) {
 			/** @var AItem $item */
 			$item = new $itemClass($v, $properties);
+			$newItems[] = $item->getId();
 			$allItems[$item->getId()] = $item;
 		}
 
-		/** @var AItem $v */
-		foreach ($allItems as $v) {
-			$v->connectToParent($allItems);
+		foreach ($newItems as $v) {
+			$newItem = $allItems[$v];
+			$newItem->connectToParent($allItems);
 
-			if (!$v->hasParent()) {
-				$rootItems[$v->getId()] = $v;
+			if (!$newItem->hasParent()) {
+				$rootItems[$newItem->getId()] = $newItem;
 			}
 		}
 
