@@ -154,6 +154,142 @@ class UtilsTest extends Tester\TestCase
 		Assert::equal('/a/b/', Utils::unifyDir('/a/b'));
 		Assert::equal('/a/b/', Utils::unifyDir('/a/b/'));
 	}
+
+	function testToNumber()
+	{
+		Assert::equal('a', Utils::numberToLetter(0));
+		Assert::equal('b', Utils::numberToLetter(1));
+		Assert::equal('n', Utils::numberToLetter(13));
+		Assert::equal('y', Utils::numberToLetter(24));
+		Assert::equal('z', Utils::numberToLetter(25));
+		Assert::equal('aa', Utils::numberToLetter(26));
+		$main = 'a';
+		for ($i = 1; $i <= 26; $i++ && $main++) {
+			Assert::equal($main . 'b', Utils::numberToLetter(($i * 26) + 1));
+		}
+		Assert::equal('ab', Utils::numberToLetter(27));
+		Assert::equal('ac', Utils::numberToLetter(28));
+		Assert::equal('af', Utils::numberToLetter(31));
+		Assert::equal('ay', Utils::numberToLetter(50));
+		Assert::equal('az', Utils::numberToLetter(51));
+		Assert::equal('ba', Utils::numberToLetter(52));
+		Assert::equal('bb', Utils::numberToLetter(53));
+		Assert::equal('bc', Utils::numberToLetter(54));
+		Assert::equal('yz', Utils::numberToLetter(675));
+		Assert::equal('za', Utils::numberToLetter(676));
+		Assert::equal('zb', Utils::numberToLetter(677));
+		Assert::equal('zc', Utils::numberToLetter(678));
+		Assert::equal('zy', Utils::numberToLetter(700));
+		Assert::equal('zz', Utils::numberToLetter(701));
+		Assert::equal('aaa', Utils::numberToLetter(702));
+		Assert::equal('aab', Utils::numberToLetter(703));
+		Assert::equal('aba', Utils::numberToLetter(728));
+		Assert::equal('abb', Utils::numberToLetter(729));
+		Assert::equal('abc', Utils::numberToLetter(730));
+		Assert::equal('abd', Utils::numberToLetter(731));
+	}
+
+	function testToNumberCapitals()
+	{
+		Assert::equal('A', Utils::numberToLetter(0, 'A'));
+		Assert::equal('B', Utils::numberToLetter(1, 'A'));
+		Assert::equal('N', Utils::numberToLetter(13, 'A'));
+		Assert::equal('Y', Utils::numberToLetter(24, 'A'));
+		Assert::equal('Z', Utils::numberToLetter(25, 'A'));
+		Assert::equal('AA', Utils::numberToLetter(26, 'A'));
+		$main = 'A';
+		for ($i = 1; $i <= 26; $i++ && $main++) {
+			Assert::equal($main . 'B', Utils::numberToLetter(($i * 26) + 1, 'A'));
+		}
+		Assert::equal('AB', Utils::numberToLetter(27, 'A'));
+		Assert::equal('AC', Utils::numberToLetter(28, 'A'));
+		Assert::equal('AF', Utils::numberToLetter(31, 'A'));
+		Assert::equal('AY', Utils::numberToLetter(50, 'A'));
+		Assert::equal('AZ', Utils::numberToLetter(51, 'A'));
+		Assert::equal('BA', Utils::numberToLetter(52, 'A'));
+		Assert::equal('BB', Utils::numberToLetter(53, 'A'));
+		Assert::equal('BC', Utils::numberToLetter(54, 'A'));
+		Assert::equal('YZ', Utils::numberToLetter(675, 'A'));
+		Assert::equal('ZA', Utils::numberToLetter(676, 'A'));
+		Assert::equal('ZB', Utils::numberToLetter(677, 'A'));
+		Assert::equal('ZC', Utils::numberToLetter(678, 'A'));
+		Assert::equal('ZY', Utils::numberToLetter(700, 'A'));
+		Assert::equal('ZZ', Utils::numberToLetter(701, 'A'));
+		Assert::equal('AAA', Utils::numberToLetter(702, 'A'));
+		Assert::equal('AAB', Utils::numberToLetter(703, 'A'));
+		Assert::equal('ABA', Utils::numberToLetter(728, 'A'));
+		Assert::equal('ABB', Utils::numberToLetter(729, 'A'));
+		Assert::equal('ABC', Utils::numberToLetter(730, 'A'));
+		Assert::equal('ABD', Utils::numberToLetter(731, 'A'));
+	}
+
+	function testToLetters()
+	{
+		Assert::equal(0, Utils::letterToNumber('a'));
+		Assert::equal(1, Utils::letterToNumber('b'));
+		Assert::equal(13, Utils::letterToNumber('n'));
+		Assert::equal(24, Utils::letterToNumber('y'));
+		Assert::equal(25, Utils::letterToNumber('z'));
+		Assert::equal(26, Utils::letterToNumber('aa'));
+		$main = 'a';
+		for ($i = 1; $i <= 26; $i++ && $main++) {
+			Assert::equal(($i * 26) + 1, Utils::letterToNumber($main . 'b'));
+		}
+		Assert::equal(27, Utils::letterToNumber('ab'));
+		Assert::equal(28, Utils::letterToNumber('ac'));
+		Assert::equal(31, Utils::letterToNumber('af'));
+		Assert::equal(50, Utils::letterToNumber('ay'));
+		Assert::equal(51, Utils::letterToNumber('az'));
+		Assert::equal(52, Utils::letterToNumber('ba'));
+		Assert::equal(53, Utils::letterToNumber('bb'));
+		Assert::equal(54, Utils::letterToNumber('bc'));
+		Assert::equal(675, Utils::letterToNumber('yz'));
+		Assert::equal(676, Utils::letterToNumber('za'));
+		Assert::equal(677, Utils::letterToNumber('zb'));
+		Assert::equal(678, Utils::letterToNumber('zc'));
+		Assert::equal(700, Utils::letterToNumber('zy'));
+		Assert::equal(701, Utils::letterToNumber('zz'));
+		Assert::equal(702, Utils::letterToNumber('aaa'));
+		Assert::equal(703, Utils::letterToNumber('aab'));
+		Assert::equal(728, Utils::letterToNumber('aba'));
+		Assert::equal(729, Utils::letterToNumber('abb'));
+		Assert::equal(730, Utils::letterToNumber('abc'));
+		Assert::equal(731, Utils::letterToNumber('abd'));
+	}
+
+	function testToLettersCapitals()
+	{
+		Assert::equal(0, Utils::letterToNumber('A', 'A'));
+		Assert::equal(1, Utils::letterToNumber('B', 'A'));
+		Assert::equal(13, Utils::letterToNumber('N', 'A'));
+		Assert::equal(24, Utils::letterToNumber('Y', 'A'));
+		Assert::equal(25, Utils::letterToNumber('Z', 'A'));
+		Assert::equal(26, Utils::letterToNumber('AA', 'A'));
+		$main = 'A';
+		for ($i = 1; $i <= 26; $i++ && $main++) {
+			Assert::equal(($i * 26) + 1, Utils::letterToNumber($main . 'B', 'A'));
+		}
+		Assert::equal(27, Utils::letterToNumber('AB', 'A'));
+		Assert::equal(28, Utils::letterToNumber('AC', 'A'));
+		Assert::equal(31, Utils::letterToNumber('AF', 'A'));
+		Assert::equal(50, Utils::letterToNumber('AY', 'A'));
+		Assert::equal(51, Utils::letterToNumber('AZ', 'A'));
+		Assert::equal(52, Utils::letterToNumber('BA', 'A'));
+		Assert::equal(53, Utils::letterToNumber('BB', 'A'));
+		Assert::equal(54, Utils::letterToNumber('BC', 'A'));
+		Assert::equal(675, Utils::letterToNumber('YZ', 'A'));
+		Assert::equal(676, Utils::letterToNumber('ZA', 'A'));
+		Assert::equal(677, Utils::letterToNumber('ZB', 'A'));
+		Assert::equal(678, Utils::letterToNumber('ZC', 'A'));
+		Assert::equal(700, Utils::letterToNumber('ZY', 'A'));
+		Assert::equal(701, Utils::letterToNumber('ZZ', 'A'));
+		Assert::equal(702, Utils::letterToNumber('AAA', 'A'));
+		Assert::equal(703, Utils::letterToNumber('AAB', 'A'));
+		Assert::equal(728, Utils::letterToNumber('ABA', 'A'));
+		Assert::equal(729, Utils::letterToNumber('ABB', 'A'));
+		Assert::equal(730, Utils::letterToNumber('ABC', 'A'));
+		Assert::equal(731, Utils::letterToNumber('ABD', 'A'));
+	}
 }
 
 $test = new UtilsTest($container);

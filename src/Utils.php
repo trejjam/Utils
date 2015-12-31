@@ -204,4 +204,54 @@ class Utils
 
 		return $dir;
 	}
+
+	/**
+	 * http://stackoverflow.com/questions/7664121/php-converting-number-to-alphabet-and-vice-versa
+	 * @param int    $num
+	 * @param string $startLetter
+	 * @return string
+	 */
+	public static function numberToLetter($num, $startLetter = 'a')
+	{
+		$startAscii = ord($startLetter);
+		$searchingNum = $num;
+		$help = 26;
+
+		$chars = [$num % 26];
+		while ($searchingNum >= $help) {
+			$help *= 26;
+
+			$num = (int)($num / 26);
+			$num -= 1;
+			if ($num >= 0) {
+				$chars[] = $num % 26;
+			}
+		}
+
+		$str = '';
+		for ($i = count($chars) - 1; $i >= 0; $i--) {
+			$str .= chr($chars[$i] + $startAscii);
+		}
+
+		return $str;
+	}
+
+	/**
+	 * @param string $str
+	 * @param string $startLetter
+	 * @return int
+	 */
+	public static function letterToNumber($str, $startLetter = 'a')
+	{
+		$startAscii = ord($startLetter);
+
+		$num = 0;
+		for ($i = 0; $i < strlen($str); $i++) {
+			$num *= 26;
+			$num += ord($str[$i]) - $startAscii;
+			$num += $i < (strlen($str) - 1) ? 1 : 0;
+		}
+
+		return $num;
+	}
 }
