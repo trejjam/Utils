@@ -18,7 +18,7 @@ abstract class AItem implements IItem
 	protected $parentId = NULL;
 
 	/**
-	 * @var $this[]
+	 * @var $this []
 	 */
 	protected $child = [];
 	/**
@@ -32,6 +32,17 @@ abstract class AItem implements IItem
 	 * @param array|NULL                                $persistProperties
 	 */
 	public function __construct($properties, array $persistProperties = NULL)
+	{
+		$this->updateProperties($properties, $persistProperties);
+	}
+
+	/**
+	 * @param array|\stdClass|Nette\Database\Table\IRow $properties
+	 * @param array|NULL                                $persistProperties
+	 *
+	 * @internal
+	 */
+	public function updateProperties($properties, array $persistProperties = NULL)
 	{
 		$this->properties = $properties;
 
@@ -52,6 +63,18 @@ abstract class AItem implements IItem
 	}
 
 	/**
+	 * @param IItem $parent
+	 *
+	 * @internal
+	 */
+	public function setParent(IItem $parent = NULL)
+	{
+		$this->parent = $parent;
+		$this->parentId = $parent->getId();
+		$this->parent->connectChild($this);
+	}
+
+	/**
 	 * @param IItem[] $allItems
 	 *
 	 * @internal
@@ -59,8 +82,7 @@ abstract class AItem implements IItem
 	public function connectToParent(array $allItems)
 	{
 		if (!$this->hasParent()) return;
-		$this->parent = $allItems[$this->parentId];
-		$this->parent->connectChild($this);
+		$this->setParent($allItems[$this->parentId]);
 	}
 	/**
 	 * @param IItem $child
@@ -72,6 +94,15 @@ abstract class AItem implements IItem
 		if (!is_null($child->getId())) {
 			$this->child[$child->getId()] = $child;
 		}
+	}
+	/**
+	 * @param IItem $child
+	 *
+	 * @internal
+	 */
+	public function unlinkChild(IItem $child)
+	{
+		unlink($this->child[$child->getId()]);
 	}
 
 	public function getId()
@@ -114,13 +145,13 @@ abstract class AItem implements IItem
 	 */
 	public function createRootWay()
 	{
-		/** @var $this[] $way */
+		/** @var $this [] $way */
 		$way = [];
 
 		if ($this->hasParent()) {
 			$parent = $this->getParent();
 
-			/** @var $this[] $way */
+			/** @var $this [] $way */
 			$way = $parent->createRootWay();
 		}
 

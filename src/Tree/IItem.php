@@ -21,6 +21,14 @@ interface IItem
 	public function __construct($properties, array $persistProperties = NULL);
 
 	/**
+	 * @param array|\stdClass|Nette\Database\Table\IRow $properties
+	 * @param array|NULL                                $persistProperties
+	 *
+	 * @internal
+	 */
+	public function updateProperties($properties, array $persistProperties = NULL);
+
+	/**
 	 * @param IItem[] $allItems
 	 *
 	 * @internal
@@ -28,11 +36,25 @@ interface IItem
 	public function connectToParent(array $allItems);
 
 	/**
+	 * @param IItem $parent
+	 *
+	 * @internal
+	 */
+	public function setParent(IItem $parent);
+
+	/**
 	 * @param IItem $child
 	 *
 	 * @internal
 	 */
 	public function connectChild(IItem $child);
+
+	/**
+	 * @param IItem $child
+	 *
+	 * @internal
+	 */
+	public function unlinkChild(IItem $child);
 
 	public function getId();
 

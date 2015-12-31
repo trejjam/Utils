@@ -44,4 +44,16 @@ class Tree
 
 		return [$rootItems, $allItems];
 	}
+
+	/**
+	 * @param IItem $child
+	 * @param IItem $newParent
+	 */
+	public static function moveChild(IItem $child, IItem $newParent)
+	{
+		if ($child->hasParent()) {
+			$child->getParent()->unlinkChild($child);
+			$child->setParent($newParent);
+		}
+	}
 }
