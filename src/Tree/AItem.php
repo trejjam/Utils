@@ -160,6 +160,19 @@ abstract class AItem implements IItem
 		return $way;
 	}
 
+	public function getAttributeRootWay($attribute)
+	{
+		$rootWay = $this->createRootWay();
+
+		$out = [];
+
+		foreach ($rootWay as $v) {
+			$out[] = is_callable($attribute) ? $attribute($v) : $v->$attribute;
+		}
+
+		return $out;
+	}
+
 	/**
 	 * @return array|\stdClass|Nette\Database\Table\IRow
 	 */
@@ -175,7 +188,7 @@ abstract class AItem implements IItem
 		if (!is_object($properties) && isset($properties[$name])) {
 			return $properties[$name];
 		}
-		else if (isset($properties->$name)) {
+		else if (isset($properties->$name) || is_null($properties->$name)) {
 			return $properties->$name;
 		}
 

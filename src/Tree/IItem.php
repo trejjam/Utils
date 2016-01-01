@@ -68,18 +68,24 @@ interface IItem
 	public function hasChild();
 
 	/**
-	 * @return null|static
+	 * @return null|$this
 	 */
 	public function getParent();
 	/**
-	 * @return static[]
+	 * @return $this[]
 	 */
 	public function getChild();
 
 	/**
-	 * @return static[]
+	 * @return $this[]
 	 */
 	public function createRootWay();
+
+	/**
+	 * @param string|callable $attribute
+	 * @return mixed
+	 */
+	public function getAttributeRootWay($attribute);
 
 	/**
 	 * @return array|\stdClass|Nette\Database\Table\IRow
