@@ -102,7 +102,7 @@ abstract class AItem implements IItem
 	 */
 	public function unlinkChild(IItem $child)
 	{
-		unlink($this->child[$child->getId()]);
+		unset($this->child[$child->getId()]);
 	}
 
 	public function getId()
