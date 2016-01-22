@@ -14,7 +14,9 @@ use Trejjam;
 interface IListingFactory
 {
 	/**
+	 * @param Trejjam\Utils\Helpers\IBaseList $list
+	 *
 	 * @return ListingFactory
 	 */
-	function create();
+	function create(Trejjam\Utils\Helpers\IBaseList $list = NULL);
 }

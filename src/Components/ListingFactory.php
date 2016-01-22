@@ -52,12 +52,13 @@ class ListingFactory extends UI\Control
 	 */
 	protected $filterFactory;
 
-	function __construct($templateFile = NULL, IFilterFactory $filterFactory)
+	function __construct($templateFile = NULL, IFilterFactory $filterFactory, Trejjam\Utils\Helpers\IBaseList $list = NULL)
 	{
 		parent::__construct();
 
 		$this->setTemplate($templateFile);
 		$this->filterFactory = $filterFactory;
+		$this->list = $list;
 	}
 
 	public function setTemplate($templateFile)
@@ -65,6 +66,11 @@ class ListingFactory extends UI\Control
 		$this->templateFile = $templateFile;
 	}
 
+	/**
+	 * @param Trejjam\Utils\Helpers\IBaseList $list
+	 *
+	 * @deprecated use constructor
+	 */
 	public function setModel(Trejjam\Utils\Helpers\IBaseList $list)
 	{
 		$this->list = $list;

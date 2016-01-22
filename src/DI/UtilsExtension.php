@@ -28,47 +28,51 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
 	];
 
-	protected function createConfig() {
-		$config = $this->getConfig([
-			'flashes'    => [
-				'enable' => FALSE,
-			],
-			'sinergi'    => [
-				'enable' => FALSE,
-			],
-			'labels'     => [
-				'enable'        => FALSE,
-				'componentName' => 'labels',
-				'table'         => 'utils__labels',
-				'keys'          => [
-					'id'        => 'id',
-					'namespace' => [
-						'name'    => 'namespace',
-						'default' => 'default'
+	protected function createConfig()
+	{
+		$config = $this->getConfig(
+			[
+				'flashes'    => [
+					'enable' => FALSE,
+				],
+				'sinergi'    => [
+					'enable' => FALSE,
+				],
+				'labels'     => [
+					'enable'        => FALSE,
+					'componentName' => 'labels',
+					'table'         => 'utils__labels',
+					'keys'          => [
+						'id'        => 'id',
+						'namespace' => [
+							'name'    => 'namespace',
+							'default' => 'default',
+						],
+						'name'      => 'name',
+						'value'     => 'value',
 					],
-					'name'      => 'name',
-					'value'     => 'value',
 				],
-			],
-			'components' => [
-				'paging'  => [
-					'template' => __DIR__ . '/../templates/paging.latte',
+				'components' => [
+					'paging'  => [
+						'template' => __DIR__ . '/../templates/paging.latte',
+					],
+					'listing' => [
+						'template' => __DIR__ . '/../templates/list.latte',
+					],
+					'filter'  => [
+						'template' => __DIR__ . '/../templates/sortLink.latte',
+					],
 				],
-				'listing' => [
-					'template' => __DIR__ . '/../templates/list.latte',
-				],
-				'filter'  => [
-					'template' => __DIR__ . '/../templates/sortLink.latte',
-				],
-			],
-		]);
+			]
+		);
 
 		Nette\Utils\Validators::assert($config, 'array');
 
 		return $config;
 	}
 
-	public function loadConfiguration() {
+	public function loadConfiguration()
+	{
 		parent::loadConfiguration();
 
 		$builder = $this->getContainerBuilder();
@@ -76,16 +80,25 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		foreach ($this->classesDefinition as $k => $v) {
 			list($firstKey) = explode('.', $k);
-			if (!isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
+			if ( !isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
 				$classes[$k] = $builder->addDefinition($this->prefix($k))
 									   ->setClass($v);
 			}
 		}
 
+		/** @var Nette\DI\ServiceDefinition[] $factories */
+		$factories = [];
 		foreach ($this->factoriesDefinition as $k => $v) {
 			$factories[$k] = $builder->addDefinition($this->prefix($k))
 									 ->setImplement($v);
 		}
+
+		$factories['components.listingFactory']->setArguments(
+			[
+				'templateFile'  => $config['components']['listing']['template'],
+				'filterFactory' => $this->prefix('@components.filterFactory'),
+			]
+		);
 
 		if (class_exists('\Symfony\Component\Console\Command\Command')) {
 			$command = [
@@ -103,7 +116,8 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		}
 	}
 
-	public function beforeCompile() {
+	public function beforeCompile()
+	{
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
@@ -114,7 +128,7 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		foreach ($this->classesDefinition as $k => $v) {
 			list($firstKey) = explode('.', $k);
-			if (!isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
+			if ( !isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
 				$classes[$k] = $builder->getDefinition($this->prefix($k));
 			}
 		}
@@ -137,7 +151,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 			$classes['layout.baseLayout']->setArguments([$this->prefix('@labels')]);
 		}
 
-		$factories['components.listingFactory']->setArguments([$config['components']['listing']['template']]);
 		$factories['components.filterFactory']->setArguments([$config['components']['filter']['template']]);
 		$factories['components.pagingFactory']->setArguments([$config['components']['paging']['template']]);
 	}
