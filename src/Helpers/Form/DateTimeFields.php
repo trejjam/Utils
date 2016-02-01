@@ -26,7 +26,7 @@ class DateTimeFields
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
-		if (!is_null($dateTime)) {
+		if ( !is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d\TH:i:s');
 			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 		}
@@ -39,7 +39,9 @@ class DateTimeFields
 
 	/**
 	 * Get DateTime from ::addDateTimeLocal() field
+	 *
 	 * @param Nette\Forms\Controls\TextInput|string $input
+	 *
 	 * @return string
 	 */
 	public static function getDateTimeLocalValue($input)
@@ -70,7 +72,7 @@ class DateTimeFields
 		$subContainer = $container->addContainer($name);
 		$date = static::addDate($subContainer, static::DATE, $label);
 		$time = static::addTime($subContainer, static::TIME);
-		if (!is_null($dateTime)) {
+		if ( !is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d');
 			$date->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i:s'));
@@ -82,7 +84,9 @@ class DateTimeFields
 
 	/**
 	 * Get DateTime from ::addDateTime() container
+	 *
 	 * @param Nette\Forms\Controls\TextInput[]|string[] $dateTime
+	 *
 	 * @return string
 	 */
 	public static function getDateTimeValue($dateTime)
@@ -90,7 +94,7 @@ class DateTimeFields
 		$date = static::getDateValue($dateTime[static::DATE]);
 		$time = static::getTimeValue($dateTime[static::TIME]);
 
-		if (!is_null($date) && $date != '' && !is_null($time) && $time != '') {
+		if ( !is_null($date) && $date != '' && !is_null($time) && $time != '') {
 			return $date . ' ' . $time;
 		}
 		else {
@@ -98,18 +102,25 @@ class DateTimeFields
 		}
 	}
 
-	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL)
+	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
 		$input->addCondition(UI\Form::FILLED)
 			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Date must be in format YYYY-MM-DD') : $name . '.' . static::$translatorRuleClass . '.filled', '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
 
+		if ( !is_null($dateTime)) {
+			$input->setDefaultValue($dateTime->format('Y-m-d'));
+		}
+
 		return $input;
 	}
+
 	/**
 	 * Get Date from ::addDate() field
+	 *
 	 * @param Nette\Forms\Controls\TextInput|string $input
+	 *
 	 * @return string
 	 */
 	public static function getDateValue($input)
@@ -131,18 +142,25 @@ class DateTimeFields
 		return $value;
 	}
 
-	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL)
+	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
 		$input->addCondition(UI\Form::FILLED)
 			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1})(:[0-5]{1}[0-9]{1}){1,2}');
 
+		if ( !is_null($dateTime)) {
+			$input->setDefaultValue($dateTime->format('H:i:s'));
+		}
+
 		return $input;
 	}
+
 	/**
 	 * Get Time from ::addTime() field
+	 *
 	 * @param Nette\Forms\Controls\TextInput $input
+	 *
 	 * @return mixed
 	 */
 	public static function getTimeValue($input)
