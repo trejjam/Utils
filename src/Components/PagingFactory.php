@@ -13,6 +13,15 @@ use Nette,
 	Trejjam,
 	Nette\Application\UI;
 
+/**
+ * Class PagingFactory
+ *
+ * @package Trejjam\Utils\Components
+ *
+ * @method pageCallback
+ * @method countCallback
+ * @method linkCallback($page)
+ */
 class PagingFactory extends UI\Control
 {
 	protected $spacePage      = 2;
@@ -47,10 +56,10 @@ class PagingFactory extends UI\Control
 
 		$template->setFile($this->templateFile);
 
-		if (is_null($this->pageCallback)) {
+		if ( !is_callable($this->pageCallback)) {
 			throw new \LogicException('Missing page callback');
 		}
-		if (is_null($this->countCallback)) {
+		if ( !is_callable($this->countCallback)) {
 			throw new \LogicException('Missing count callback');
 		}
 
@@ -98,7 +107,7 @@ class PagingFactory extends UI\Control
 
 		$previous = NULL;
 		foreach ($paging as $k => $v) {
-			if (!is_null($previous) && $previous < ($k - 1)) {
+			if ( !is_null($previous) && $previous < ($k - 1)) {
 				$paging[$k - 1] = (object)[
 					'hasLink' => FALSE,
 					'text'    => '&hellip;',
@@ -125,7 +134,7 @@ class PagingFactory extends UI\Control
 
 	protected function createLink($page)
 	{
-		if (is_null($this->linkCallback)) {
+		if ( !is_callable($this->linkCallback)) {
 			throw new \LogicException('Missing link creating callback');
 		}
 
