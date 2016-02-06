@@ -50,6 +50,20 @@ class PagingFactory extends UI\Control
 		$this->templateFile = $templateFile;
 	}
 
+	public function setSpacePage($spacePage)
+	{
+		$this->spacePage = $spacePage;
+
+		return $this;
+	}
+
+	public function setContinuousPage($continuousPage)
+	{
+		$this->continuousPage = $continuousPage;
+
+		return $this;
+	}
+
 	public function render()
 	{
 		$template = $this->createTemplate();
