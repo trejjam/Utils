@@ -19,17 +19,17 @@ class Zip
 		$zip = new \ZipArchive();
 
 		if ($zip->open($zipFileName, \ZipArchive::CREATE) !== TRUE) {
-			throw new \RuntimeException("cannot open '$zipFileName'");
+			throw new Trejjam\Utils\RuntimeException("cannot open '$zipFileName'");
 		}
 
 		foreach ($files as $filename => $file) {
 			if ( !$zip->addFromString($filename, file_get_contents($file))) {
-				throw new \RuntimeException("cannot add '$filename'");
+				throw new Trejjam\Utils\RuntimeException("cannot add '$filename'");
 			}
 		}
 
 		if ( !$zip->close()) {
-			throw new \RuntimeException("cannot save '$zipFileName'");
+			throw new Trejjam\Utils\RuntimeException("cannot save '$zipFileName'");
 		}
 
 		return $zipFileName;

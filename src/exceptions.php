@@ -30,6 +30,10 @@ class LogicException extends \LogicException implements Exception
 {
 }
 
+class RuntimeException extends \RuntimeException implements Exception
+{
+}
+
 class MagicArrayAccessException extends LogicException
 {
 	protected $usedKeys = [];
