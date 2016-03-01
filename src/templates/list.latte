@@ -27,7 +27,7 @@
 		{$v2->render($v)}
 			{else}
 		{var $columnName=is_numeric($k2)?$v2:$k2}
-		{var $columnValue=is_callable($v2)?$v2($v):(is_array($v)?$v[$columnName]:$v->$columnName)}
+		{var $columnValue=is_callable($v2) && !is_numeric($k2)?$v2($v):(is_array($v)?$v[$columnName]:$v->$columnName)}
 
 		<td>{$columnValue}</td>
 			{/if}
