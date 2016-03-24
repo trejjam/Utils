@@ -1,3 +1,15 @@
+<div class="filter_active">
+	{var $head=is_null($columnsHead)?$columns:$columnsHead}
+	<span n:foreach="$appliedSort as $k=>$v">
+		<i>{isset($head[$k])?$head[$k]:$k} {=__($v)}</i>
+		<a href="{$filterComponent->link(this, ['sort'=>array_merge($appliedSort, [$k=>null])])}" class="remove"><span>×</span></a>
+	</span>
+	<span n:foreach="$appliedLikeFilter as $k=>$v">
+		<i>{isset($head[$k])?$head[$k]:$k} {$v}</i>
+		<a href="{$filterComponent->link(this, ['filter'=>array_merge($appliedLikeFilter, [$k=>null])])}" class="remove"><span>×</span></a>
+	</span>
+</div>
+
 <table class="table table-list">
 	<tr class="table-head" n:inner-foreach="is_null($columnsHead)?$columns:$columnsHead as $k2=>$v2">
 		{var $columnName=is_numeric($k2)?$v2:$k2}

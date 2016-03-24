@@ -82,11 +82,15 @@ class ListingFactory extends UI\Control
 		$template->setFile($this->templateFile);
 
 		/** @var FilterFactory $filter */
-		$filter = $this->getComponent('filter');
+		$template->filterComponent = $filter = $this->getComponent('filter');
 
 		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
 		$template->sort = $this->sort;
+		$template->appliedSort = $filter->getSort();
 		$template->filter = array_combine($this->filter, $this->filter);
+		$template->appliedFilter = $filter->getFilter();
+		$template->appliedLikeFilter = $template->appliedFilter;
+		unset($template->appliedLikeFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
 		$template->columns = $this->columns;
 		$template->columnsHead = $this->columnsHead;
 		$template->actionButtons = $this->actionButtons;
