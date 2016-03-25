@@ -215,4 +215,19 @@ abstract class AItem implements IItem
 
 		return FALSE;
 	}
+
+	public function callInAllItem(callable $pre = NULL, callable $post = NULL)
+	{
+		if ( !is_null($pre)) {
+			$pre($this);
+		}
+
+		foreach ($this->getChild() as $v) {
+			$v->callInAllItem($pre, $post);
+		}
+
+		if ( !is_null($post)) {
+			$post($this);
+		}
+	}
 }
