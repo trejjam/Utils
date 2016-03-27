@@ -22,7 +22,7 @@ class DateTimeFields
 	static public $useTranslatorRule   = TRUE;
 	static public $translatorRuleClass = 'rule';
 
-	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label, \DateTime $dateTime = NULL)
+	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL)
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
@@ -67,7 +67,7 @@ class DateTimeFields
 		return $value;
 	}
 
-	public static function addDateTime(Nette\Forms\Container $container, $name, $label, \DateTime $dateTime = NULL)
+	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL)
 	{
 		$subContainer = $container->addContainer($name);
 		$date = static::addDate($subContainer, static::DATE, $label);
