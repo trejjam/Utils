@@ -14,8 +14,10 @@ use Nette,
 interface IRenderable
 {
 	/**
-	 * @param null $parameter
+	 * @param \stdClass|null $parameter
+	 * @param \stdClass[]    $list
+	 *
 	 * @return Nette\Utils\Html
 	 */
-	function render($parameter = NULL);
+	function render($parameter = NULL, $list = []);
 }

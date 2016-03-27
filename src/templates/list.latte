@@ -36,10 +36,10 @@
 		{foreach $listData as $k=>$v}
 	<tr n:class="list-item, $iterator->isEven()?odd:even" n:inner-foreach="$columns as $k2=>$v2">
 			{if $v2 instanceof Trejjam\Utils\Components\IRenderable}
-		{$v2->render($v)}
+		{$v2->render($v, $listData)}
 			{else}
 		{var $columnName=is_numeric($k2)?$v2:$k2}
-		{var $columnValue=is_callable($v2) && !is_numeric($k2)?$v2($v):(is_array($v)?$v[$columnName]:$v->$columnName)}
+		{var $columnValue=is_callable($v2) && !is_numeric($k2)?$v2($v, $listData):(is_array($v)?$v[$columnName]:$v->$columnName)}
 
 		<td>{$columnValue}</td>
 			{/if}

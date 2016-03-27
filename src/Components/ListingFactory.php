@@ -19,17 +19,18 @@ use Nette,
  */
 class ListingFactory extends UI\Control
 {
-	public $defaultSort       = [];
-	public $sort              = [];
-	public $sortDbTranslate   = [];
-	public $enabledSort       = [
+	public $defaultSort        = [];
+	public $sort               = [];
+	public $sortDbTranslate    = [];
+	public $enabledSort        = [
 		'asc'  => TRUE,
 		'desc' => FALSE,
 	];
-	public $defaultFilter     = [];
-	public $strictFilter      = [];
-	public $filter            = [];
-	public $filterDbTranslate = [];
+	public $defaultFilter      = [];
+	public $strictFilter       = [];
+	public $filterSpecialInput = [];
+	public $filter             = [];
+	public $filterDbTranslate  = [];
 
 	public $columns;
 	public $columnsHead;
@@ -88,9 +89,9 @@ class ListingFactory extends UI\Control
 		$template->sort = $this->sort;
 		$template->appliedSort = $filter->getSort();
 		$template->filter = array_combine($this->filter, $this->filter);
-		$template->appliedFilter = $filter->getFilter();
-		$template->appliedLikeFilter = $template->appliedFilter;
-		unset($template->appliedLikeFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
+		$template->appliedFilter = $appliedFilter = $filter->getFilter();
+		unset($appliedFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
+		$template->appliedLikeFilter = $appliedFilter;
 		$template->columns = $this->columns;
 		$template->columnsHead = $this->columnsHead;
 		$template->actionButtons = $this->actionButtons;
@@ -102,14 +103,14 @@ class ListingFactory extends UI\Control
 	{
 		$filter = $this->filterFactory->create();
 
-		$filter->setSort($this->sort, $this->enabledSort);
-		$filter->setSortDbTranslate($this->sortDbTranslate);
-		$filter->defaultSort($this->defaultSort);
-
-		$filter->setFilter($this->filter);
-		$filter->setFilterDbTranslate($this->filterDbTranslate);
-		$filter->setDefaultFilter($this->defaultFilter);
-		$filter->setStrictFilter($this->strictFilter);
+		$filter->setSort($this->sort, $this->enabledSort)
+			   ->setSortDbTranslate($this->sortDbTranslate)
+			   ->setDefaultSort($this->defaultSort)
+			   ->setFilter($this->filter)
+			   ->setFilterDbTranslate($this->filterDbTranslate)
+			   ->setDefaultFilter($this->defaultFilter)
+			   ->setStrictFilter($this->strictFilter)
+			   ->setFilterSpecialInput($this->filterSpecialInput);
 
 		$filter->countCallback = function ($filter) {
 			return $this->list->getCount($filter);

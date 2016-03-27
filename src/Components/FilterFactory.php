@@ -66,7 +66,8 @@ class FilterFactory extends UI\Control
 	protected $enabledSort   = [];
 	protected $enableValues  = [];
 
-	protected $enableFilter = [];
+	protected $enableFilter       = [];
+	protected $filterSpecialInput = [];
 
 	/**
 	 * @var callable
@@ -96,37 +97,37 @@ class FilterFactory extends UI\Control
 
 		if (count($this->sort) == 0) {
 			foreach ($this->defaultSort as $k => $v) {
-				if (!isset($this->sort[$k])) {
+				if ( !isset($this->sort[$k])) {
 					$this->sort[$k] = $v;
 				}
 			}
 		}
 
 		foreach ($this->sort as $k => $v) {
-			if (!in_array($k, $this->enabledSort) && !isset($this->defaultSort[$k])) {
+			if ( !in_array($k, $this->enabledSort) && !isset($this->defaultSort[$k])) {
 				unset($this->sort[$k]);
 				continue;
 			}
 
-			if (!in_array($v, array_keys($this->enableValues))) {
+			if ( !in_array($v, array_keys($this->enableValues))) {
 				unset($this->sort[$k]);
 				continue;
 			}
 		}
 
 		foreach ($this->defaultFilter as $k => $v) {
-			if (!isset($this->filter[$k])) {
+			if ( !isset($this->filter[$k])) {
 				$this->filter[$k] = $v;
 			}
 		}
 		foreach ($this->filter as $k => $v) {
-			if (!in_array($k, $this->enableFilter)) {
+			if ( !in_array($k, $this->enableFilter)) {
 				unset($this->filter[$k]);
 				continue;
 			}
 		}
 
-		if (!is_null($this->countCallback)) {
+		if ( !is_null($this->countCallback)) {
 			$this->count = $this->countCallback($this->getDbFilter());
 		}
 		else {
@@ -134,7 +135,13 @@ class FilterFactory extends UI\Control
 		}
 
 		$this->limit = Nette\Utils\Validators::isNumericInt($this->limit) ? $this->limit : static::DEFAULT_LIMIT;
-		$this->page = (Nette\Utils\Validators::isNumericInt($this->page) && $this->page <= ceil($this->count / $this->limit) && $this->page > 0) ? $this->page : 1;
+		$this->page = (
+			Nette\Utils\Validators::isNumericInt($this->page)
+			&& $this->page <= ceil($this->count / $this->limit)
+			&& $this->page > 0
+		)
+			? $this->page
+			: 1;
 
 		$this->cleanSortKeys = $this->defaultSort;
 		foreach ($this->enabledSort as $k => $v) {
@@ -148,30 +155,39 @@ class FilterFactory extends UI\Control
 	{
 		$this->enabledSort = $enableSort;
 		$this->enableValues = $enableValues;
+
+		return $this;
 	}
+
 	public function setSortDbTranslate(array $sortDbTranslate)
 	{
 		$this->sortDbTranslate = $sortDbTranslate;
+
+		return $this;
 	}
 
-	public function defaultSort(array $defaultSort)
+	public function setDefaultSort(array $defaultSort)
 	{
 		$this->defaultSort = $defaultSort;
+
+		return $this;
 	}
 
 	public function isSort($name)
 	{
 		return isset($this->sort[$name]);
 	}
+
 	public function sort($name, $boolean = FALSE)
 	{
-		if (!$this->isSort($name)) {
+		if ( !$this->isSort($name)) {
 			return NULL;
 		}
 		else {
 			return $boolean ? $this->enableValues[$this->sort[$name]] : $this->sort[$name];
 		}
 	}
+
 	public function getNextSort($name)
 	{
 		foreach ($this->enableValues as $k => $v) {
@@ -216,6 +232,7 @@ class FilterFactory extends UI\Control
 	{
 		return $this->sort;
 	}
+
 	public function getDbSort()
 	{
 		$out = [];
@@ -230,18 +247,36 @@ class FilterFactory extends UI\Control
 	public function setFilter(array $enableFilter)
 	{
 		$this->enableFilter = $enableFilter;
+
+		return $this;
 	}
+
 	public function setFilterDbTranslate(array $filterDbTranslate)
 	{
 		$this->filterDbTranslate = $filterDbTranslate;
+
+		return $this;
 	}
+
 	public function setDefaultFilter(array $defaultFilter)
 	{
 		$this->defaultFilter = $defaultFilter;
+
+		return $this;
 	}
+
 	public function setStrictFilter(array $strictFilter)
 	{
 		$this->strictFilter = $strictFilter;
+
+		return $this;
+	}
+
+	public function setFilterSpecialInput(array $filterSpecialInput)
+	{
+		$this->filterSpecialInput = $filterSpecialInput;
+
+		return $this;
 	}
 
 	public function createComponentForm()
@@ -249,8 +284,26 @@ class FilterFactory extends UI\Control
 		$form = new UI\Form;
 
 		foreach ($this->enableFilter as $v) {
-			$input = $form->addText($v);
-			if (isset($this->filter[$v])) {
+			if (
+				array_key_exists($v, $this->filterSpecialInput)
+				&& array_key_exists('type', $this->filterSpecialInput[$v])
+			) {
+				/** @var Nette\Forms\Controls\BaseControl $input */
+				$input = call_user_func([$form, $this->filterSpecialInput[$v]['type']], $v);
+			}
+			else if (
+				array_key_exists($v, $this->filterSpecialInput)
+				&& array_key_exists('factory', $this->filterSpecialInput[$v])
+				&& is_callable($this->filterSpecialInput[$v]['factory'])
+			) {
+				/** @var Nette\Forms\Controls\BaseControl $input */
+				$input = call_user_func($this->filterSpecialInput[$v]['factory'], $this, $form, $v);
+			}
+			else {
+				/** @var Nette\Forms\Controls\BaseControl $input */
+				$input = $form->addText($v);
+			}
+			if (array_key_exists($v, $this->filter)) {
 				$input->setDefaultValue($this->filter[$v]);
 			}
 		}
