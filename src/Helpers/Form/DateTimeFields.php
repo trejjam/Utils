@@ -56,15 +56,15 @@ class DateTimeFields
 		if (preg_match('~^(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{1,2}?)[/.]{1}[ ]{0,1}(\d{4}?) (\d{1,2}?)[:]{1}(\d{1,2}?)([:]{1}(\d{1,2}?)){0,1}$~', $value, $arr)) {
 			$date = new Nette\Utils\DateTime($arr[1] . '-' . $arr[2] . '-' . $arr[3] . ' ' . $arr[4] . ':' . $arr[5] . (isset($arr[7]) ? ':' . $arr[7] : ''));
 
-			return $date->format('Y-m-d H:i:s');
+			return $date->getTimestamp() < 10 ? NULL : $date->format('Y-m-d H:i:s');
 		}
 		else if (preg_match('~^(\d{4}?)[-]{1}(\d{2}?)[-]{1}(\d{2}?)T(\d{1,2}?)[:]{1}(\d{1,2}?)([:]{1}(\d{1,2}?)){0,1}$~', $value, $arr)) {
 			$date = new Nette\Utils\DateTime($arr[3] . '-' . $arr[2] . '-' . $arr[1] . ' ' . $arr[4] . ':' . $arr[5] . (isset($arr[7]) ? ':' . $arr[7] : ''));
 
-			return $date->format('Y-m-d H:i:s');
+			return $date->getTimestamp() < 10 ? NULL : $date->format('Y-m-d H:i:s');
 		}
 
-		return $value;
+		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
 	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL)
@@ -98,7 +98,7 @@ class DateTimeFields
 			return $date . ' ' . $time;
 		}
 		else {
-			return (is_null($date) || $date == '' ? '0000-00-00' : $date) . ' ' . (is_null($time) || $time == '' ? '00:00:00' : $time);
+			return (empty($date) || $date == '' ? '0000-00-00' : $date) . ' ' . (is_null($time) || $time == '' ? '00:00:00' : $time);
 		}
 	}
 
@@ -136,10 +136,10 @@ class DateTimeFields
 			$dateArr = preg_split('/[.\/]{1}[ ]{0,1}/s', $arr[0]);
 			$date = new Nette\Utils\DateTime($dateArr[2] . '-' . $dateArr[1] . '-' . $dateArr[0]);
 
-			return $date->format('Y-m-d');
+			return $date->getTimestamp() < 10 ? NULL : $date->format('Y-m-d');
 		}
 
-		return $value;
+		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
 	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL)
@@ -172,6 +172,6 @@ class DateTimeFields
 			$value = $input;
 		}
 
-		return empty($value) ? '' : $value . ':00';
+		return empty($value) ? NULL : $value . ':00';
 	}
 }
