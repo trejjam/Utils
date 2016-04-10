@@ -18,6 +18,7 @@ class Utils
 	 * @param double|double[] $price
 	 * @param null|string     $units
 	 * @param int             $decimalLength
+	 *
 	 * @return string|string[]
 	 */
 	public static function priceFreeText($freeText, $price, $units = NULL, $decimalLength = 2)
@@ -34,10 +35,12 @@ class Utils
 			return $price <= 0 ? $freeText : static::priceCreate($price, $units, $decimalLength);
 		}
 	}
+
 	/**
 	 * @param double|double[] $price
 	 * @param null|string     $units
 	 * @param int             $decimalLength
+	 *
 	 * @return string|string[]
 	 */
 	public static function priceCreate($price, $units = NULL, $decimalLength = 2)
@@ -80,18 +83,22 @@ class Utils
 			return ($price < 0 ? '-' : '') . $outPrice . ',' . (in_array($decimalPrice, ['', '0']) ? '-' : $decimalPrice) . (is_null($units) ? '' : ' ' . $units);
 		}
 	}
+
 	/**
 	 * @param int $number
 	 * @param int $positionStart
 	 * @param int $numberLength
+	 *
 	 * @return int
 	 */
 	public static function numberAt($number, $positionStart, $numberLength = 1)
 	{
 		return (int)(floor($number / pow(10, $positionStart))) % pow(10, $numberLength);
 	}
+
 	/**
 	 * @param $zip
+	 *
 	 * @return string
 	 */
 	public static function unifyZip($zip)
@@ -102,10 +109,12 @@ class Utils
 
 		return $zip;
 	}
+
 	/**
 	 * @param string $phone
 	 * @param bool   $addPrefix
 	 * @param string $prefix
+	 *
 	 * @return string
 	 */
 	public static function unifyPhone($phone, $addPrefix = TRUE, $prefix = "+420")
@@ -147,6 +156,7 @@ class Utils
 
 		return $info;
 	}
+
 	public static function getTextServerInfo()
 	{
 		return print_r(static::getServerInfo(), TRUE);
@@ -160,7 +170,7 @@ class Utils
 
 		$findKeys = [];
 		foreach ($keyArray as $v) {
-			if (isset($out[$v])) {
+			if (array_key_exists($v, $out)) {
 				$out = $out[$v];
 				$findKeys[] = $v;
 			}
@@ -209,6 +219,7 @@ class Utils
 	 * http://stackoverflow.com/questions/7664121/php-converting-number-to-alphabet-and-vice-versa
 	 * @param int    $num
 	 * @param string $startLetter
+	 *
 	 * @return string
 	 */
 	public static function numberToLetter($num, $startLetter = 'a')
@@ -239,6 +250,7 @@ class Utils
 	/**
 	 * @param string $str
 	 * @param string $startLetter
+	 *
 	 * @return int
 	 */
 	public static function letterToNumber($str, $startLetter = 'a')
@@ -253,5 +265,27 @@ class Utils
 		}
 
 		return $num;
+	}
+
+	public static function extractFieldFromArray($array, $key, $skipEmpty = FALSE, $keyDelimiter = '.', callable $getArrayCallback=null)
+	{
+		$out = [];
+
+		foreach ($array as $v) {
+			if (is_callable($getArrayCallback)) {
+				$value = self::getValue($getArrayCallback($v), $key, $keyDelimiter);
+			}
+			else {
+				$value = self::getValue($v, $key, $keyDelimiter);
+			}
+
+			if ($skipEmpty && empty($value)) {
+				continue;
+			}
+
+			$out[] = $value;
+		}
+
+		return $out;
 	}
 }
