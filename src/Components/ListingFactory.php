@@ -77,6 +77,11 @@ class ListingFactory extends UI\Control
 		$this->list = $list;
 	}
 
+	public function getModel()
+	{
+		return $this->list;
+	}
+
 	public function render()
 	{
 		$template = $this->createTemplate();
