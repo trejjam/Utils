@@ -128,7 +128,7 @@ class FilterFactory extends UI\Control
 		}
 
 		if ( !is_null($this->countCallback)) {
-			$this->count = $this->countCallback($this->getDbFilter());
+			$this->count = call_user_func($this->countCallback,$this->getDbFilter());
 		}
 		else {
 			throw new \LogicException('Missing count callback');
@@ -309,7 +309,7 @@ class FilterFactory extends UI\Control
 		}
 
 		$form->addSubmit('send', 'Filter');
-		$form->onSuccess[] = $this->updateFilter;
+		$form->onSuccess[] = [$this,'updateFilter'];
 
 		return $form;
 	}

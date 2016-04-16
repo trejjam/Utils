@@ -77,8 +77,8 @@ class PagingFactory extends UI\Control
 			throw new \LogicException('Missing count callback');
 		}
 
-		$template->page = $page = $this->pageCallback();
-		$template->count = $count = $this->countCallback();
+		$template->page = $page = call_user_func($this->pageCallback);
+		$template->count = $count = call_user_func($this->countCallback);
 
 		if ($count < 2) {
 			return;
@@ -155,7 +155,7 @@ class PagingFactory extends UI\Control
 		return (object)[
 			'hasLink' => TRUE,
 			'text'    => $page,
-			'link'    => $this->linkCallback($page),
+			'link'    => call_user_func($this->linkCallback, $page),
 		];
 	}
 }

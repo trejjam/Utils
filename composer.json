@@ -22,7 +22,7 @@
 	"require": {
 		"php": ">=5.4",
 
-		"nette/di": "~2.3"
+		"nette/di": ">=2.4.10 ~2.4"
 	},
 	"require-dev": {
 		"nette/tester": "@dev",
