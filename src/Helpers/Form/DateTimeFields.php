@@ -67,12 +67,12 @@ class DateTimeFields
 		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
-	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL)
+	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
 	{
 		$subContainer = $container->addContainer($name);
 		$date = static::addDate($subContainer, static::DATE, $label);
 		$time = static::addTime($subContainer, static::TIME);
-		if ( !is_null($dateTime)) {
+		if ($onNullSetNow && !is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d');
 			$date->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i:s'));
@@ -102,14 +102,14 @@ class DateTimeFields
 		}
 	}
 
-	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL)
+	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
 		$input->addCondition(UI\Form::FILLED)
 			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Date must be in format YYYY-MM-DD') : $name . '.' . static::$translatorRuleClass . '.filled', '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
 
-		if ( !is_null($dateTime)) {
+		if ($onNullSetNow && !is_null($dateTime)) {
 			$input->setDefaultValue($dateTime->format('Y-m-d'));
 		}
 
@@ -142,14 +142,14 @@ class DateTimeFields
 		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
-	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL)
+	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
 		$input->addCondition(UI\Form::FILLED)
 			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1})(:[0-5]{1}[0-9]{1}){1,2}');
 
-		if ( !is_null($dateTime)) {
+		if ($onNullSetNow && !is_null($dateTime)) {
 			$input->setDefaultValue($dateTime->format('H:i:s'));
 		}
 
