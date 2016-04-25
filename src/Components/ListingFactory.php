@@ -39,6 +39,8 @@ class ListingFactory extends UI\Control
 	 */
 	public $actionButtons = [];
 
+	public $controlVariables = [];
+
 	/**
 	 * @var Trejjam\Utils\Helpers\IBaseList
 	 */
@@ -100,6 +102,15 @@ class ListingFactory extends UI\Control
 		$template->columns = $this->columns;
 		$template->columnsHead = $this->columnsHead;
 		$template->actionButtons = $this->actionButtons;
+
+		$controlCache = [];
+		$template->getControl = function ($name) use($controlCache) {
+			if ( !array_key_exists($name, $controlCache)) {
+				$controlCache[$name] = $this->controlVariables[$name]();
+			}
+
+			return $controlCache[$name];
+		};
 
 		$template->render();
 	}
