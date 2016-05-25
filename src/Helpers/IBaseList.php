@@ -13,7 +13,7 @@ use Nette,
 
 interface IBaseList
 {
-	function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL);
+	function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = []);
 	function getItem($id);
-	function getCount(array $filter = NULL);
+	function getCount(array $filter = NULL, array $defaultFilterType = []);
 }

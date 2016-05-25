@@ -31,6 +31,7 @@ class ListingFactory extends UI\Control
 	public $filterSpecialInput = [];
 	public $filter             = [];
 	public $filterDbTranslate  = [];
+	public $filterCompareType  = [];
 
 	public $columns;
 	public $columnsHead;
@@ -92,7 +93,7 @@ class ListingFactory extends UI\Control
 		/** @var FilterFactory $filter */
 		$template->filterComponent = $filter = $this->getComponent('filter');
 
-		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit());
+		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit(), $this->filterCompareType);
 		$template->sort = $this->sort;
 		$template->appliedSort = $filter->getSort();
 		$template->filter = array_combine($this->filter, $this->filter);
@@ -104,7 +105,7 @@ class ListingFactory extends UI\Control
 		$template->actionButtons = $this->actionButtons;
 
 		$controlCache = [];
-		$template->getControl = function ($name) use($controlCache) {
+		$template->getControl = function ($name) use ($controlCache) {
 			if ( !array_key_exists($name, $controlCache)) {
 				$controlCache[$name] = $this->controlVariables[$name]();
 			}
@@ -129,7 +130,7 @@ class ListingFactory extends UI\Control
 			   ->setFilterSpecialInput($this->filterSpecialInput);
 
 		$filter->countCallback = function ($filter) {
-			return $this->list->getCount($filter);
+			return $this->list->getCount($filter, $this->filterCompareType);
 		};
 
 		return $filter;

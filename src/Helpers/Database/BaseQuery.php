@@ -14,26 +14,57 @@ use Nette,
 
 class BaseQuery
 {
-	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL)
+	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL, array $defaultFilterType = [])
 	{
-		if (!is_null($filter)) {
+		if ( !is_null($filter)) {
 			if (isset($filter[ABaseList::STRICT])) {
 				$query->where($filter[ABaseList::STRICT]);
 				unset($filter[ABaseList::STRICT]);
 			}
 
 			foreach ($filter as $k => $v) {
-				$query->where([
-					$k . ' LIKE' => '%' . $v . '%',
-				]);
+				if (array_key_exists($k, $defaultFilterType)) {
+					switch ($defaultFilterType[$k]) {
+						case '<':
+							$query->where($k . ' < ?', $v);
+
+							break;
+						case '<=':
+							$query->where($k . ' <= ?', $v);
+
+							break;
+						case '>':
+							$query->where($k . ' > ?', $v);
+
+							break;
+						case '>=':
+							$query->where($k . ' >= ?', $v);
+
+							break;
+						case '=':
+							$query->where($k . ' = ?', $v);
+
+							break;
+						default:
+							throw new Trejjam\Utils\LogicException('Unknown filter type ' . $defaultFilterType[$k]);
+					}
+				}
+				else {
+					$query->where(
+						[
+							$k . ' LIKE' => '%' . $v . '%',
+						]
+					);
+				}
 			}
 		}
 
 		return $query;
 	}
+
 	static function appendSort(Nette\Database\Table\Selection &$query, $sort = NULL)
 	{
-		if (!is_null($sort)) {
+		if ( !is_null($sort)) {
 			foreach ($sort as $k => $v) {
 				if (Nette\Utils\Validators::isNumericInt($k)) {
 					$query->order($v);
@@ -46,9 +77,10 @@ class BaseQuery
 
 		return $query;
 	}
+
 	static function appendLimit(Nette\Database\Table\Selection &$query, $limit = NULL, $offset = NULL)
 	{
-		if (!is_null($limit)) {
+		if ( !is_null($limit)) {
 			$query->limit($limit, $offset);
 		}
 
