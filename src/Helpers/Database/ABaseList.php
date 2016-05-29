@@ -22,12 +22,12 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 */
 	protected abstract function getTable();
 
-	protected function prepareListQuery(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [])
+	protected function prepareListQuery(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [], array $filterTranslate = [])
 	{
 		$query = $this->getTable();
 
 		BaseQuery::appendSort($query, $sort);
-		BaseQuery::appendFilter($query, $filter, $defaultFilterType);
+		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate, $defaultFilterType);
 		BaseQuery::appendLimit($query, $limit, $offset);
 
 		return $query;
@@ -40,11 +40,13 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 * @param int|null   $offset
 	 * @param array      $defaultFilterType
 	 *
+	 * @param array      $filterTranslate
+	 *
 	 * @return \stdClass[]
 	 */
-	public function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [])
+	public function getList(array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [], array $filterTranslate = [])
 	{
-		$query = $this->prepareListQuery($sort, $filter, $limit, $offset, $defaultFilterType);
+		$query = $this->prepareListQuery($sort, $filter, $limit, $offset, $defaultFilterType, $filterTranslate);
 
 		$out = [];
 
@@ -83,11 +85,11 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 */
 	public abstract function getItem($id);
 
-	public function getCount(array $filter = NULL, array $defaultFilterType = [])
+	public function getCount(array $filter = NULL, array $defaultFilterType = [], array $filterTranslate = [])
 	{
 		$query = $this->getTable()->select('COUNT(*) count');
 
-		BaseQuery::appendFilter($query, $filter, $defaultFilterType);
+		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate);
 
 		return $query->fetch()->count;
 	}
@@ -103,7 +105,7 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 *
 	 * @return \stdClass[]
 	 */
-	public function getRelatedList($row, $throughColumn = NULL, array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [])
+	public function getRelatedList($row, $throughColumn = NULL, array $sort = NULL, array $filter = NULL, $limit = NULL, $offset = NULL, array $defaultFilterType = [], array $filterTranslate = [])
 	{
 		if ($row instanceof \stdClass) {
 			$row = $row->{static::ROW};
@@ -113,7 +115,7 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 		$query = $row->related($this->getTable()->getName(), $throughColumn);
 
 		BaseQuery::appendSort($query, $sort);
-		BaseQuery::appendFilter($query, $filter, $defaultFilterType);
+		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate);
 		BaseQuery::appendLimit($query, $limit, $offset);
 
 		$out = [];

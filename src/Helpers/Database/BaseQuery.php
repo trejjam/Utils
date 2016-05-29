@@ -14,7 +14,7 @@ use Nette,
 
 class BaseQuery
 {
-	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL, array $defaultFilterType = [])
+	static function appendFilter(Nette\Database\Table\Selection &$query, $filter = NULL, array $defaultFilterType = [], array $filterTranslate = [])
 	{
 		if ( !is_null($filter)) {
 			if (isset($filter[ABaseList::STRICT])) {
@@ -23,26 +23,31 @@ class BaseQuery
 			}
 
 			foreach ($filter as $k => $v) {
+				$key = $k;
+				if (array_key_exists($k, $filterTranslate)) {
+					$key = $filterTranslate[$k];
+				}
+
 				if (array_key_exists($k, $defaultFilterType)) {
 					switch ($defaultFilterType[$k]) {
 						case '<':
-							$query->where($k . ' < ?', $v);
+							$query->where($key . ' < ?', $v);
 
 							break;
 						case '<=':
-							$query->where($k . ' <= ?', $v);
+							$query->where($key . ' <= ?', $v);
 
 							break;
 						case '>':
-							$query->where($k . ' > ?', $v);
+							$query->where($key . ' > ?', $v);
 
 							break;
 						case '>=':
-							$query->where($k . ' >= ?', $v);
+							$query->where($key . ' >= ?', $v);
 
 							break;
 						case '=':
-							$query->where($k . ' = ?', $v);
+							$query->where($key . ' = ?', $v);
 
 							break;
 						default:
@@ -52,7 +57,7 @@ class BaseQuery
 				else {
 					$query->where(
 						[
-							$k . ' LIKE' => '%' . $v . '%',
+							$key . ' LIKE' => '%' . $v . '%',
 						]
 					);
 				}

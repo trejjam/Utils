@@ -128,7 +128,7 @@ class FilterFactory extends UI\Control
 		}
 
 		if ( !is_null($this->countCallback)) {
-			$this->count = call_user_func($this->countCallback,$this->getDbFilter());
+			$this->count = call_user_func($this->countCallback, $this->getDbFilter());
 		}
 		else {
 			throw new \LogicException('Missing count callback');
@@ -251,12 +251,12 @@ class FilterFactory extends UI\Control
 		return $this;
 	}
 
-	public function setFilterDbTranslate(array $filterDbTranslate)
-	{
-		$this->filterDbTranslate = $filterDbTranslate;
+	//public function setFilterDbTranslate(array $filterDbTranslate)
+	//{
+	//	$this->filterDbTranslate = $filterDbTranslate;
 
-		return $this;
-	}
+	//	return $this;
+	//}
 
 	public function setDefaultFilter(array $defaultFilter)
 	{
@@ -337,13 +337,14 @@ class FilterFactory extends UI\Control
 
 	public function getDbFilter()
 	{
-		$out = [];
+		//moved to BaseQuery::appendFilter
+		//$out = [];
 
-		foreach ($this->getFilter() as $k => $v) {
-			$out[isset($this->filterDbTranslate[$k]) ? $this->filterDbTranslate[$k] : $k] = $v;
-		}
+		//foreach ($this->getFilter() as $k => $v) {
+		//	$out[isset($this->filterDbTranslate[$k]) ? $this->filterDbTranslate[$k] : $k] = $v;
+		//}
 
-		return $out;
+		return $this->getFilter();
 	}
 
 	public function setLimit($limit)

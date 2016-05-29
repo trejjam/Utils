@@ -32,6 +32,7 @@ class ListingFactory extends UI\Control
 	public $filter             = [];
 	public $filterDbTranslate  = [];
 	public $filterCompareType  = [];
+	public $multipleFilter     = [];
 
 	public $columns;
 	public $columnsHead;
@@ -93,10 +94,11 @@ class ListingFactory extends UI\Control
 		/** @var FilterFactory $filter */
 		$template->filterComponent = $filter = $this->getComponent('filter');
 
-		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit(), $this->filterCompareType);
+		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit(), $this->filterCompareType, $this->filterDbTranslate);
 		$template->sort = $this->sort;
 		$template->appliedSort = $filter->getSort();
 		$template->filter = array_combine($this->filter, $this->filter);
+		$template->multipleFilter = $this->multipleFilter;
 		$template->appliedFilter = $appliedFilter = $filter->getFilter();
 		unset($appliedFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
 		$template->appliedLikeFilter = $appliedFilter;
@@ -124,13 +126,13 @@ class ListingFactory extends UI\Control
 			   ->setSortDbTranslate($this->sortDbTranslate)
 			   ->setDefaultSort($this->defaultSort)
 			   ->setFilter($this->filter)
-			   ->setFilterDbTranslate($this->filterDbTranslate)
+			   //->setFilterDbTranslate($this->filterDbTranslate)
 			   ->setDefaultFilter($this->defaultFilter)
 			   ->setStrictFilter($this->strictFilter)
 			   ->setFilterSpecialInput($this->filterSpecialInput);
 
 		$filter->countCallback = function ($filter) {
-			return $this->list->getCount($filter, $this->filterCompareType);
+			return $this->list->getCount($filter, $this->filterCompareType, $this->filterDbTranslate);
 		};
 
 		return $filter;
