@@ -170,7 +170,7 @@ class Utils
 
 		$findKeys = [];
 		foreach ($keyArray as $v) {
-			if (array_key_exists($v, $out)) {
+			if (isset($out[$v])) {
 				$out = $out[$v];
 				$findKeys[] = $v;
 			}
@@ -267,7 +267,7 @@ class Utils
 		return $num;
 	}
 
-	public static function extractFieldFromArray($array, $key, $skipEmpty = FALSE, $keyDelimiter = '.', callable $getArrayCallback=null)
+	public static function extractFieldFromArray($array, $key, $skipEmpty = FALSE, $keyDelimiter = '.', callable $getArrayCallback = NULL)
 	{
 		$out = [];
 
