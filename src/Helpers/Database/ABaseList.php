@@ -27,7 +27,7 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 		$query = $this->getTable();
 
 		BaseQuery::appendSort($query, $sort);
-		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate, $defaultFilterType);
+		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate);
 		BaseQuery::appendLimit($query, $limit, $offset);
 
 		return $query;
