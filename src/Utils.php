@@ -170,18 +170,26 @@ class Utils
 
 		$findKeys = [];
 		foreach ($keyArray as $v) {
-			if (isset($out[$v])) {
+			if (is_array($out) && array_key_exists($v, $out)) {
 				$out = $out[$v];
 				$findKeys[] = $v;
-			}
-			else {
-				$magicArrayAccessException = new Trejjam\Utils\MagicArrayAccessException("Key '$v' from '$key' not exist in array.", Exception::UTILS_KEY_NOT_FOUND);
-				$magicArrayAccessException->setUsedKeys($findKeys);
-				$magicArrayAccessException->setAllKeys($keyArray);
-				$magicArrayAccessException->setLastItem($out);
 
-				throw $magicArrayAccessException;
+				continue;
 			}
+
+			if (is_object($out) && $out instanceof \ArrayAccess && isset($out[$v])) {
+				$out = $out[$v];
+				$findKeys[] = $v;
+
+				continue;
+			}
+
+			$magicArrayAccessException = new Trejjam\Utils\MagicArrayAccessException("Key '$v' from '$key' not exist in array.", Exception::UTILS_KEY_NOT_FOUND);
+			$magicArrayAccessException->setUsedKeys($findKeys);
+			$magicArrayAccessException->setAllKeys($keyArray);
+			$magicArrayAccessException->setLastItem($out);
+
+			throw $magicArrayAccessException;
 		}
 
 		return $out;
