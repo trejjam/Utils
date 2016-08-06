@@ -23,7 +23,7 @@ class Zip
 		}
 
 		foreach ($files as $filename => $file) {
-			if ( !$zip->addFromString($filename, file_get_contents($file))) {
+			if ( !$zip->addFile($file, $filename)) {
 				throw new Trejjam\Utils\RuntimeException("cannot add '$filename'");
 			}
 		}
