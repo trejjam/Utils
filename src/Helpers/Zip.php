@@ -8,9 +8,7 @@
 
 namespace Trejjam\Utils\Helpers;
 
-use Nette,
-	App,
-	Trejjam;
+use Trejjam;
 
 class Zip
 {
