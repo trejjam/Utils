@@ -283,28 +283,38 @@ class FilterFactory extends UI\Control
 	{
 		$form = new UI\Form;
 
-		foreach ($this->enableFilter as $v) {
+		foreach ($this->enableFilter as $fieldName) {
 			if (
-				array_key_exists($v, $this->filterSpecialInput)
-				&& array_key_exists('type', $this->filterSpecialInput[$v])
+				array_key_exists($fieldName, $this->filterSpecialInput)
+				&& array_key_exists('type', $this->filterSpecialInput[$fieldName])
 			) {
 				/** @var Nette\Forms\Controls\BaseControl $input */
-				$input = call_user_func([$form, $this->filterSpecialInput[$v]['type']], $v);
+				$input = call_user_func([$form, $this->filterSpecialInput[$fieldName]['type']], $fieldName);
 			}
 			else if (
-				array_key_exists($v, $this->filterSpecialInput)
-				&& array_key_exists('factory', $this->filterSpecialInput[$v])
-				&& is_callable($this->filterSpecialInput[$v]['factory'])
+				array_key_exists($fieldName, $this->filterSpecialInput)
+				&& array_key_exists('factory', $this->filterSpecialInput[$fieldName])
+				&& is_callable($this->filterSpecialInput[$fieldName]['factory'])
 			) {
 				/** @var Nette\Forms\Controls\BaseControl $input */
-				$input = call_user_func($this->filterSpecialInput[$v]['factory'], $this, $form, $v);
+				$input = call_user_func($this->filterSpecialInput[$fieldName]['factory'], $this, $form, $fieldName);
 			}
 			else {
 				/** @var Nette\Forms\Controls\BaseControl $input */
-				$input = $form->addText($v);
+				$input = $form->addText($fieldName);
 			}
-			if (array_key_exists($v, $this->filter)) {
-				$input->setDefaultValue($this->filter[$v]);
+			if (array_key_exists($fieldName, $this->filter)) {
+				$input->setDefaultValue($this->filter[$fieldName]);
+			}
+
+			if (
+				array_key_exists($fieldName, $this->filterSpecialInput)
+				&& array_key_exists('onValidate', $this->filterSpecialInput[$fieldName])
+				&& is_callable($this->filterSpecialInput[$fieldName]['onValidate'])
+			) {
+				$form->onValidate[] = function (Nette\Forms\Form $form) use ($fieldName, $input) {
+					call_user_func($this->filterSpecialInput[$fieldName]['onValidate'], $form, $input);
+				};
 			}
 		}
 
