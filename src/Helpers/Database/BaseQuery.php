@@ -40,7 +40,7 @@ class BaseQuery
 							break;
 
 						case '<=date':
-							$query->where($key . ' < ? + interval 1 day', $v);
+							$query->where($key . ' < ? + INTERVAL 1 DAY', $v);
 
 							break;
 						case '>':
