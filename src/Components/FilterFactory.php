@@ -330,7 +330,7 @@ class FilterFactory extends UI\Control
 
 		$filter = [];
 		foreach ($values as $k => $v) {
-			if ($k == 'send' || $v == '') {
+			if ($k === 'send' || $v === '') {
 				continue;
 			}
 
