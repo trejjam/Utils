@@ -10,7 +10,6 @@ namespace Trejjam\Utils\Helpers\Form;
 
 use Nette,
 	Nette\Application\UI,
-	App,
 	Trejjam;
 
 class DateTimeFields
@@ -26,15 +25,33 @@ class DateTimeFields
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
-		if ( !is_null($dateTime)) {
+		if (!is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d\TH:i:s');
 			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 		}
 
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}(:[0-9]{1,2}){1,2})');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}(:[0-9]{1,2}){1,2})')
+			  ->addRule(
+				  [DateTimeFields::class, 'validateUnixDateTimeLocal'],
+				  static::$useTranslatorRule ? __('Date must be older than 1970-01-01 00:00') : $name . '.' . static::$translatorRuleClass . '.invalid',
+				  new Nette\Utils\DateTime('1970-01-01 00:00')
+			  );
 
 		return $input;
+	}
+
+	protected static function validateUnixDateTimeLocal(Nette\Forms\Controls\TextInput $control, $restriction, callable $getValue = NULL)
+	{
+		$rawValue = $control->getValue();
+
+		if ( !empty($rawValue)) {
+			$value = $getValue ? $getValue($rawValue) : static::getDateTimeLocalValue($rawValue);
+
+			return $value >= $restriction;
+		}
+
+		return TRUE;
 	}
 
 	/**
@@ -79,7 +96,17 @@ class DateTimeFields
 		}
 
 		$date->addConditionOn($time, UI\Form::FILLED)
-			 ->addRule(UI\Form::FILLED, static::$useTranslatorRule ? __('Please, fill date otherwise you lose data.') : $name . '.' . static::$translatorRuleClass . '.filled');
+			 ->addRule(UI\Form::FILLED, static::$useTranslatorRule ? __('Please, fill date otherwise you lose data.') : $name . '.' . static::$translatorRuleClass . '.filled')
+			 ->addRule(
+				 [DateTimeFields::class, 'validateUnixDateTime'],
+				 static::$useTranslatorRule ? __('Date must be older than 1970-01-01 00:00') : $name . '.' . static::$translatorRuleClass . '.invalid',
+				 new Nette\Utils\DateTime('1970-01-01 00:00')
+			 );
+	}
+
+	protected static function validateUnixDateTime(Nette\Forms\Controls\TextInput $control, $restriction)
+	{
+		return static::validateUnixDateTimeLocal($control, $restriction, [DateTimeFields::class, 'getDateTimeValue']);
 	}
 
 	/**
@@ -94,7 +121,7 @@ class DateTimeFields
 		$date = static::getDateValue($dateTime[static::DATE]);
 		$time = static::getTimeValue($dateTime[static::TIME]);
 
-		if ( !is_null($date) && $date != '' && !is_null($time) && $time != '') {
+		if (!is_null($date) && $date != '' && !is_null($time) && $time != '') {
 			return $date . ' ' . $time;
 		}
 		else {
@@ -107,13 +134,23 @@ class DateTimeFields
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Date must be in format YYYY-MM-DD') : $name . '.' . static::$translatorRuleClass . '.filled', '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Date must be in format YYYY-MM-DD') : $name . '.' . static::$translatorRuleClass . '.filled', '([0-9]{4}-[0-9]{2}-[0-9]{2})|(\d{1,2}[/.]{1}[ ]{0,1}\d{1,2}[/.]{1}[ ]{0,1}\d{4})')
+			  ->addRule(
+				  [DateTimeFields::class, 'validateUnixDate'],
+				  static::$useTranslatorRule ? __('Date must be older than 1970-01-01 00:00') : $name . '.' . static::$translatorRuleClass . '.invalid',
+				  new Nette\Utils\DateTime('1970-01-01 00:00')
+			  );
 
 		if ($onNullSetNow && !is_null($dateTime)) {
 			$input->setDefaultValue($dateTime->format('Y-m-d'));
 		}
 
 		return $input;
+	}
+
+	protected static function validateUnixDate(Nette\Forms\Controls\TextInput $control, $restriction)
+	{
+		return static::validateUnixDateTimeLocal($control, $restriction, [DateTimeFields::class, 'getDateValue']);
 	}
 
 	/**
