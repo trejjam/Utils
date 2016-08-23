@@ -26,13 +26,24 @@ class DateTimeFields
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
-		if ( !is_null($dateTime)) {
+		if (!is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d\TH:i:s');
 			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 		}
 
 		$input->addCondition(UI\Form::FILLED)
-			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}(:[0-9]{1,2}){1,2})');
+			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Datetime must be in format YYYY-MM-DD HH:mm') : $name . '.' . static::$translatorRuleClass . '.filled', '(([0-9]{4}-[0-9]{2}-[0-9]{2})|([0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{1,2}[/.]{1}[ ]{0,1}[0-9]{4}))[T ]{1}([0-9]{1,2}(:[0-9]{1,2}){1,2})')
+			  ->addRule(function (Nette\Forms\Controls\TextInput $control, $resctriction) {
+				  $rawValue = $control->getValue();
+
+				  if (!empty($rawValue)) {
+					  $value = static::getDateTimeLocalValue($rawValue);
+
+					  return $value >= $resctriction;
+				  }
+
+				  return TRUE;
+			  }, __('Date must be older than 1970-01-01 00:00'), new Nette\Utils\DateTime('1970-01-01 00:00'));
 
 		return $input;
 	}
@@ -94,7 +105,7 @@ class DateTimeFields
 		$date = static::getDateValue($dateTime[static::DATE]);
 		$time = static::getTimeValue($dateTime[static::TIME]);
 
-		if ( !is_null($date) && $date != '' && !is_null($time) && $time != '') {
+		if (!is_null($date) && $date != '' && !is_null($time) && $time != '') {
 			return $date . ' ' . $time;
 		}
 		else {
