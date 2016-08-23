@@ -41,7 +41,7 @@ class DateTimeFields
 		return $input;
 	}
 
-	protected static function validateUnixDateTimeLocal(Nette\Forms\Controls\TextInput $control, $restriction, callable $getValue = NULL)
+	public static function validateUnixDateTimeLocal(Nette\Forms\Controls\TextInput $control, $restriction, callable $getValue = NULL)
 	{
 		$rawValue = $control->getValue();
 
@@ -104,7 +104,7 @@ class DateTimeFields
 			 );
 	}
 
-	protected static function validateUnixDateTime(Nette\Forms\Controls\TextInput $control, $restriction)
+	public static function validateUnixDateTime(Nette\Forms\Controls\TextInput $control, $restriction)
 	{
 		return static::validateUnixDateTimeLocal($control, $restriction, [DateTimeFields::class, 'getDateTimeValue']);
 	}
@@ -148,7 +148,7 @@ class DateTimeFields
 		return $input;
 	}
 
-	protected static function validateUnixDate(Nette\Forms\Controls\TextInput $control, $restriction)
+	public static function validateUnixDate(Nette\Forms\Controls\TextInput $control, $restriction)
 	{
 		return static::validateUnixDateTimeLocal($control, $restriction, [DateTimeFields::class, 'getDateValue']);
 	}
