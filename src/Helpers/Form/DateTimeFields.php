@@ -21,11 +21,16 @@ class DateTimeFields
 	static public $useTranslatorRule   = TRUE;
 	static public $translatorRuleClass = 'rule';
 
-	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL)
+	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
-		if (!is_null($dateTime)) {
+
+		if ($onNullSetNow && is_null($dateTime)) {
+			$dateTime = new Nette\Utils\DateTime;
+		}
+
+		if ( !is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d\TH:i:s');
 			$input->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 		}
@@ -89,7 +94,12 @@ class DateTimeFields
 		$subContainer = $container->addContainer($name);
 		$date = static::addDate($subContainer, static::DATE, $label);
 		$time = static::addTime($subContainer, static::TIME);
-		if ($onNullSetNow && !is_null($dateTime)) {
+
+		if ($onNullSetNow && is_null($dateTime)) {
+			$dateTime = new Nette\Utils\DateTime;
+		}
+
+		if ( !is_null($dateTime)) {
 			$dateValue = $dateTime->format('Y-m-d');
 			$date->setDefaultValue($dateValue[0] == '-' ? NULL : $dateValue);
 			$time->setDefaultValue($dateValue[0] == '-' ? NULL : $dateTime->format('H:i:s'));
@@ -141,7 +151,11 @@ class DateTimeFields
 				  new Nette\Utils\DateTime('1970-01-01 00:00')
 			  );
 
-		if ($onNullSetNow && !is_null($dateTime)) {
+		if ($onNullSetNow && is_null($dateTime)) {
+			$dateTime = new Nette\Utils\DateTime;
+		}
+
+		if (!is_null($dateTime)) {
 			$input->setDefaultValue($dateTime->format('Y-m-d'));
 		}
 
@@ -186,7 +200,11 @@ class DateTimeFields
 		$input->addCondition(UI\Form::FILLED)
 			  ->addRule(UI\Form::PATTERN, static::$useTranslatorRule ? __('Time must be in format HH:MM') : $name . '.' . static::$translatorRuleClass . '.filled', '([01]?[0-9]{1}|2[0-3]{1})(:[0-5]{1}[0-9]{1}){1,2}');
 
-		if ($onNullSetNow && !is_null($dateTime)) {
+		if ($onNullSetNow && is_null($dateTime)) {
+			$dateTime = new Nette\Utils\DateTime;
+		}
+
+		if ( !is_null($dateTime)) {
 			$input->setDefaultValue($dateTime->format('H:i:s'));
 		}
 
