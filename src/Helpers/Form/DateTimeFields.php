@@ -21,7 +21,7 @@ class DateTimeFields
 	static public $useTranslatorRule   = TRUE;
 	static public $translatorRuleClass = 'rule';
 
-	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
+	public static function addDateTimeLocal(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = FALSE)
 	{
 		$input = $container->addText($name, $label);
 		$input->setType('datetime-local');
@@ -89,7 +89,7 @@ class DateTimeFields
 		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
-	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
+	public static function addDateTime(Nette\Forms\Container $container, $name, $label = NULL, \DateTime $dateTime = NULL, $onNullSetNow = FALSE)
 	{
 		$subContainer = $container->addContainer($name);
 		$date = static::addDate($subContainer, static::DATE, $label);
@@ -139,7 +139,7 @@ class DateTimeFields
 		}
 	}
 
-	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
+	public static function addDate(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = FALSE)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('date');
@@ -193,7 +193,7 @@ class DateTimeFields
 		return empty($value) || $value == '0000-00-00' ? NULL : $value;
 	}
 
-	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = TRUE)
+	public static function addTime(Nette\Forms\Container $container, $name, $label = NULL, $cols = NULL, $maxLength = NULL, \DateTime $dateTime = NULL, $onNullSetNow = FALSE)
 	{
 		$input = $container->addText($name, $label, $cols, $maxLength);
 		$input->setType('time');
