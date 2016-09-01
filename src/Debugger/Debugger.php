@@ -53,7 +53,7 @@ class Debugger extends Tracy\Debugger
 				];
 			}
 
-			$reflection = new \ReflectionClass('App\Model\Debugger\Debugger');
+			$reflection = new \ReflectionClass(static::class);
 			$tracyDebugger = $reflection->getParentClass();
 			$tracyDebuggerBlueScreen = $tracyDebugger->getProperty('blueScreen');
 			$tracyDebuggerBlueScreen->setAccessible(TRUE);
