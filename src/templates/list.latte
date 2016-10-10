@@ -1,64 +1,70 @@
-<div class="filter_active">
-	{var $head=is_null($columnsHead)?$columns:$columnsHead}
-	<span n:foreach="$appliedSort as $k=>$v">
-		<i>{isset($head[$k])?$head[$k]:$k} {=__($v)}</i>
-		<a href="{$filterComponent->link(this, ['sort'=>array_merge($appliedSort, [$k=>null])])}" class="remove"><span>×</span></a>
-	</span>
-	<span n:foreach="$appliedLikeFilter as $k=>$v">
-		<i>{isset($head[$k])?$head[$k]:$k} {$v}</i>
-		<a href="{$filterComponent->link(this, ['filter'=>array_merge($appliedLikeFilter, [$k=>null])])}" class="remove"><span>×</span></a>
-	</span>
-</div>
+{if $displayFilters}
+	<div class="filter_active">
+		{var $head=is_null($columnsHead)?$columns:$columnsHead}
+		<span n:foreach="$appliedSort as $k=>$v">
+			<i>{isset($head[$k])?$head[$k]:$k} {=__($v)}</i>
+			<a href="{$filterComponent->link(this, ['sort'=>array_merge($appliedSort, [$k=>null])])}" class="remove"><span>×</span></a>
+		</span>
+		<span n:foreach="$appliedLikeFilter as $k=>$v">
+			<i>{isset($head[$k])?$head[$k]:$k} {$v}</i>
+			<a href="{$filterComponent->link(this, ['filter'=>array_merge($appliedLikeFilter, [$k=>null])])}" class="remove"><span>×</span></a>
+		</span>
+	</div>
+{/if}
 
 <table class="table table-list">
-	<tr class="table-head" n:inner-foreach="is_null($columnsHead)?$columns:$columnsHead as $k2=>$v2">
-		{var $columnName=is_numeric($k2)?$v2:$k2}
-		{var $columnValue=is_scalar($v2)?$v2:$k2}
+	<thead>
+		<tr class="table-head" n:inner-foreach="is_null($columnsHead)?$columns:$columnsHead as $k2=>$v2">
+			{var $columnName=is_numeric($k2)?$v2:$k2}
+			{var $columnValue=is_scalar($v2)?$v2:$k2}
 
 			{if isset($sort[$columnName])}
-		<th>{control filter:sortLink $columnName, $columnValue}</th>
+				<th>{control filter:sortLink $columnName, $columnValue}</th>
 			{else}
-		<th>{is_null($columnsHead)?$columnName:$columnsHead[$columnName]}</th>
+				<th>{is_null($columnsHead)?$columnName:$columnsHead[$columnName]}</th>
 			{/if}
 			{last}
-		<th>&nbsp;</th>
+				<th>{=__('More actions')}</th>
 			{/last}
-	</tr>
-	<tr class="table-filter" n:if="count($filter)>0">
-		{form filter-form}
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="table-filter" n:if="count($filter)>0">
+			{form filter-form}
 				{foreach $columns as $k2=>$v2}
 					{var $columnName=is_numeric($k2)?$v2:$k2}
-			<td n:inner-if="isset($filter[$columnName])">{input $filter[$columnName]}{if array_key_exists($columnName, $multipleFilter)}
-					{foreach $multipleFilter[$columnName] as $v}
-						{input $v}
-					{/foreach}
-				{/if}</td>
+					<td n:inner-if="isset($filter[$columnName])">{input $filter[$columnName] class => 'form-control'}{if array_key_exists($columnName, $multipleFilter)}
+							{foreach $multipleFilter[$columnName] as $v}
+								{input $v class => 'form-control'}
+							{/foreach}
+						{/if}</td>
 				{/foreach}
-			<td>{input send}</td>
-		{/form}
-	</tr>
+				<td>{input send class => 'btn btn-primary'}</td>
+			{/form}
+		</tr>
 		{foreach $listData as $k=>$v}
-	<tr n:class="list-item, $iterator->isEven()?odd:even" n:inner-foreach="$columns as $k2=>$v2">
-			{if $v2 instanceof Trejjam\Utils\Components\IRenderable}
-		{$v2->render($v, $listData)}
-			{else}
-		{var $columnName=is_numeric($k2)?$v2:$k2}
-		{var $columnValue=is_callable($v2) && !is_numeric($k2)?$v2($v, $listData):(is_array($v)?$v[$columnName]:$v->$columnName)}
-
-		<td>{$columnValue}</td>
-			{/if}
-			{last}
-		<td n:inner-foreach="$actionButtons as $k3=>$v3">
-			<span>
-				{if $v3 instanceof Trejjam\Utils\Components\IRenderable}
-					{$v3->render($v)}
+			<tr n:class="list-item, $iterator->isEven()?odd:even" n:inner-foreach="$columns as $k2=>$v2">
+				{if $v2 instanceof Trejjam\Utils\Components\IRenderable}
+					{$v2->render($v, $listData)}
 				{else}
-				<a href="{$v3($v)}">{$k3}</a>
+					{var $columnName=is_numeric($k2)?$v2:$k2}
+					{var $columnValue=is_callable($v2) && !is_numeric($k2)?$v2($v, $listData):(is_array($v)?$v[$columnName]:$v->$columnName)}
+
+					<td>{$columnValue}</td>
 				{/if}
-			</span>
-		</td>
-			{/last}
-	</tr>
+				{last}
+					<td n:inner-foreach="$actionButtons as $k3=>$v3">
+				<span>
+					{if $v3 instanceof Trejjam\Utils\Components\IRenderable}
+						{$v3->render($v)}
+					{else}
+						<a href="{$v3($v)}">{$k3}</a>
+					{/if}
+				</span>
+					</td>
+				{/last}
+			</tr>
 		{/foreach}
+	</tbody>
 </table>
 {control filter-paging}

@@ -33,6 +33,7 @@ class ListingFactory extends UI\Control
 	public $filterDbTranslate  = [];
 	public $filterCompareType  = [];
 	public $multipleFilter     = [];
+	public $displayFilters = TRUE;
 
 	public $columns;
 	public $columnsHead;
@@ -105,6 +106,7 @@ class ListingFactory extends UI\Control
 		$template->columns = $this->columns;
 		$template->columnsHead = $this->columnsHead;
 		$template->actionButtons = $this->actionButtons;
+		$template->displayFilters = $this->displayFilters;
 
 		$controlCache = [];
 		$template->getControl = function ($name) use ($controlCache) {
