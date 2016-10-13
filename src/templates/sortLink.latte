@@ -1,4 +1,4 @@
-{$name}
 <a href="{$filter->link('this', ['sort' => $filter->getNextArr($key)])}">
+{$name}
     <span n:if="$filter->isSort($key)" n:class="'sort glyphicon', $filter->sort($key), $filter->sort($key, TRUE) ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'" aria-hidden="true"></span>
 </a>
