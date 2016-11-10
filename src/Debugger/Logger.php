@@ -183,11 +183,13 @@ class Logger extends Tracy\Logger
 							  ])
 						  ));
 
-		foreach ($email as $k => $v) {
-			if ($k == 0) {
-				continue;
+		if (is_array($email)) {
+			foreach ($email as $k => $v) {
+				if ($k == 0) {
+					continue;
+				}
+				$mail->addCc($v);
 			}
-			$mail->addCc($v);
 		}
 
 		$this->mailerClass->send($mail);
