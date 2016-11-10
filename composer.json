@@ -7,9 +7,7 @@
 		"labels",
 		"baseLayout"
 	],
-	"license": [
-		"MIT"
-	],
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Jan Trejbal"
@@ -51,7 +49,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.5.x-dev"
+			"dev-master": "v1.6.x-dev"
 		}
 	}
 }
