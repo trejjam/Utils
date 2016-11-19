@@ -11,8 +11,8 @@ class Rule
 	const IPV6      = '(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}';
 	const MAC       = '([a-fA-F0-9]{2}[:.-]?){7}[[a-fA-F0-9]{2}';
 
-	const DateTimeCompare = 'Trejjam\Utils\Helpers\Form::dateTimeCompare';
-	const DateCompare     = 'Trejjam\Utils\Helpers\Form::dateCompare';
+	const DateTimeCompare = 'Trejjam\Utils\Helpers\Form\Rule::dateTimeCompare';
+	const DateCompare     = 'Trejjam\Utils\Helpers\Form\Rule::dateCompare';
 
 	static function dateTimeCompare(Nextras\Forms\Controls\DateTimePicker $item, array $arg)
 	{
