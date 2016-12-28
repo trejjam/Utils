@@ -85,13 +85,13 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 */
 	public abstract function getItem($id);
 
-	public function getCount(array $filter = NULL, array $defaultFilterType = [], array $filterTranslate = [])
+	public function getCount(array $filter = NULL, array $defaultFilterType = [], array $filterTranslate = [], $countColumn = '*')
 	{
-		$query = $this->getTable()->select('COUNT(*) count');
+		$query = $this->getTable();
 
 		BaseQuery::appendFilter($query, $filter, $defaultFilterType, $filterTranslate);
 
-		return $query->fetch()->count;
+		return $query->count($countColumn);
 	}
 
 	/**
