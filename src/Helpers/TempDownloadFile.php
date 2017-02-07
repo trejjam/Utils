@@ -2,6 +2,8 @@
 
 namespace Trejjam\Utils\Helpers;
 
+use Tracy;
+
 class TempDownloadFile
 {
 	/**
