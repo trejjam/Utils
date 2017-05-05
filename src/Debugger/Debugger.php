@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 3.11.15
- * Time: 13:16
- */
 
 namespace Trejjam\Utils\Debugger;
 
-use Nette,
-	Tracy;
+use Tracy;
 
 class Debugger extends Tracy\Debugger
 {
@@ -23,7 +16,7 @@ class Debugger extends Tracy\Debugger
 	protected static $blueScreen;
 
 	/**
-	 * @return Logger
+	 * @return Logger|Tracy\ILogger
 	 */
 	public static function getLogger()
 	{
