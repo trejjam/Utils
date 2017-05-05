@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Jan
- * Date: 26. 10. 2014
- * Time: 17:38
- */
 
 namespace Trejjam\Utils\DI;
 
-use Nette,
-	Trejjam;
+use Nette;
+use Trejjam;
 
 class DebuggerExtension extends Nette\DI\CompilerExtension
 {
@@ -24,6 +18,10 @@ class DebuggerExtension extends Nette\DI\CompilerExtension
 
 	protected function createConfig()
 	{
+		if ( !array_key_exists('sslAuthorizedDn', $this->getContainerBuilder()->parameters)) {
+			$this->getContainerBuilder()->parameters['sslAuthorizedDn'] = NULL;
+		}
+
 		$config = $this->getConfig($this->default);
 
 		Nette\Utils\Validators::assert($config, 'array');
