@@ -21,7 +21,7 @@
 		"php": ">=5.4",
 
 		"nette/di": "~2.4",
-		"trejjam/base-extension": "~0.5.0"
+		"trejjam/base-extension": "~0.5"
 	},
 	"require-dev": {
 		"nette/tester": "@dev",
