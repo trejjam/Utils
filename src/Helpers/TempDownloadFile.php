@@ -25,6 +25,11 @@ class TempDownloadFile
 		return $this->fileName;
 	}
 
+	public function getFileName()
+	{
+		return $this->fileName;
+	}
+
 	public function halt()
 	{
 		if ($this->removeAfterSend) {
