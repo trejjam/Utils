@@ -2,9 +2,8 @@
 
 namespace Trejjam\Utils\Helpers;
 
-use Tracy,
-	Trejjam;
-
+use Tracy;
+use Trejjam;
 
 /**
  * Base debug panel.

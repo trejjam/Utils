@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 27.2.16
- * Time: 12:04
- */
 
 namespace Trejjam\Utils\Debugger;
 
-use Nette,
-	Tracy;
+use Nette;
+use Tracy;
 
 class BlueScreen extends Tracy\BlueScreen
 {

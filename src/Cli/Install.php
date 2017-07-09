@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 6.12.14
- * Time: 2:25
- */
 
 namespace Trejjam\Utils\Cli;
 
-use Symfony\Component\Console\Command\Command,
-	Symfony\Component\Console\Input\InputInterface,
-	Symfony\Component\Console\Output\OutputInterface,
-	Nette;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Nette;
 
 class Install extends Command
 {

@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 29.6.15
- * Time: 17:14
- */
 
 namespace Trejjam\Utils\Helpers\Database;
 
-use Nette,
-	Trejjam;
+use Nette;
+use Trejjam;
 
 abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 {

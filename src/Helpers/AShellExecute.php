@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 5.1.16
- * Time: 21:03
- */
 
 namespace Trejjam\Utils\Helpers;
-
-use EFPA;
 
 abstract class AShellExecute
 {

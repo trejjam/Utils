@@ -1,17 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 4.10.15
- * Time: 17:07
- */
 
 namespace Trejjam\Utils\Helpers\Form;
 
-use Nette,
-	Nette\Application\UI,
-	Trejjam;
+use Nette;
+use Nette\Application\UI;
+use Trejjam;
 
+/**
+ * @deprecated use Nextras\Forms
+ */
 class DateTimeFields
 {
 	const

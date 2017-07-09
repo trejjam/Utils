@@ -1,16 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 29.6.15
- * Time: 17:18
- */
 
 namespace Trejjam\Utils\Helpers\Database;
 
-
-use Nette,
-	Trejjam;
+use Nette;
+use Trejjam;
 
 class BaseQuery
 {

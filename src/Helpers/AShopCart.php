@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Jan
- * Date: 3.5.14
- * Time: 19:06
- */
 
 namespace Trejjam\Utils\Helpers;
 
-use Nette,
-	Trejjam;
+use Nette;
+use Trejjam;
 
 /**
  * Manage shopping cart

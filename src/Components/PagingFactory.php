@@ -1,23 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 1.3.15
- * Time: 3:12
- */
 
 namespace Trejjam\Utils\Components;
 
-
-use Nette,
-	Trejjam,
-	Nette\Application\UI;
+use Nette;
+use Trejjam;
+use Nette\Application\UI;
 
 /**
- * Class PagingFactory
- *
- * @package Trejjam\Utils\Components
- *
  * @method pageCallback
  * @method countCallback
  * @method linkCallback($page)

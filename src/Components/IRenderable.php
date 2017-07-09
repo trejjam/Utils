@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 7.9.15
- * Time: 15:01
- */
 
 namespace Trejjam\Utils\Components;
 
-use Nette,
-	Trejjam;
+use Nette;
 
 interface IRenderable
 {

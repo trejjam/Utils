@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 12.2.16
- * Time: 11:28
- */
 
 namespace Trejjam\Utils\Helpers;
 

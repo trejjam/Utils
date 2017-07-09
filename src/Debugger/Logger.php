@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jam
- * Date: 3.11.15
- * Time: 12:32
- */
 
 namespace Trejjam\Utils\Debugger;
 
-use Nette,
-	Tracy;
+use Nette;
+use Tracy;
 
 class Logger extends Tracy\Logger
 {
