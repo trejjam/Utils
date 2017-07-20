@@ -6,6 +6,8 @@ use Tracy;
 
 class TempDownloadFile
 {
+	private $fileName;
+
 	/**
 	 * TempDownloadFile constructor.
 	 *
