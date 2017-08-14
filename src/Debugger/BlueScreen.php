@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Debugger;
 
-use Nette;
 use Tracy;
+use Trejjam;
 
 class BlueScreen extends Tracy\BlueScreen
 {
@@ -19,10 +20,22 @@ class BlueScreen extends Tracy\BlueScreen
 	 * @var array
 	 */
 	protected $logIgnoreEmail;
+	/**
+	 * @var Trejjam\Utils\Debugger\Storage\IStorage
+	 */
+	protected $storage;
 
 	/**
-	 * @param array $sslAuthorizedDn
-	 * @param array $logIgnoreEmail
+	 * @param Trejjam\Utils\Debugger\Storage\IStorage|NULL $storage
+	 */
+	public function setLogStorage(Trejjam\Utils\Debugger\Storage\IStorage $storage = NULL)
+	{
+		$this->storage = $storage;
+	}
+
+	/**
+	 * @param array   $sslAuthorizedDn
+	 * @param array   $logIgnoreEmail
 	 */
 	public function setSslAuthorizedDn($sslAuthorizedDn, $logIgnoreEmail)
 	{
@@ -72,5 +85,21 @@ class BlueScreen extends Tracy\BlueScreen
 		}
 
 		parent::render($exception);
+	}
+
+	/**
+	 * Renders blue screen to file (if file exists, it will not be overwritten).
+	 * @param  \Exception|\Throwable
+	 * @param  string file path
+	 * @return void
+	 */
+	public function renderToFile($exception, $file)
+	{
+		parent::renderToFile($exception, $file);
+
+		if (!is_null($this->storage)) {
+			$this->storage->persist($file);
+			unlink($file);
+		}
 	}
 }

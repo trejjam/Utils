@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\DI;
 
@@ -14,6 +15,9 @@ class DebuggerExtension extends Nette\DI\CompilerExtension
 		'sslAuthorizedDn' => '%sslAuthorizedDn%',
 		'logIgnoreEmail'  => [],
 		'siteMode'        => '%siteMode%',
+		'email'           => NULL,
+		'blobService'     => NULL,
+		'blobPrefix'      => '',
 	];
 
 	protected function createConfig()
@@ -38,15 +42,28 @@ class DebuggerExtension extends Nette\DI\CompilerExtension
 
 		$tracyLogger = $builder->getDefinition('tracy.logger');
 		$tracyLogger->setFactory('Trejjam\Utils\Debugger\Debugger::getLogger')
-					->addSetup('setEmailClass', ['@Nette\Mail\IMailer'])
+					->addSetup('setEmailClass', [$config['email']])
 					->addSetup('setEmailSnooze', [$config['snoze']])
 					->addSetup('setHost', [$config['host']])
 					->addSetup('setPath', [$config['path']]);
 
-		$tracyLogger = $builder->getDefinition('tracy.blueScreen');
-		$tracyLogger->setFactory('Trejjam\Utils\Debugger\Debugger::getBlueScreen')
-					->addSetup('setSslAuthorizedDn', [$config['sslAuthorizedDn'], $config['logIgnoreEmail']])
-					->addSetup('setSiteMode', [$config['siteMode']]);
-	}
+		$blueScreen = $builder->getDefinition('tracy.blueScreen');
+		$blueScreen->setFactory('Trejjam\Utils\Debugger\Debugger::getBlueScreen')
+				   ->addSetup('setSslAuthorizedDn', [$config['sslAuthorizedDn'], $config['logIgnoreEmail']])
+				   ->addSetup('setSiteMode', [$config['siteMode']]);
 
+		if ( !is_null($config['blobService'])) {
+			$builder->addDefinition($this->prefix('storage'))
+					->setClass(Trejjam\Utils\Debugger\Storage\Storage::class)
+					->setArguments(
+						[
+							$config['blobService'],
+							$config['blobPrefix'],
+						]
+					)
+					->setAutowired(FALSE);
+
+			$blueScreen->addSetup('setLogStorage', [$this->prefix('@storage')]);
+		}
+	}
 }
