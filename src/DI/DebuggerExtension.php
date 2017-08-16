@@ -15,7 +15,7 @@ class DebuggerExtension extends Nette\DI\CompilerExtension
 		'sslAuthorizedDn' => '%sslAuthorizedDn%',
 		'logIgnoreEmail'  => [],
 		'siteMode'        => '%siteMode%',
-		'email'           => NULL,
+		'email'           => '@Nette\Mail\IMailer',
 		'blobService'     => NULL,
 		'blobPrefix'      => '',
 	];
