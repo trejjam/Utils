@@ -12,53 +12,48 @@ class DebuggerExtension extends Nette\DI\CompilerExtension
 		'snoze'           => '1 day',
 		'host'            => NULL, //NULL mean auto
 		'path'            => '/log/',
-		'sslAuthorizedDn' => '%sslAuthorizedDn%',
+		'sslAuthorizedDn' => NULL,
 		'logIgnoreEmail'  => [],
-		'siteMode'        => '%siteMode%',
+		'siteMode'        => NULL,
 		'email'           => '@Nette\Mail\IMailer',
 		'blobService'     => NULL,
 		'blobPrefix'      => '',
 	];
 
-	protected function createConfig()
+	public function loadConfiguration() : void
 	{
-		if ( !array_key_exists('sslAuthorizedDn', $this->getContainerBuilder()->parameters)) {
-			$this->getContainerBuilder()->parameters['sslAuthorizedDn'] = NULL;
+		if (array_key_exists('sslAuthorizedDn', $this->getContainerBuilder()->parameters)) {
+			$this->default['sslAuthorizedDn'] = $this->getContainerBuilder()->parameters['sslAuthorizedDn'];
+		}
+		if (array_key_exists('siteMode', $this->getContainerBuilder()->parameters)) {
+			$this->default['siteMode'] = $this->getContainerBuilder()->parameters['siteMode'];
 		}
 
-		$config = $this->getConfig($this->default);
+		$this->validateConfig($this->default);
 
-		Nette\Utils\Validators::assert($config, 'array');
-
-		return $config;
-	}
-
-	public function loadConfiguration()
-	{
 		parent::loadConfiguration();
 
 		$builder = $this->getContainerBuilder();
-		$config = $this->createConfig();
 
 		$tracyLogger = $builder->getDefinition('tracy.logger');
 		$tracyLogger->setFactory('Trejjam\Utils\Debugger\Debugger::getLogger')
-					->addSetup('setEmailClass', [$config['email']])
-					->addSetup('setEmailSnooze', [$config['snoze']])
-					->addSetup('setHost', [$config['host']])
-					->addSetup('setPath', [$config['path']]);
+					->addSetup('setEmailClass', [$this->config['email']])
+					->addSetup('setEmailSnooze', [$this->config['snoze']])
+					->addSetup('setHost', [$this->config['host']])
+					->addSetup('setPath', [$this->config['path']]);
 
 		$blueScreen = $builder->getDefinition('tracy.blueScreen');
 		$blueScreen->setFactory('Trejjam\Utils\Debugger\Debugger::getBlueScreen')
-				   ->addSetup('setSslAuthorizedDn', [$config['sslAuthorizedDn'], $config['logIgnoreEmail']])
-				   ->addSetup('setSiteMode', [$config['siteMode']]);
+				   ->addSetup('setSslAuthorizedDn', [$this->config['sslAuthorizedDn'], $this->config['logIgnoreEmail']])
+				   ->addSetup('setSiteMode', [$this->config['siteMode']]);
 
-		if ( !is_null($config['blobService'])) {
+		if ( !is_null($this->config['blobService'])) {
 			$builder->addDefinition($this->prefix('storage'))
 					->setClass(Trejjam\Utils\Debugger\Storage\Storage::class)
 					->setArguments(
 						[
-							$config['blobService'],
-							$config['blobPrefix'],
+							$this->config['blobService'],
+							$this->config['blobPrefix'],
 						]
 					)
 					->setAutowired(FALSE);

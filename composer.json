@@ -18,10 +18,10 @@
 		"issues": "https://github.com/Trejjam/Utils/issues"
 	},
 	"require": {
-		"php": ">=5.4",
+		"php": ">=7.1",
 
 		"nette/di": "~2.4",
-		"trejjam/base-extension": "~0.5"
+		"trejjam/base-extension": "~0.7"
 	},
 	"require-dev": {
 		"nette/tester": "@dev",
