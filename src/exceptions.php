@@ -5,6 +5,7 @@ namespace Trejjam\Utils;
 
 interface Exception
 {
+	const UTILS_KEY_NOT_FOUND = 1;
 }
 
 class InvalidArgumentException extends \InvalidArgumentException implements Exception
