@@ -7,9 +7,8 @@ use Trejjam;
 
 abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 {
-	const
-		ROW = '__row__',
-		STRICT = '__strict__';
+	const ROW    = '__row__';
+	const STRICT = '__strict__';
 
 	/**
 	 * @return Nette\Database\Table\Selection

@@ -18,15 +18,12 @@ abstract class AShellExecute
 		$this->loggerName = get_called_class();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getLoggerName()
+	public function getLoggerName() : string
 	{
 		return $this->loggerName;
 	}
 
-	protected function execute($command)
+	protected function execute(string $command) : string
 	{
 		$time = $timerName = '';
 		if (class_exists('\Tracy\Debugger')) {

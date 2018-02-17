@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Helpers;
 
@@ -6,9 +7,9 @@ use Trejjam;
 
 class Zip
 {
-	public static function create($zipFileName, array $files)
+	public static function create(string $zipFileName, array $files) : string
 	{
-		$zip = new \ZipArchive();
+		$zip = new \ZipArchive;
 
 		if ($zip->open($zipFileName, \ZipArchive::CREATE) !== TRUE) {
 			throw new Trejjam\Utils\RuntimeException("cannot open '$zipFileName'");

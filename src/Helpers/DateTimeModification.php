@@ -5,7 +5,6 @@ namespace Trejjam\Utils\Helpers;
 use Trejjam;
 
 /**
- * @package Trejjam\Utils\Helpers
  * @method string format(string $format)
  */
 class DateTimeModification

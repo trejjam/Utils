@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Helpers;
 
@@ -11,27 +12,28 @@ class FileResponse extends Nette\Application\Responses\FileResponse
 	 */
 	protected $file;
 
-	/**
-	 * @param string $file        file path
-	 * @param string $name        imposed file name
-	 * @param string $contentType MIME content type
-	 * @param bool   $forceDownload
-	 *
-	 * @throws Nette\Application\BadRequestException
-	 */
-	public function __construct($file, $name = NULL, $contentType = NULL, $forceDownload = TRUE)
-	{
+	public function __construct(
+		$file,
+		string $name = NULL,
+		string $contentType = NULL,
+		bool $forceDownload = TRUE
+	) {
 		$this->file = $file;
-		$filename = ($file instanceof TempDownloadFile && is_file((string)$file)) ? (string)$file : $file;
+		$filename = ($file instanceof TempDownloadFile && is_file($file->getFileName()))
+			? $file->getFileName()
+			: $file;
+
 		parent::__construct($filename, $name, $contentType, $forceDownload);
 	}
 
-	public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse)
-	{
+	public function send(
+		Nette\Http\IRequest $httpRequest,
+		Nette\Http\IResponse $httpResponse
+	) {
 		$httpResponse->setExpiration(FALSE);
 		parent::send($httpRequest, $httpResponse);
 
-		if ($this->file instanceof TempDownloadFile && is_file((string)$this->file)) {
+		if ($this->file instanceof TempDownloadFile && is_file($this->file->getFileName())) {
 			$this->file->halt();
 		}
 	}

@@ -3,11 +3,7 @@
 namespace Trejjam\Utils\Helpers;
 
 use Tracy;
-use Trejjam;
 
-/**
- * Base debug panel.
- */
 class BaseTracyPanel implements Tracy\IBarPanel
 {
 	protected $count = 0;
