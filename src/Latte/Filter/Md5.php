@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Latte\Filter;
 
@@ -7,13 +8,7 @@ use Trejjam;
 
 class Md5
 {
-	/**
-	 * @param mixed $input
-	 *
-	 * @return string
-	 * @throws Nette\Utils\JsonException
-	 */
-	public function filter($input)
+	public function filter(string $input) : string
 	{
 		return md5($input);
 	}
