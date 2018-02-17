@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Components;
+
+use Nette;
 
 class HtmlButton implements IRenderable
 {
@@ -17,7 +20,7 @@ class HtmlButton implements IRenderable
 	/**
 	 * @inheritdoc
 	 */
-	function render($parameter = NULL, $list = [])
+	function render($parameter = NULL, array $list = []) : Nette\Utils\Html
 	{
 		return call_user_func($this->onRender, $parameter);
 	}

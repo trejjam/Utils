@@ -4,8 +4,5 @@ namespace Trejjam\Utils\Components;
 
 interface IFilterFactory
 {
-	/**
-	 * @return FilterFactory
-	 */
-	function create();
+	function create() : FilterFactory;
 }

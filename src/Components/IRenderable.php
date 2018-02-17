@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Components;
 
@@ -12,5 +13,5 @@ interface IRenderable
 	 *
 	 * @return Nette\Utils\Html
 	 */
-	function render($parameter = NULL, $list = []);
+	function render($parameter = NULL, array $list = []) : Nette\Utils\Html;
 }

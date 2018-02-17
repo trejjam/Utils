@@ -9,8 +9,7 @@ use Nette\Application\UI;
 
 class FilterFactory extends UI\Control
 {
-	const
-		DEFAULT_LIMIT = 20;
+	const DEFAULT_LIMIT = 20;
 
 	/**
 	 * @var string
@@ -245,13 +244,6 @@ class FilterFactory extends UI\Control
 		return $this;
 	}
 
-	//public function setFilterDbTranslate(array $filterDbTranslate)
-	//{
-	//	$this->filterDbTranslate = $filterDbTranslate;
-
-	//	return $this;
-	//}
-
 	public function setDefaultFilter(array $defaultFilter)
 	{
 		$this->defaultFilter = $defaultFilter;
@@ -341,13 +333,6 @@ class FilterFactory extends UI\Control
 
 	public function getDbFilter()
 	{
-		//moved to BaseQuery::appendFilter
-		//$out = [];
-
-		//foreach ($this->getFilter() as $k => $v) {
-		//	$out[isset($this->filterDbTranslate[$k]) ? $this->filterDbTranslate[$k] : $k] = $v;
-		//}
-
 		return $this->getFilter();
 	}
 
