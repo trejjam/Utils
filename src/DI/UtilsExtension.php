@@ -8,8 +8,6 @@ use Trejjam;
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
 	protected $classesDefinition = [
-		'layout.baseLayout' => 'Trejjam\Utils\Layout\BaseLayout',
-		'labels'            => 'Trejjam\Utils\Labels\Labels',
 		'sinergi.browser'   => 'Sinergi\BrowserDetector\Browser',
 		'sinergi.os'        => 'Sinergi\BrowserDetector\Os',
 		'sinergi.device'    => 'Sinergi\BrowserDetector\Device',
@@ -26,25 +24,8 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 	{
 		$config = $this->getConfig(
 			[
-				'flashes'    => [
-					'enable' => FALSE,
-				],
 				'sinergi'    => [
 					'enable' => FALSE,
-				],
-				'labels'     => [
-					'enable'        => FALSE,
-					'componentName' => 'labels',
-					'table'         => 'utils__labels',
-					'keys'          => [
-						'id'        => 'id',
-						'namespace' => [
-							'name'    => 'namespace',
-							'default' => 'default',
-						],
-						'name'      => 'name',
-						'value'     => 'value',
-					],
 				],
 				'components' => [
 					'paging'  => [
@@ -93,21 +74,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 				'filterFactory' => $this->prefix('@components.filterFactory'),
 			]
 		);
-
-		if (class_exists('\Symfony\Component\Console\Command\Command')) {
-			$command = [
-				"cli.install" => "Install",
-			];
-			if ($config['labels']['enable']) {
-				$command["cli.labels"] = "Labels";
-			}
-
-			foreach ($command as $k => $v) {
-				$builder->addDefinition($this->prefix($k))
-						->setClass('Trejjam\Utils\Cli\\' . $v)
-						->addTag("kdyby.console.command");
-			}
-		}
 	}
 
 	public function beforeCompile()
@@ -131,18 +97,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		$factories = [];
 		foreach ($this->factoriesDefinition as $k => $v) {
 			$factories[$k] = $builder->getDefinition($this->prefix($k));
-		}
-
-		$classes['layout.baseLayout']->addSetup('setConfigurations', [
-			'configurations' => $config,
-		]);
-
-		if ($config['labels']['enable']) {
-			$classes['labels']->addSetup('setConfigurations', [
-				'configurations' => $config['labels'],
-			]);
-
-			$classes['layout.baseLayout']->setArguments([$this->prefix('@labels')]);
 		}
 
 		$factories['components.filterFactory']->setArguments([$config['components']['filter']['template']]);
