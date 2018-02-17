@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\DI;
 
@@ -7,13 +8,6 @@ use Trejjam;
 
 class UtilsExtension extends Nette\DI\CompilerExtension
 {
-	protected $classesDefinition = [
-		'sinergi.browser'   => 'Sinergi\BrowserDetector\Browser',
-		'sinergi.os'        => 'Sinergi\BrowserDetector\Os',
-		'sinergi.device'    => 'Sinergi\BrowserDetector\Device',
-		'sinergi.language'  => 'Sinergi\BrowserDetector\Language',
-	];
-
 	protected $factoriesDefinition = [
 		'components.listingFactory' => 'Trejjam\Utils\Components\IListingFactory',
 		'components.filterFactory'  => 'Trejjam\Utils\Components\IFilterFactory',
@@ -24,9 +18,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 	{
 		$config = $this->getConfig(
 			[
-				'sinergi'    => [
-					'enable' => FALSE,
-				],
 				'components' => [
 					'paging'  => [
 						'template' => __DIR__ . '/../templates/paging.latte',
@@ -53,14 +44,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$config = $this->createConfig();
 
-		foreach ($this->classesDefinition as $k => $v) {
-			list($firstKey) = explode('.', $k);
-			if ( !isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
-				$classes[$k] = $builder->addDefinition($this->prefix($k))
-									   ->setClass($v);
-			}
-		}
-
 		/** @var Nette\DI\ServiceDefinition[] $factories */
 		$factories = [];
 		foreach ($this->factoriesDefinition as $k => $v) {
@@ -82,16 +65,6 @@ class UtilsExtension extends Nette\DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 		$config = $this->createConfig();
-
-		/** @var Nette\DI\ServiceDefinition[] $classes */
-		$classes = [];
-
-		foreach ($this->classesDefinition as $k => $v) {
-			list($firstKey) = explode('.', $k);
-			if ( !isset($config[$firstKey]) || !isset($config[$firstKey]['enable']) || $config[$firstKey]['enable']) {
-				$classes[$k] = $builder->getDefinition($this->prefix($k));
-			}
-		}
 
 		/** @var Nette\DI\ServiceDefinition[] $factories */
 		$factories = [];

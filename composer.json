@@ -1,11 +1,9 @@
 {
 	"name": "trejjam/utils",
-	"description": "Utils, labels",
+	"description": "Utils",
 	"keywords": [
 		"nette",
-		"utils",
-		"labels",
-		"baseLayout"
+		"utils"
 	],
 	"license": "MIT",
 	"authors": [
@@ -20,25 +18,8 @@
 	"require": {
 		"php": ">=7.1",
 
-		"nette/di": "~2.4",
+		"nette/di": "~2.4 || ~3.0",
 		"trejjam/base-extension": "~0.7"
-	},
-	"require-dev": {
-		"nette/tester": "@dev",
-		"nette/bootstrap": "~2.3",
-		"nette/robot-loader": "~2.3",
-		"nette/database": "~2.3",
-
-		"kdyby/console": "~2.4",
-
-		"sinergi/browser-detector": "^5.0",
-
-		"besanek/presenter-tester": "@dev"
-	},
-	"suggest": {
-		"nette/database": "to use Labels",
-		"sinergi/browser-detector": "to get information about browser",
-		"kdyby/console": "to use CLI configurator"
 	},
 	"autoload": {
 		"psr-4": {
@@ -50,7 +31,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "v1.5.x-dev"
+			"dev-master": "v2.0.x-dev"
 		}
 	}
 }
