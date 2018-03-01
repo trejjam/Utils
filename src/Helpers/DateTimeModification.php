@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Trejjam\Utils\Helpers;
 
@@ -10,26 +11,26 @@ use Trejjam;
 class DateTimeModification
 {
 	/**
-	 * @var \DateTime
+	 * @var \DateTimeImmutable|\DateTime
 	 */
 	private $dateTime;
 
-	public function __construct(\DateTime $dateTime)
+	public function __construct(\DateTimeInterface $dateTime)
 	{
 		$this->dateTime = $dateTime;
 	}
 
-	public static function modify(\DateTime $dateTime)
+	public static function modify(\DateTimeInterface $dateTime)
 	{
 		return new static($dateTime);
 	}
 
-	public function getDateTime()
+	public function getDateTime() : \DateTimeInterface
 	{
 		return $this->dateTime;
 	}
 
-	public function getDateArray()
+	public function getDateArray() : array
 	{
 		if ($this->dateTime->getTimestamp() < 0) {
 			return [0, 0, 0];
@@ -38,22 +39,22 @@ class DateTimeModification
 		return explode('-', $this->dateTime->format('Y-m-d'));
 	}
 
-	public function getDate()
+	public function getDate() : int
 	{
-		return $this->getDateArray()[2];
+		return intval($this->getDateArray()[2]);
 	}
 
-	public function getMonth()
+	public function getMonth() : int
 	{
-		return $this->getDateArray()[1];
+		return intval($this->getDateArray()[1]);
 	}
 
-	public function getYear()
+	public function getYear() : int
 	{
-		return $this->getDateArray()[0];
+		return intval($this->getDateArray()[0]);
 	}
 
-	public function addDay($days)
+	public function addDay(int $days) : self
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
@@ -62,7 +63,7 @@ class DateTimeModification
 		return $this;
 	}
 
-	public function addMonth($months, $cleanDays = FALSE)
+	public function addMonth(int $months, bool $cleanDays = FALSE) : self
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
@@ -71,7 +72,7 @@ class DateTimeModification
 		return $this;
 	}
 
-	public function addYear($years, $cleanMonths = FALSE, $cleanDays = FALSE)
+	public function addYear(int $years, bool $cleanMonths = FALSE, bool $cleanDays = FALSE) : self
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
@@ -80,7 +81,8 @@ class DateTimeModification
 		return $this;
 	}
 
-	public function setDay($day){
+	public function setDay(int $day) : self
+	{
 		list($year, $month) = $this->getDateArray();
 
 		$this->dateTime->setDate($year, $month, $day);
