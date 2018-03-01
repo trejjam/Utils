@@ -36,22 +36,28 @@ class DateTimeModification
 			return [0, 0, 0];
 		}
 
-		return explode('-', $this->dateTime->format('Y-m-d'));
+		$dateArray = explode('-', $this->dateTime->format('Y-m-d'));
+
+		return [
+			intval($dateArray[0]),
+			intval($dateArray[1]),
+			intval($dateArray[2]),
+		];
 	}
 
 	public function getDate() : int
 	{
-		return intval($this->getDateArray()[2]);
+		return $this->getDateArray()[2];
 	}
 
 	public function getMonth() : int
 	{
-		return intval($this->getDateArray()[1]);
+		return $this->getDateArray()[1];
 	}
 
 	public function getYear() : int
 	{
-		return intval($this->getDateArray()[0]);
+		return $this->getDateArray()[0];
 	}
 
 	public function addDay(int $days) : self
