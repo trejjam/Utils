@@ -64,7 +64,7 @@ class DateTimeModification
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
-		$this->dateTime->setDate($year, $month, $day + $days);
+		$this->dateTime = $this->dateTime->setDate($year, $month, $day + $days);
 
 		return $this;
 	}
@@ -73,7 +73,7 @@ class DateTimeModification
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
-		$this->dateTime->setDate($year, $month + $months, $cleanDays ? 1 : $day);
+		$this->dateTime = $this->dateTime->setDate($year, $month + $months, $cleanDays ? 1 : $day);
 
 		return $this;
 	}
@@ -82,7 +82,7 @@ class DateTimeModification
 	{
 		list($year, $month, $day) = $this->getDateArray();
 
-		$this->dateTime->setDate($year + $years, $cleanMonths ? 1 : $month, $cleanDays ? 1 : $day);
+		$this->dateTime = $this->dateTime->setDate($year + $years, $cleanMonths ? 1 : $month, $cleanDays ? 1 : $day);
 
 		return $this;
 	}
@@ -91,7 +91,7 @@ class DateTimeModification
 	{
 		list($year, $month) = $this->getDateArray();
 
-		$this->dateTime->setDate($year, $month, $day);
+		$this->dateTime = $this->dateTime->setDate($year, $month, $day);
 
 		return $this;
 	}
