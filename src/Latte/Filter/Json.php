@@ -9,13 +9,18 @@ use Trejjam;
 class Json
 {
 	/**
-	 * @param mixed $input
+	 * @param mixed      $input
+	 * @param int|string $options
 	 *
 	 * @return string
 	 * @throws Nette\Utils\JsonException
 	 */
-	public function filter($input) : string
+	public function filter($input, $options = 0) : string
 	{
-		return Nette\Utils\Json::encode($input);
+		if (is_string($options)) {
+			$options = constant(Nette\Utils\Json::class . '::' . strtoupper($options));
+		}
+
+		return Nette\Utils\Json::encode($input, $options);
 	}
 }
