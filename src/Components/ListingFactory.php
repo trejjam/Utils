@@ -31,7 +31,7 @@ class ListingFactory extends UI\Control
 	public $columns;
 	public $columnsHead;
 	/**
-	 * @var callable[]
+	 * @var callable[]|IRenderable[]
 	 */
 	public $actionButtons = [];
 
