@@ -58,11 +58,11 @@ abstract class ABaseList implements Trejjam\Utils\Helpers\IBaseList
 	 */
 	protected function getRow($id)
 	{
-		if (isset($id->{static::ROW})) {
-			$row = $id->{static::ROW};
-		}
-		else if ($id instanceof Nette\Database\Table\IRow) {
+		if ($id instanceof Nette\Database\Table\IRow) {
 			$row = $id;
+		}
+		else if (isset($id->{static::ROW})) {
+			$row = $id->{static::ROW};
 		}
 		else {
 			$row = $this->getTable()->get($id);
