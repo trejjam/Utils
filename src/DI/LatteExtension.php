@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Trejjam\Utils\DI;
 
+use Nette\DI\Definitions\FactoryDefinition;
 use Trejjam;
 
 class LatteExtension extends Trejjam\BaseExtension\DI\BaseExtension
@@ -17,7 +18,10 @@ class LatteExtension extends Trejjam\BaseExtension\DI\BaseExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$latteFactory = $builder->getDefinition('latte.latteFactory');
+		/** @var FactoryDefinition $latteFactoryDefinition */
+		$latteFactoryDefinition = $builder->getDefinition('latte.latteFactory');
+		$latteFactory = $latteFactoryDefinition->getResultDefinition();
+
 		$latteFactory->addSetup('addFilter', ['json', [$this->prefix('@filter.json'), 'filter']]);
 		$latteFactory->addSetup('addFilter', ['md5', [$this->prefix('@filter.md5'), 'filter']]);
 		$latteFactory->addSetup('addFilter', ['sha1', [$this->prefix('@filter.sha1'), 'filter']]);
