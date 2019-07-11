@@ -3,35 +3,42 @@ declare(strict_types=1);
 
 namespace Trejjam\Utils\Helpers;
 
-use Nette;
+use Nette\Application\IResponse as IApplicationResponse;
+use Nette\Application\Responses\FileResponse as NetteFileResponse;
+use Nette\Http\IRequest;
+use Nette\Http\IResponse;
 
-class FileResponse extends Nette\Application\Responses\FileResponse
+final class FileResponse implements IApplicationResponse
 {
 	/**
 	 * @var string|TempDownloadFile
 	 */
 	protected $file;
 
+	/**
+	 * @var NetteFileResponse
+	 */
+	private $innerResponse;
+
 	public function __construct(
 		$file,
-		string $name = NULL,
-		string $contentType = NULL,
-		bool $forceDownload = TRUE
+		string $name = null,
+		string $contentType = null,
+		bool $forceDownload = true
 	) {
 		$this->file = $file;
 		$filename = ($file instanceof TempDownloadFile && is_file($file->getFileName()))
 			? $file->getFileName()
 			: $file;
 
-		parent::__construct($filename, $name, $contentType, $forceDownload);
+		$this->innerResponse = new NetteFileResponse($filename, $name, $contentType, $forceDownload);
 	}
 
-	public function send(
-		Nette\Http\IRequest $httpRequest,
-		Nette\Http\IResponse $httpResponse
-	) {
-		$httpResponse->setExpiration(FALSE);
-		parent::send($httpRequest, $httpResponse);
+	public function send(IRequest $httpRequest, IResponse $httpResponse) : void
+	{
+		$httpResponse->setExpiration(null);
+
+		$this->innerResponse->send($httpRequest, $httpResponse);
 
 		if ($this->file instanceof TempDownloadFile && is_file($this->file->getFileName())) {
 			$this->file->halt();

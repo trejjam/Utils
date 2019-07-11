@@ -18,7 +18,7 @@
 	"require": {
 		"php": ">=7.1",
 
-		"nette/di": "~2.4 || ~3.0",
+		"nette/di": "~3.0",
 		"trejjam/base-extension": "~0.7"
 	},
 	"autoload": {
@@ -31,7 +31,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "v2.0.x-dev"
+			"dev-master": "v2.1.x-dev"
 		}
 	}
 }
