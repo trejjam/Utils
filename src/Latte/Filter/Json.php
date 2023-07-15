@@ -12,7 +12,6 @@ class Json
 	 * @param mixed      $input
 	 * @param int|string $options
 	 *
-	 * @return string
 	 * @throws Nette\Utils\JsonException
 	 */
 	public function filter($input, $options = 0) : string

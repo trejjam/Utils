@@ -10,23 +10,14 @@ use Nette\Http\IResponse;
 
 final class FileResponse implements IApplicationResponse
 {
-	/**
-	 * @var string|TempDownloadFile
-	 */
-	protected $file;
-
-	/**
-	 * @var NetteFileResponse
-	 */
-	private $innerResponse;
+	private NetteFileResponse $innerResponse;
 
 	public function __construct(
-		$file,
+        private readonly string|TempDownloadFile $file,
 		string $name = null,
 		string $contentType = null,
 		bool $forceDownload = true
 	) {
-		$this->file = $file;
 		$filename = ($file instanceof TempDownloadFile && is_file($file->getFileName()))
 			? $file->getFileName()
 			: $file;

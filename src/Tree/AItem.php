@@ -8,8 +8,8 @@
 
 namespace Trejjam\Utils\Tree;
 
-use Nette,
-	Trejjam;
+use Nette;
+use Trejjam;
 
 abstract class AItem implements IItem
 {

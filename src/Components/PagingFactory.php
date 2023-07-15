@@ -2,7 +2,6 @@
 
 namespace Trejjam\Utils\Components;
 
-use Nette;
 use Trejjam;
 use Nette\Application\UI;
 
@@ -13,138 +12,134 @@ use Nette\Application\UI;
  */
 class PagingFactory extends UI\Control
 {
-	protected $spacePage      = 2;
-	protected $continuousPage = 4;
+    protected int $spacePage = 2;
+    protected int $continuousPage = 4;
 
-	/**
-	 * @var string
-	 */
-	protected $templateFile;
+    /**
+     * @var callable
+     */
+    public $pageCallback = NULL;
+    /**
+     * @var callable
+     */
+    public $countCallback = NULL;
+    /**
+     * @var callable
+     */
+    public $linkCallback = NULL;
 
-	/**
-	 * @var callable
-	 */
-	public $pageCallback = NULL;
-	/**
-	 * @var callable
-	 */
-	public $countCallback = NULL;
-	/**
-	 * @var callable
-	 */
-	public $linkCallback = NULL;
+    function __construct(
+        private readonly string|null $templateFile
+    )
+    {
+    }
 
-	function __construct($templateFile = NULL)
-	{
-		$this->templateFile = $templateFile;
-	}
+    public function setSpacePage(int $spacePage): self
+    {
+        $this->spacePage = $spacePage;
 
-	public function setSpacePage($spacePage)
-	{
-		$this->spacePage = $spacePage;
+        return $this;
+    }
 
-		return $this;
-	}
+    public function setContinuousPage(int $continuousPage): self
+    {
+        $this->continuousPage = $continuousPage;
 
-	public function setContinuousPage($continuousPage)
-	{
-		$this->continuousPage = $continuousPage;
+        return $this;
+    }
 
-		return $this;
-	}
+    public function render()
+    {
+        $template = $this->createTemplate();
 
-	public function render()
-	{
-		$template = $this->createTemplate();
+        $template->setFile($this->templateFile);
 
-		$template->setFile($this->templateFile);
+        if (!is_callable($this->pageCallback)) {
+            throw new \LogicException('Missing page callback');
+        }
+        if (!is_callable($this->countCallback)) {
+            throw new \LogicException('Missing count callback');
+        }
 
-		if ( !is_callable($this->pageCallback)) {
-			throw new \LogicException('Missing page callback');
-		}
-		if ( !is_callable($this->countCallback)) {
-			throw new \LogicException('Missing count callback');
-		}
+        $template->page = $page = call_user_func($this->pageCallback);
+        $template->count = $count = call_user_func($this->countCallback);
 
-		$template->page = $page = call_user_func($this->pageCallback);
-		$template->count = $count = call_user_func($this->countCallback);
+        if ($count < 2) {
+            return;
+        }
 
-		if ($count < 2) {
-			return;
-		}
+        $downContinuous = $page - ceil($this->continuousPage / 2);
+        if ($downContinuous < 2) {
+            $downContinuous = 1;
+        }
+        $upContinuous = $page + ceil($this->continuousPage / 2);
+        if ($upContinuous > $count) {
+            $upContinuous = $count;
+        }
 
-		$downContinuous = $page - ceil($this->continuousPage / 2);
-		if ($downContinuous < 2) {
-			$downContinuous = 1;
-		}
-		$upContinuous = $page + ceil($this->continuousPage / 2);
-		if ($upContinuous > $count) {
-			$upContinuous = $count;
-		}
+        $paging = [];
 
-		$paging = [];
+        $paging[1] = TRUE;
 
-		$paging[1] = TRUE;
+        if ($downContinuous > ($this->spacePage + 1)) {
+            $step = ceil($downContinuous / ($this->spacePage + 1));
+            for ($i = 1; $i < $downContinuous; $i += $step) {
+                $paging[$i] = TRUE;
+            }
+        }
 
-		if ($downContinuous > ($this->spacePage + 1)) {
-			$step = ceil($downContinuous / ($this->spacePage + 1));
-			for ($i = 1; $i < $downContinuous; $i += $step) {
-				$paging[$i] = TRUE;
-			}
-		}
+        for ($i = $downContinuous; $i < $upContinuous; $i++) {
+            if ($i > 1) {
+                $paging[$i] = TRUE;
+            }
+        }
 
-		for ($i = $downContinuous; $i < $upContinuous; $i++) {
-			if ($i > 1) {
-				$paging[$i] = TRUE;
-			}
-		}
+        if (($count - $upContinuous) > ($this->spacePage + 1)) {
+            $step = ceil(($count - $upContinuous) / ($this->spacePage + 1));
+            for ($i = $upContinuous; $i < $count; $i += $step) {
+                $paging[$i] = TRUE;
+            }
+        }
 
-		if (($count - $upContinuous) > ($this->spacePage + 1)) {
-			$step = ceil(($count - $upContinuous) / ($this->spacePage + 1));
-			for ($i = $upContinuous; $i < $count; $i += $step) {
-				$paging[$i] = TRUE;
-			}
-		}
+        $paging[$count] = TRUE;
 
-		$paging[$count] = TRUE;
+        $previous = NULL;
+        foreach ($paging as $k => $v) {
+            if (!is_null($previous) && $previous < ($k - 1)) {
+                $paging[$k - 1] = (object)[
+                    'hasLink' => FALSE,
+                    'text' => '&hellip;',
+                ];
+            }
 
-		$previous = NULL;
-		foreach ($paging as $k => $v) {
-			if ( !is_null($previous) && $previous < ($k - 1)) {
-				$paging[$k - 1] = (object)[
-					'hasLink' => FALSE,
-					'text'    => '&hellip;',
-				];
-			}
+            $paging[$k] = $this->createLink($k);
+            $previous = $k;
+        }
 
-			$paging[$k] = $this->createLink($k);
-			$previous = $k;
-		}
+        ksort($paging);
 
-		ksort($paging);
+        $template->paging = $paging;
 
-		$template->paging = $paging;
+        if ($page > 1) {
+            $template->previous = $this->createLink($page - 1);
+        }
+        if ($page < $count) {
+            $template->next = $this->createLink($page + 1);
+        }
 
-		if ($page > 1) {
-			$template->previous = $this->createLink($page - 1);
-		}
-		if ($page < $count) {
-			$template->next = $this->createLink($page + 1);
-		}
+        $template->render();
+    }
 
-		$template->render();
-	}
+    protected function createLink($page)
+    {
+        if (!is_callable($this->linkCallback)) {
+            throw new \LogicException('Missing link creating callback');
+        }
 
-	protected function createLink($page)
-	{
-		if ( !is_callable($this->linkCallback)) {
-			throw new \LogicException('Missing link creating callback');
-		}
-
-		return (object)[
-			'hasLink' => TRUE,
-			'text'    => $page,
-			'link'    => call_user_func($this->linkCallback, $page),
-		];
-	}
+        return (object)[
+            'hasLink' => TRUE,
+            'text' => $page,
+            'link' => call_user_func($this->linkCallback, $page),
+        ];
+    }
 }

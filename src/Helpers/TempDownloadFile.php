@@ -7,16 +7,12 @@ use Tracy;
 
 class TempDownloadFile
 {
-	private $fileName;
-
 	public function __construct(
-		string $fileName,
-		bool $removeAfterSend = FALSE,
+		private readonly string $fileName,
+		private readonly bool $removeAfterSend = FALSE,
 		int $chmod = 0764
 	) {
-		$this->fileName = $fileName;
 		@chmod($this->fileName, $chmod);
-		$this->removeAfterSend = $removeAfterSend;
 	}
 
 	public function __toString() : string
