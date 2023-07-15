@@ -7,11 +7,8 @@ abstract class AShellExecute
 	/**
 	 * @var callable[]
 	 */
-	public $logger = [];
-	/**
-	 * @var string
-	 */
-	protected $loggerName = '';
+	public array $logger = [];
+	protected string $loggerName = '';
 
 	public function __construct()
 	{

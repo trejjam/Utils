@@ -4,75 +4,53 @@ declare(strict_types=1);
 namespace Trejjam\Utils\DI;
 
 use Nette;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Trejjam;
 
-class UtilsExtension extends Nette\DI\CompilerExtension
+final class UtilsExtension extends Nette\DI\CompilerExtension
 {
-	protected $factoriesDefinition = [
-		'components.listingFactory' => 'Trejjam\Utils\Components\IListingFactory',
-		'components.filterFactory'  => 'Trejjam\Utils\Components\IFilterFactory',
-		'components.pagingFactory'  => 'Trejjam\Utils\Components\IPagingFactory',
-	];
+    public function getConfigSchema(): Schema
+    {
+        return Expect::structure([
+            'components' => Expect::structure([
+                'paging' => Expect::structure([
+                    'template' => Expect::string()->default(__DIR__ . '/../templates/paging.latte'),
+                ]),
+                'listing' => Expect::structure([
+                    'template' => Expect::string()->default(__DIR__ . '/../templates/list.latte'),
+                ]),
+                'filter' => Expect::structure([
+                    'template' => Expect::string()->default(__DIR__ . '/../templates/sortLink.latte'),
+                ]),
+            ]),
+        ]);
+    }
 
-	protected function createConfig()
-	{
-		$config = $this->getConfig(
-			[
-				'components' => [
-					'paging'  => [
-						'template' => __DIR__ . '/../templates/paging.latte',
-					],
-					'listing' => [
-						'template' => __DIR__ . '/../templates/list.latte',
-					],
-					'filter'  => [
-						'template' => __DIR__ . '/../templates/sortLink.latte',
-					],
-				],
-			]
-		);
+    public function beforeCompile()
+    {
+        parent::beforeCompile();
 
-		Nette\Utils\Validators::assert($config, 'array');
+        $builder = $this->getContainerBuilder();
+        $config = $this->createConfig();
 
-		return $config;
-	}
+        $builder->addDefinition($this->prefix('components.listingFactory'))
+            ->setFactory(Trejjam\Utils\Components\IListingFactory::class)
+            ->setArguments([
+                'templateFile' => $config['components']['listing']['template'],
+                'filterFactory' => $this->prefix('@components.filterFactory'),
+            ]);
 
-	public function loadConfiguration()
-	{
-		parent::loadConfiguration();
+        $builder->addDefinition($this->prefix('components.filterFactory'))
+            ->setFactory(Trejjam\Utils\Components\IFilterFactory::class)
+            ->setArguments([
+                'templateFile' => $config['components']['filter']['template']
+            ]);
 
-		$builder = $this->getContainerBuilder();
-		$config = $this->createConfig();
-
-		/** @var Nette\DI\ServiceDefinition[] $factories */
-		$factories = [];
-		foreach ($this->factoriesDefinition as $k => $v) {
-			$factories[$k] = $builder->addDefinition($this->prefix($k))
-									 ->setImplement($v);
-		}
-
-		$factories['components.listingFactory']->setArguments(
-			[
-				'templateFile'  => $config['components']['listing']['template'],
-				'filterFactory' => $this->prefix('@components.filterFactory'),
-			]
-		);
-	}
-
-	public function beforeCompile()
-	{
-		parent::beforeCompile();
-
-		$builder = $this->getContainerBuilder();
-		$config = $this->createConfig();
-
-		/** @var Nette\DI\ServiceDefinition[] $factories */
-		$factories = [];
-		foreach ($this->factoriesDefinition as $k => $v) {
-			$factories[$k] = $builder->getDefinition($this->prefix($k));
-		}
-
-		$factories['components.filterFactory']->setArguments([$config['components']['filter']['template']]);
-		$factories['components.pagingFactory']->setArguments([$config['components']['paging']['template']]);
-	}
+        $builder->addDefinition($this->prefix('components.pagingFactory'))
+            ->setFactory(Trejjam\Utils\Components\IPagingFactory::class)
+            ->setArguments([
+                'templateFile' =>$config['components']['paging']['template']
+            ]);
+    }
 }

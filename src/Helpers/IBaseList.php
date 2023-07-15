@@ -2,7 +2,6 @@
 
 namespace Trejjam\Utils\Helpers;
 
-use Nette;
 use Trejjam;
 
 interface IBaseList

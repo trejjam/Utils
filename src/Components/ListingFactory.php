@@ -12,124 +12,104 @@ use Nette\Application\UI;
  */
 class ListingFactory extends UI\Control
 {
-	public $defaultSort        = [];
-	public $sort               = [];
-	public $sortDbTranslate    = [];
-	public $enabledSort        = [
-		'asc'  => TRUE,
-		'desc' => FALSE,
-	];
-	public $defaultFilter      = [];
-	public $strictFilter       = [];
-	public $filterSpecialInput = [];
-	public $filter             = [];
-	public $filterDbTranslate  = [];
-	public $filterCompareType  = [];
-	public $multipleFilter     = [];
-	public $displayFilters = TRUE;
+    public $defaultSort = [];
+    public $sort = [];
+    public $sortDbTranslate = [];
+    public $enabledSort = [
+        'asc' => TRUE,
+        'desc' => FALSE,
+    ];
+    public $defaultFilter = [];
+    public $strictFilter = [];
+    public $filterSpecialInput = [];
+    public $filter = [];
+    public $filterDbTranslate = [];
+    public $filterCompareType = [];
+    public $multipleFilter = [];
+    public $displayFilters = TRUE;
 
-	public $columns;
-	public $columnsHead;
-	/**
-	 * @var callable[]|IRenderable[]
-	 */
-	public $actionButtons = [];
+    public $columns;
+    public $columnsHead;
+    /**
+     * @var callable[]|IRenderable[]
+     */
+    public $actionButtons = [];
 
-	public $controlVariables = [];
+    public $controlVariables = [];
 
-	/**
-	 * @var Trejjam\Utils\Helpers\IBaseList
-	 */
-	protected $list = NULL;
+    protected string $templateFile;
 
-	/**
-	 * @var string
-	 */
-	protected $templateFile;
-	/**
-	 * @var IFilterFactory
-	 */
-	protected $filterFactory;
+    function __construct(
+        string|null                                           $templateFile,
+        private readonly IFilterFactory                       $filterFactory,
+        private readonly Trejjam\Utils\Helpers\IBaseList|null $list = null
+    )
+    {
+        parent::__construct();
 
-	function __construct($templateFile = NULL, IFilterFactory $filterFactory, Trejjam\Utils\Helpers\IBaseList $list = NULL)
-	{
-		parent::__construct();
+        $this->setTemplate($templateFile);
+    }
 
-		$this->setTemplate($templateFile);
-		$this->filterFactory = $filterFactory;
-		$this->list = $list;
-	}
+    public function setTemplate($templateFile)
+    {
+        $this->templateFile = $templateFile;
+    }
 
-	public function setTemplate($templateFile)
-	{
-		$this->templateFile = $templateFile;
-	}
+    public function getModel(): Trejjam\Utils\Helpers\IBaseList|null
+    {
+        return $this->list;
+    }
 
-	/**
-	 * @param Trejjam\Utils\Helpers\IBaseList $list
-	 *
-	 * @deprecated use constructor
-	 */
-	public function setModel(Trejjam\Utils\Helpers\IBaseList $list)
-	{
-		$this->list = $list;
-	}
+    public function render()
+    {
+        $template = $this->createTemplate();
+        $template->setFile($this->templateFile);
 
-	public function getModel()
-	{
-		return $this->list;
-	}
+        /** @var FilterFactory $filter */
+        $template->filterComponent = $filter = $this->getComponent('filter');
 
-	public function render()
-	{
-		$template = $this->createTemplate();
-		$template->setFile($this->templateFile);
+        $template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit(), $this->filterCompareType, $this->filterDbTranslate);
+        $template->sort = $this->sort;
+        $template->appliedSort = $filter->getSort();
+        $template->filter = array_combine($this->filter, $this->filter);
+        $template->multipleFilter = $this->multipleFilter;
+        $template->appliedFilter = $appliedFilter = $filter->getFilter();
+        unset($appliedFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
+        $template->appliedLikeFilter = $appliedFilter;
+        $template->columns = $this->columns;
+        $template->columnsHead = $this->columnsHead;
+        $template->actionButtons = $this->actionButtons;
+        $template->displayFilters = $this->displayFilters;
 
-		/** @var FilterFactory $filter */
-		$template->filterComponent = $filter = $this->getComponent('filter');
+        $controlCache = [];
+        $template->getControl = function ($name) use ($controlCache) {
+            if (!array_key_exists($name, $controlCache)) {
+                $controlCache[$name] = $this->controlVariables[$name]();
+            }
 
-		$template->listData = $this->list->getList($filter->getDbSort(), $filter->getDbFilter(), $filter->getLimit(), ($filter->getPage() - 1) * $filter->getLimit(), $this->filterCompareType, $this->filterDbTranslate);
-		$template->sort = $this->sort;
-		$template->appliedSort = $filter->getSort();
-		$template->filter = array_combine($this->filter, $this->filter);
-		$template->multipleFilter = $this->multipleFilter;
-		$template->appliedFilter = $appliedFilter = $filter->getFilter();
-		unset($appliedFilter[Trejjam\Utils\Helpers\Database\ABaseList::STRICT]);
-		$template->appliedLikeFilter = $appliedFilter;
-		$template->columns = $this->columns;
-		$template->columnsHead = $this->columnsHead;
-		$template->actionButtons = $this->actionButtons;
-		$template->displayFilters = $this->displayFilters;
+            return $controlCache[$name];
+        };
 
-		$controlCache = [];
-		$template->getControl = function ($name) use ($controlCache) {
-			if ( !array_key_exists($name, $controlCache)) {
-				$controlCache[$name] = $this->controlVariables[$name]();
-			}
+        $template->render();
+    }
 
-			return $controlCache[$name];
-		};
+    public function createComponentFilter(): FilterFactory
+    {
+        $filter = $this->filterFactory->create();
 
-		$template->render();
-	}
+        $filter->setSort($this->sort, $this->enabledSort)
+            ->setSortDbTranslate($this->sortDbTranslate)
+            ->setDefaultSort($this->defaultSort)
+            ->setFilter($this->filter)
+            //->setFilterDbTranslate($this->filterDbTranslate)
+            ->setDefaultFilter($this->defaultFilter)
+            ->setStrictFilter($this->strictFilter)
+            ->setFilterSpecialInput($this->filterSpecialInput);
 
-	public function createComponentFilter()
-	{
-		$filter = $this->filterFactory->create();
+        $filter->countCallback = function ($filter) {
+            return $this->list->getCount($filter, $this->filterCompareType, $this->filterDbTranslate);
+        };
 
-		$filter->setSort($this->sort, $this->enabledSort)
-			   ->setSortDbTranslate($this->sortDbTranslate)
-			   ->setDefaultSort($this->defaultSort)
-			   ->setFilter($this->filter)
-			   //->setFilterDbTranslate($this->filterDbTranslate)
-			   ->setDefaultFilter($this->defaultFilter)
-			   ->setStrictFilter($this->strictFilter)
-			   ->setFilterSpecialInput($this->filterSpecialInput);
-
-		$filter->countCallback = function ($filter) {
-			return $this->list->getCount($filter, $this->filterCompareType, $this->filterDbTranslate);
-		};
-
-		return $filter;
-	}
+        return $filter;
+    }
 }

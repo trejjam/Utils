@@ -7,11 +7,8 @@ use Nette;
 
 interface IRenderable
 {
-	/**
-	 * @param \stdClass|null $parameter
-	 * @param \stdClass[]    $list
-	 *
-	 * @return Nette\Utils\Html
-	 */
-	function render($parameter = NULL, array $list = []) : Nette\Utils\Html;
+    /**
+     * @param \stdClass[] $list
+     */
+    function render(\stdClass|null $parameter = NULL, array $list = []): Nette\Utils\Html;
 }
